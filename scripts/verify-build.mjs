@@ -66,7 +66,8 @@ for (const required of ['feed.xml','sitemap-index.xml','robots.txt','pagefind/pa
   try { await stat(path.join(root, required)); } catch { errors.push(`Missing ${required}`); }
 }
 const rss = load(await readFile(path.join(root,'feed.xml'),'utf8'),{xml:true});
-const articleCount = [...pages.values()].filter($ => $('[data-article-body]').length > 0).length;
+// The about page reuses the reader enhancement hook but is not an RSS entry.
+const articleCount = [...pages.entries()].filter(([file, $]) => $('[data-article-body]').length > 0 && !file.endsWith(`${path.sep}about${path.sep}index.html`)).length;
 if(rss('item').length !== articleCount) errors.push(`RSS has ${rss('item').length} items for ${articleCount} published article pages`);
 for(const link of rss('item > link').toArray()) await checkUrl(rss(link).text(),path.join(root,'index.html'));
 if(errors.length) { console.error(errors.join('\n')); process.exit(1); }

@@ -28,6 +28,7 @@ export default function MobileMenu() {
             const Icon = icons[index];
             return <motion.section key={item.path} initial={reduced ? false : { y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ ...reboundPreset, delay: index * .08 }}>
               <a className="block" href={withBase(item.path)} onClick={() => setOpen(false)}><span className="flex items-center space-x-2 py-2 text-lg"><i>{Icon ? <Icon /> : <i className={item.icon} />}</i><h2>{item.title}</h2></span></a>
+            {item.subMenu && <ul className="my-2 grid grid-cols-2 gap-2">{item.subMenu.map(sub=><li key={sub.path}><a className="inline-block p-2" href={withBase(sub.path)} onClick={()=>setOpen(false)}>{sub.title}</a></li>)}</ul>}
             </motion.section>;
           })}
         </nav>

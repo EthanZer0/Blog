@@ -17,11 +17,11 @@ export async function articles(collection: 'posts' | 'notes') {
 export function articlePath(entry: Entry) {
   return entry.collection === 'posts'
     ? `/posts/${entry.data.categorySlug}/${entry.data.slug}/`
-    : `/notes/${entry.data.slug}/`;
+    : `/notes/${entry.data.nid ?? entry.data.slug}/`;
 }
 
 export function formatDate(date: Date) {
   return new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Shanghai' }).format(date);
 }
 
-export const tagPath = (tag: string) => `/tags/${encodeURIComponent(tag)}/`;
+export const tagPath = (tag: string) => `/posts/tag/${encodeURIComponent(tag)}/`;

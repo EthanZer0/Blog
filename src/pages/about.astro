@@ -1,10 +1,13 @@
 ---
+import Toc from '../components/Toc.astro';
 import Base from '../layouts/Base.astro';
 import { siteConfig } from '../site.config';
 ---
 <Base title="关于">
-  <main id="main" data-header-hide-bg class="mx-auto mt-14 max-w-3xl px-2 lg:mt-[80px] lg:px-0 2xl:max-w-4xl">
+  <main id="main" class="container m-auto mt-[120px] max-w-5xl px-2 md:px-6 lg:px-0">
+    <div class="reading-layout relative min-h-[120px]"><div data-reading-region>
     <h1 class="mb-12 text-3xl font-medium">关于</h1>
-    <article class="prose markdown"><p>你好，我是 {siteConfig.owner}。</p><p>这里是我的个人博客，记录生活，也分享思考。</p><p>如纸的纯净，似雪的清新。</p><hr /><p class="text-sm opacity-60">当前个人介绍和头像为演示占位内容，可以在站点配置中替换。</p></article>
+    <article data-article-body class="prose markdown min-w-0 overflow-hidden"><p>你好，我是 {siteConfig.owner}。</p><p>这里是我的个人博客，记录生活，也分享思考。</p><p>如纸的纯净，似雪的清新。</p><hr /><p class="text-sm opacity-60">当前个人介绍和头像为演示占位内容，可以在站点配置中替换。</p></article>
+    </div><aside class="reading-aside relative" data-pagefind-ignore><div class="sticky top-[120px] mt-[120px] ml-4 h-[calc(100vh-6rem-4.5rem-150px-120px)]"><Toc headings={[]} /></div></aside></div>
   </main>
 </Base>

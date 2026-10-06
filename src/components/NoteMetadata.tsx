@@ -1,0 +1,2 @@
+import {mood2icon,weather2icon} from './upstream/meta-icon';
+export default function NoteMetadata({mood,weather}:{mood?:string;weather?:string}){return <>{[[weather,weather2icon],[mood,mood2icon]].map(([value,icon],i)=>value&&<span key={i} className="inline-flex items-center"><span className="mx-2 h-full w-px scale-y-50 bg-black/30 dark:bg-white/30"/><span className="flex shrink-0 items-center space-x-1">{(icon as (value:string)=>React.ReactNode)(value as string)}<span className="font-medium">{value as string}</span></span></span>)}</>;}

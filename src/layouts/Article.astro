@@ -1,5 +1,10 @@
 ---
+import EditedTime from '../components/EditedTime';
+import {slugify} from '../lib/heading-slug';
 import { render } from 'astro:content';
+import {NoteBottomTopic} from '../components/NoteBottomTopic';
+import PostCopyright from '../components/PostCopyright';
+import NoteMetadata from '../components/NoteMetadata';
 import Base from './Base.astro';
 import Toc from '../components/Toc.astro';
 import TocDialog from '../components/TocDialog';
@@ -10,11 +15,14 @@ import { siteConfig } from '../site.config';
 interface Props { entry: Entry; }
 const { entry } = Astro.props;
 const { Content, headings: allHeadings } = await render(entry);
-const headings = allHeadings.filter(heading => heading.slug !== 'footnote-label');
+const headings = allHeadings.filter(heading => heading.slug !== 'footnote-label').map((heading,index)=>({...heading,slug:`${index}__${slugify(heading.text)}`}));
 const all = await articles(entry.collection);
 const index = all.findIndex(item => item.id === entry.id);
 const previous = all[index + 1];
 const next = all[index - 1];
+const related=entry.data.related.map(id=>all.find(item=>item.id===id||item.data.slug===id)).filter((item):item is Entry=>Boolean(item));
+const topic=entry.data.topic&&(siteConfig.topics.find(topic=>topic.slug===entry.data.topic)||{slug:entry.data.topic,name:entry.data.topic,introduce:''});
+const topicNotes=all.filter(item=>item.data.topic===entry.data.topic).map(item=>({title:item.data.title,url:withBase(articlePath(item)),created:item.data.published.toISOString(),modified:item.data.updated?.toISOString()}));
 const note = entry.collection === 'notes';
 const ld = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: entry.data.title, description: entry.data.description, datePublished: entry.data.published.toISOString(), dateModified: (entry.data.updated || entry.data.published).toISOString(), author: { '@type': 'Person', name: siteConfig.owner }, url: new URL(withBase(articlePath(entry)), Astro.site).href };
 ---
@@ -27,22 +35,20 @@ const ld = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline:
         <div class:list={[!note && 'mb-8']}>
           <h1 class:list={['text-4xl font-bold leading-tight text-balance', note ? 'my-8 text-left text-base-content/95' : 'mb-8 text-center']} data-pagefind-meta="title">{entry.data.title}</h1>
           <div class:list={['flex flex-wrap items-center gap-2 text-sm', note ? 'text-neutral/60' : 'mb-8 justify-center text-neutral']} data-pagefind-ignore>
-            <span class="flex items-center gap-1"><MdiClockOutline aria-hidden="true" /><time datetime={entry.data.published.toISOString()}>{formatDate(entry.data.published)}</time></span>
-            <span class="flex items-center gap-1"><FeHash aria-hidden="true" /><a href={withBase(`/categories/${entry.data.categorySlug}/`)}>{entry.data.category}</a>{entry.data.tags.length > 0 && <span>/ {entry.data.tags.map((tag,i) => <><a href={withBase(tagPath(tag))} class="shiro-link--underline">{tag}</a>{i < entry.data.tags.length-1 ? ', ' : ''}</>)}</span>}</span>
+            <span class="flex items-center gap-1"><MdiClockOutline aria-hidden="true" /><time datetime={entry.data.published.toISOString()}>{formatDate(entry.data.published)}</time>{entry.data.updated&&<EditedTime date={entry.data.updated.toISOString()} client:load />}</span>
+            {!note && <span class="flex items-center gap-1"><FeHash aria-hidden="true" /><span>{entry.data.category}</span>{entry.data.tags.length > 0 && <span>/ {entry.data.tags.map((tag,i) => <><a data-tag={tag} href={withBase(tagPath(tag))} class="shiro-link--underline">{tag}</a>{i < entry.data.tags.length-1 ? ', ' : ''}</>)}</span>}</span>}
+            {note && <NoteMetadata mood={entry.data.mood} weather={entry.data.weather} />}
           </div>
         </div>
         {headings.length > 0 && <TocDialog headings={headings} client:load />}
-        <article class:list={['prose markdown', note && 'markdown--note']} data-article-body data-pagefind-body>
+        <article class:list={['prose markdown', note && 'markdown--note']} data-article-body data-image-records={JSON.stringify(entry.data.images.map(image=>({...image,src:withBase(image.src)})))} data-pagefind-body>
+          <span hidden data-pagefind-meta="subtitle">{note?'手记':entry.data.category}</span>
           <Content />
         </article>
         </div>
-        {!note && <section id="copyright" class="mt-4 text-sm leading-loose text-zinc-600 dark:text-neutral-400" data-pagefind-ignore>
-          <p>文章标题：{entry.data.title}</p><p>文章作者：{siteConfig.owner}</p>
-          <p>文章链接：<a href={withBase(articlePath(entry))}>{ld.url}</a></p>
-          <p>最后修改：{entry.data.updated ? formatDate(entry.data.updated) : '暂无修改'}</p>
-          <hr class="my-4 h-[0.5px] border-0 bg-black/30 dark:bg-white/30" />
-          <p>转载请注明作者与文章出处。</p>
-        </section>}
+        {!note && related.length>0 && <div data-hide-print class="prose mb-5 mt-8"><h3 class="flex items-center gap-2 text-lg font-medium"><i class="i-mingcute-question-line"/><span>关联阅读</span></h3><ul class="ml-0 mt-4 list-inside list-disc pl-0 text-base leading-relaxed">{related.map(item=><li><a class="shiro-link--underline" href={withBase(articlePath(item))}>{item.data.title}</a></li>)}</ul></div>}
+        {!note && <PostCopyright title={entry.data.title} name={siteConfig.owner} link={ld.url} date={entry.data.updated?.toISOString()} license={entry.data.license} client:load />}
+        {note && topic && <NoteBottomTopic topic={topic} notes={topicNotes} client:load />}
         {note && (previous || next) && <nav aria-label="前后篇文章" class="article-navigation relative mt-4 py-2 text-center" data-pagefind-ignore>
           <div class="flex items-center justify-between [&>*]:inline-flex [&>*]:items-center [&>*]:space-x-2 [&>*]:p-2">
             <span>{previous && <a href={withBase(articlePath(previous))} class="inline-flex items-center space-x-2 hover:text-accent"><i class="i-mingcute-arrow-left-line" /><span>前一篇</span></a>}</span>

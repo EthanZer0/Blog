@@ -4,6 +4,7 @@ description: 一个小小的开始。给自己的文字找一个可以安静停�
 published: 2026-09-28T20:00:00+08:00
 category: 日常
 categorySlug: daily
+nid: 1
 slug: first-page
 tags: [生活, 写作]
 ---

@@ -1,5 +1,7 @@
 // Personal information is demo content. Layout and design are ported from Shiro.
+export type NavItem={title:string;path:string;icon:string;subMenu?:NavItem[]};
 export const siteConfig = {
+  topics: [] as {slug:string;name:string;icon?:string;introduce:string;description?:string}[],
   title: 'Sylvan 的小站',
   description: '记录生活，分享思考。',
   owner: 'Sylvan',
@@ -23,7 +25,7 @@ export const siteConfig = {
     { title: '首页', path: '/', icon: 'i-mingcute-home-4-line' },
     { title: '文稿', path: '/posts/', icon: 'i-mingcute-book-2-line' },
     { title: '手记', path: '/notes/', icon: 'i-mingcute-quill-pen-line' },
-    { title: '时光', path: '/timeline/', icon: 'i-mingcute-history-line' },
+    { title: '时光', path: '/timeline/', icon: 'i-mingcute-history-line',subMenu:[{title:'手记',path:'/timeline/?type=note',icon:'i-mingcute-quill-pen-line'},{title:'文稿',path:'/timeline/?type=post',icon:'i-mingcute-book-2-line'},{title:'专栏',path:'/notes/series/',icon:'i-mingcute-align-bottom-fill'}] },
     { title: '关于', path: '/about/', icon: 'i-mingcute-user-3-line' },
-  ],
+  ] as NavItem[],
 };

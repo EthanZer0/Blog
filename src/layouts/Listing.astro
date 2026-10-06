@@ -1,6 +1,7 @@
 ---
 import Base from './Base.astro';
 import PostItem from '../components/PostItem.astro';
+import PostSettings from '../components/PostSettings';
 import type { Entry } from '../lib/content';
 interface Props { title: string; entries: Entry[]; description?: string; showTitle?: boolean; }
 const { title, entries, description, showTitle = true } = Astro.props;
@@ -9,7 +10,8 @@ const { title, entries, description, showTitle = true } = Astro.props;
   <main id="main" data-header-hide-bg class="mx-auto mt-14 max-w-3xl px-2 lg:mt-[80px] lg:px-0 2xl:max-w-4xl [&_header.prose]:mb-[80px]">
     <h1 class:list={[showTitle ? 'mb-12 text-3xl font-medium' : 'sr-only']}>{title}</h1>
     <slot />
-    <div>{entries.map(entry => <PostItem entry={entry} />)}</div>
+    <div data-post-list>{entries.map(entry => <PostItem entry={entry} />)}</div>
+    <PostSettings tags={[...new Set(entries.flatMap(entry=>entry.data.tags))].map(name=>({name,count:entries.filter(entry=>entry.data.tags.includes(name)).length}))} client:load />
     {entries.length === 0 && <p class="py-12 opacity-60">这里还没有文章。</p>}
   </main>
 </Base>

@@ -1,0 +1,2 @@
+import {FloatPopover} from './FloatPopover';
+export default function EditedTime({date}:{date:string}){return <FloatPopover type="tooltip" mobileAsSheet wrapperClassName="text-xs" triggerElement={<span>(已编辑)</span>}>编辑于 <time dateTime={date}>{new Intl.DateTimeFormat('zh-CN',{dateStyle:'full',timeStyle:'short'}).format(new Date(date))}</time></FloatPopover>;}

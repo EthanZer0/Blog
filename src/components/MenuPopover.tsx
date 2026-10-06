@@ -1,0 +1,5 @@
+import type { ReactElement } from 'react';
+import type { NavItem } from '../site.config';
+import { withBase } from '../lib/url';
+import { FloatPopover } from './FloatPopover';
+export default function MenuPopover({children,subMenu}:{children:ReactElement;subMenu?:NavItem[]}){if(!subMenu?.length)return children;return <FloatPopover strategy="fixed" placement="bottom" offset={10} headless popoverWrapperClassNames="z-[19] relative" popoverClassNames="select-none rounded-xl bg-white/60 outline-hidden dark:bg-neutral-900/60 border border-zinc-900/5 shadow-lg shadow-zinc-800/5 backdrop-blur-md dark:border-zinc-100/10 dark:from-zinc-900/70 dark:to-zinc-800/90 relative flex w-[130px] flex-col focus-visible:ring-0!" triggerElement={children}>{subMenu.map(item=><a key={item.path} href={withBase(item.path)} className="relative flex w-full items-center space-x-2 px-4 py-3 duration-200 hover:bg-accent/5 hover:text-accent justify-around" role="button"><span><i className={item.icon}/></span><span>{item.title}</span></a>)}</FloatPopover>;}

@@ -8,14 +8,19 @@ import 'katex/dist/katex.min.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { siteConfig } from '../site.config';
-import { withBase } from '../lib/content';
+import { articles, articlePath, withBase } from '../lib/content';
+import { ClientRouter } from 'astro:transitions';
+import { Toaster } from '../components/upstream/Toaster';
+import ModalRoot from '../components/ModalRoot';
+const publicEntries=[...await articles('posts'),...await articles('notes')];
 interface Props { title?: string; description?: string; article?: boolean; }
 const { title, description = siteConfig.description, article = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname.replace(/\/404\/?$/, '/404.html'), Astro.site);
 ---
 <!doctype html>
-<html lang="zh-CN" class="noise themed" data-theme="light">
+<html transition:animate="none" lang="zh-CN" class="noise themed" data-theme="light">
   <head>
+    <ClientRouter />
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title ? `${title} · ${siteConfig.title}` : siteConfig.title}</title>
     <meta name="description" content={description} /><meta name="generator" content={Astro.generator} />
@@ -23,15 +28,17 @@ const canonical = new URL(Astro.url.pathname.replace(/\/404\/?$/, '/404.html'), 
     <link rel="canonical" href={canonical} /><link rel="icon" href={withBase('/favicon.ico')} />
     <link rel="alternate" type="application/rss+xml" title={siteConfig.title} href={withBase('/feed.xml')} />
     <meta property="og:title" content={title || siteConfig.title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} /><meta property="og:type" content={article ? 'article' : 'website'} />
-    <script is:inline>
+    <script is:inline data-astro-rerun>
       (() => { let theme; try { theme = localStorage.getItem('shiro-theme'); } catch {} document.documentElement.dataset.themePreference = theme || 'system'; theme = theme === 'dark' || theme === 'light' ? theme : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; document.documentElement.dataset.theme = theme; })();
     </script>
   </head>
-  <body class="min-h-screen text-base-content antialiased">
+  <body transition:animate="none" class="min-h-screen text-base-content antialiased">
     <a href="#main" class="skip-link">跳到正文</a>
     <Header />
     <div class="fill-content relative z-[1] px-4 pt-[4.5rem] md:px-0"><slot /></div>
     <Footer />
+    <Toaster client:load transition:persist="shiro-toasts" />
+    <ModalRoot entries={publicEntries.filter(entry=>entry.collection==='posts').map(entry=>({title:entry.data.title,url:withBase(articlePath(entry)),created:entry.data.published.toISOString(),tags:entry.data.tags}))} client:load transition:persist="shiro-modals" />
     <script>
       import '../scripts/site';
     </script>

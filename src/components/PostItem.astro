@@ -1,4 +1,5 @@
 ---
+import EditedTime from './EditedTime';
 import { articlePath, formatDate, withBase, type Entry } from '../lib/content';
 import RemoveMarkdown from 'remove-markdown';
 import { MdiClockOutline } from './upstream/clock';
@@ -11,14 +12,15 @@ const text = entry.body || '';
 const displayText = text.length > 300 ? `${RemoveMarkdown(text.slice(0,300))}...` : text;
 ---
 <!-- Adapted from Shiro PostLooseItem: title, summary, meta, hover bounds and spacing. -->
-<a href={withBase(articlePath(entry))} class="post-item relative flex flex-col py-8">
+<a href={withBase(articlePath(entry))} class="post-item relative flex flex-col py-8" data-published={entry.data.published.toISOString()} data-updated={(entry.data.updated||entry.data.published).toISOString()} data-pin={String(entry.data.pin)}>
   <h2 class="relative break-words text-2xl font-medium"><div class:list={['flex items-baseline gap-2', entry.data.pin ? 'w-[calc(100%-2rem)]' : 'w-full']}><span>{entry.data.title}</span></div>{entry.data.pin && <span aria-label="置顶" class="pointer-events-none absolute top-[4px] right-0 bottom-0 z-10 -m-5 box-content inline-flex size-5 items-center p-5 text-error"><PhPushPinFill /></span>}</h2>
-  <div class="relative mt-8 space-y-2">
+  <div class="relative mt-8 space-y-2" data-post-loose>
     {entry.data.description && <p class="mb-4 break-all rounded-md px-4 py-2 text-sm leading-relaxed text-zinc-900 ring-1 ring-accent/10 dark:text-zinc-50">摘要： {entry.data.description}</p>}
     <div class="relative overflow-hidden text-justify">{previewImage && <div class="float-right mb-2 ml-3 size-[5.5rem] overflow-hidden rounded-md bg-cover bg-center bg-no-repeat" style={{backgroundImage:`url(${withBase(previewImage)})`}} />}<p class="break-all leading-loose text-zinc-800/90 dark:text-zinc-200/90">{displayText}</p></div>
   </div>
+  <div class="relative mt-4 space-y-2" data-post-compact hidden><div class="relative overflow-hidden text-justify">{entry.data.description&&<p class="mb-2 break-all leading-loose text-zinc-800/90 dark:text-zinc-200/90">{entry.data.description}</p>}</div></div>
   <div class="mt-2 flex select-none flex-wrap items-center justify-end gap-4 text-base-content/60">
-    <div class="flex min-w-0 shrink grow flex-wrap gap-2 text-sm text-neutral"><span class="flex min-w-0 items-center space-x-1"><MdiClockOutline aria-hidden="true" /><time data-relative-time datetime={entry.data.published.toISOString()}>{formatDate(entry.data.published)}</time></span><span class="flex min-w-0 items-center space-x-1"><FeHash className="translate-y-[0.5px]" aria-hidden="true" /><span>{entry.data.category}{entry.data.tags.length > 0 && ` / ${entry.data.tags.join(', ')}`}</span></span></div>
-    <span class="flex shrink-0 select-none items-center space-x-1 text-right text-accent hover:text-accent [&>svg]:hover:ml-2">阅读全文<i class="i-mingcute-arrow-right-line text-lg transition-[margin]" aria-hidden="true"></i></span>
+    <div class="flex min-w-0 shrink grow flex-wrap gap-2 text-sm text-neutral"><span class="flex min-w-0 items-center space-x-1"><MdiClockOutline aria-hidden="true" /><time data-relative-time datetime={entry.data.published.toISOString()}>{formatDate(entry.data.published)}</time>{entry.data.updated&&<EditedTime date={entry.data.updated.toISOString()} client:load />}</span><span class="flex min-w-0 items-center space-x-1"><FeHash className="translate-y-[0.5px]" aria-hidden="true" /><span>{entry.data.category}{entry.data.tags.length > 0 && <> / {entry.data.tags.map((tag,i)=><><button data-tag={tag} type="button" class="shiro-link--underline">{tag}</button>{i<entry.data.tags.length-1?', ':''}</>)}</>}</span></span></div>
+    <span data-post-loose class="flex shrink-0 select-none items-center space-x-1 text-right text-accent hover:text-accent [&>svg]:hover:ml-2">阅读全文<i class="i-mingcute-arrow-right-line text-lg transition-[margin]" aria-hidden="true"></i></span>
   </div>
 </a>

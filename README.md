@@ -61,3 +61,9 @@ slug 与 categorySlug 使用小写英文、数字及连字符。文稿地址为 
 上游作者 Innei，项目 https://github.com/Innei/Shiro，参考提交 `891bb24cd59aff7c9baaf4d9a3579ca4275da3b7`。
 
 保留上游 `LICENSE` 与 `ADDITIONAL_TERMS.md`，沿用 AGPLv3 和上游附加商业使用条款。源码来源与适配变更见 `docs/SOURCES.md`，迁移范围见 `docs/MIGRATION.md`，最新逐文件审查及剩余视觉差异见 `docs/FRONTEND_AUDIT.md`。
+
+## 本轮新增的写作字段
+
+手记可设置 `nid`（唯一正整数）、`mood`、`weather`、`topic`；专栏介绍配置在 `siteConfig.topics`。文稿 `related` 填公开文稿的 id 或 slug。`license` 默认为 `reserved`；`CC-BY-NC-SA-4.0` 才启用原 CC 声明。`images` 可填写 `src/width/height/accent/blurHash`，用于原图片占位和色彩展示。
+
+已接入 Tabs、spoiler、tag、grid、masonry、carousel、静态 LinkCard 和视频。完整来源与明确边界见 [前端源码审查](docs/FRONTEND_AUDIT.md)。

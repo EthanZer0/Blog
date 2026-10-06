@@ -5,18 +5,27 @@ import languageMap from './upstream-code-languages.json' with { type: 'json' };
 export function rehypeShiro() {
   const base = (process.env.BASE_PATH || '/').replace(/\/$/, '');
   return tree => {
+    let headingIndex=0;
     visit(tree, 'element', (node, index, parent) => {
       let props = node.properties ||= {};
-      if (props.className?.includes('shiro-container--gallery')) {
+      if (props.className?.includes('shiro-container--gallery') || props.className?.includes('shiro-container--carousel')) {
         const images = [];
         visit(node, 'element', child => { if (child.tagName === 'img') images.push(child); });
         props.className = 'w-full relative gallery-root'; props.dataGallery = true;
         if (images.length > 1) {
-          images.forEach(image => { image.properties.alt = image.properties.title || (/^[¡!]/.test(image.properties.alt || '') ? image.properties.alt.slice(1) : ''); });
+          images.forEach(image => { image.properties.dataGalleryName=image.properties.alt; image.properties.alt = image.properties.title || (/^[¡!]/.test(image.properties.alt || '') ? image.properties.alt.slice(1) : ''); });
           const button = (direction, side, icon) => ({type:'element',tagName:'div',properties:{className:`pointer-events-none absolute inset-y-0 ${side}-2 flex items-center [&_*]:duration-200`,dataGalleryArrow:direction,hidden:direction < 0},children:[{type:'element',tagName:'button',properties:{type:'button',ariaLabel:direction < 0 ? '上一张图片' : '下一张图片',dataGalleryStep:direction,className:'border-border center pointer-events-auto flex size-8 rounded-full border bg-base-100 p-1 opacity-80 hover:opacity-100'},children:[{type:'element',tagName:'i',properties:{className:icon},children:[]}]}]});
           node.children = [{type:'element',tagName:'div',properties:{className:'w-full overflow-auto whitespace-nowrap gallery-container'},children:images.map(image => ({type:'element',tagName:'div',properties:{className:'gallery-child inline-block self-center',style:'width:calc(100% - 60px);margin-right:15px'},children:[image]}))},button(-1,'left','i-mingcute-left-fill'),button(1,'right','i-mingcute-right-fill'),{type:'element',tagName:'div',properties:{className:'gallery-indicator space-x-2'},children:images.map((_,index) => ({type:'element',tagName:'button',properties:{type:'button',ariaLabel:`查看第 ${index+1} 张图片`,dataGalleryIndex:index,className:'size-[6px] cursor-pointer rounded-full bg-stone-600 opacity-50 transition-opacity duration-200 ease-in-out',ariaPressed:index===0},children:[]}))}];
         } else node.children = images;
       }
+      if(props.className?.includes('shiro-container--grid')) props.className='relative grid w-full';
+      if(props.className?.includes('shiro-container--masonry')) {props.className='shiro-masonry [&_figure]:my-0';props.dataMasonry=true;}
+      if(props.className?.includes('shiro-container--tabs') || node.tagName==='tabs'){node.tagName='div';props.className='shiro-tabs';props.dataTabs=true;}
+      if(props.className?.includes('shiro-container--tab') || node.tagName==='tab'){node.tagName='div';props.dataTabLabel ||= props.label;props.className='animate-in fade-in animation-duration-500';}
+      if(props.className?.includes('shiro-container--spoiler') || node.tagName==='spoiler'){node.tagName='del';props.className='spoiler';props.title='你知道的太多了';}
+      if(props.className?.includes('shiro-container--tag') || node.tagName==='tag'){node.tagName='span';props.className='inline-block space-x-1 rounded-full px-3 py-0 mr-2 last:mr-0 text-sm';props.dataMarkdownTag=true;}
+      if(node.tagName==='linkcard'){node.tagName='div';props.dataLinkCard=true;props.dataHref=props.href||props.url;props.dataTitle=props.title;props.dataDescription=props.description;props.dataImage=props.image;}
+      if(node.tagName==='video'){props.className='mx-auto select-none';props.playsInline=true;props.muted=true;props.controls=true;props.dataVideoPlayer=true;}
       if (node.tagName === 'p') props.className = [...(props.className || []), 'paragraph'];
       if (node.tagName === 'table') {
         props.className = ['table', 'table-zebra', 'table-pin-rows'];
@@ -27,6 +36,7 @@ export function rehypeShiro() {
         node = parent.children[index];
         props = node.properties ||= {};
       }
+      if(node.tagName==='img' && /\.(mp4|webm|mov|mkv)(?:[?#]|$)/i.test(props.src||'')){node.tagName='video';props.controls=true;props.playsInline=true;props.dataVideoPlayer=true;props.className='mx-auto select-none';}
       if (node.tagName === 'img' && parent && parent.tagName !== 'span') {
         const caption = props.title || props.alt?.replace(/^[¡!]/, '');
         props.alt = props.alt?.replace(/^[¡!]/, '') || '';
@@ -38,19 +48,21 @@ export function rehypeShiro() {
           ...(caption ? [{type:'element',tagName:'figcaption',properties:{className:'mt-1 flex flex-col items-center justify-center'},children:[{type:'element',tagName:'hr',properties:{className:'my-4 h-[0.5px] w-[80px] border-0 bg-black/30 opacity-80 dark:bg-white/30'},children:[]},{type:'element',tagName:'span',properties:{},children:[{type:'text',value:caption}]}]}] : []),
         ]};
       }
-      if (props.dataFootnotes) {
+      if (props.dataFootnotes !== undefined) {
         node.tagName = 'div'; props.id = 'md-footnote'; props.className = 'mt-4';
         node.children = node.children.filter(child => child.tagName !== 'h2');
         node.children.unshift({type:'element',tagName:'hr',properties:{className:'my-4 h-[0.5px] border-0 bg-black/30 dark:bg-white/30'},children:[]});
         const list = node.children.find(child => child.tagName === 'ol');
         if (list) { list.tagName = 'ul'; list.properties.className = 'list-[upper-roman] space-y-3 text-base text-zinc-600 dark:text-neutral-400'; }
       }
-      if (props.dataFootnoteRef) props.ariaDescribedBy = 'md-footnote';
-      if (props.dataFootnoteBackref) {
+      if(typeof props.id==='string')props.id=props.id.replace(/^user-content-fnref-/, 'footnote-ref-').replace(/^user-content-fn-/, 'footnote-');
+      if(typeof props.href==='string')props.href=props.href.replace(/^#user-content-fnref-/, '#footnote-ref-').replace(/^#user-content-fn-/, '#footnote-');
+      if (props.dataFootnoteRef !== undefined) props.ariaDescribedBy = 'md-footnote';
+      if (props.dataFootnoteBackref !== undefined) {
         props.className = 'ml-2 inline-flex items-center';
         node.children = [{type:'element',tagName:'svg',properties:{width:'1em',height:'1em',viewBox:'0 0 24 24',ariaHidden:true},children:[{type:'element',tagName:'path',properties:{fill:'currentColor',d:'m6.8 13l2.9 2.9q.275.275.275.7t-.275.7q-.275.275-.7.275t-.7-.275l-4.6-4.6q-.15-.15-.213-.325T3.426 12q0-.2.063-.375T3.7 11.3l4.6-4.6q.275-.275.7-.275t.7.275q.275.275.275.7t-.275.7L6.8 11H19V8q0-.425.288-.713T20 7q.425 0 .713.288T21 8v3q0 .825-.588 1.413T19 13H6.8Z'},children:[]}]}];
       }
-      if (node.tagName === 'a' && !props.dataFootnoteRef && !props.dataFootnoteBackref && !props.className?.includes('heading-anchor')) props.className = 'shiro-link--underline';
+      if (node.tagName === 'a' && props.dataFootnoteRef === undefined && props.dataFootnoteBackref === undefined && !props.className?.includes('heading-anchor')) props.className = 'shiro-link--underline';
       const fencedCode = node.tagName === 'pre' && node.children.find(child => child.tagName === 'code');
       const languageClass = fencedCode?.properties?.className?.find(name => name.startsWith('language-'));
       const language = props.dataLanguage || languageClass?.slice(9);
@@ -83,7 +95,9 @@ export function rehypeShiro() {
       }
       if (/^h[1-6]$/.test(node.tagName) && props.id) {
         if(props.id === 'footnote-label') return;
-        props.className = 'group flex items-center'; props.dataMarkdownHeading = true;
+        const text=node.children.map(function text(node){return node.type==='text'?node.value:(node.children||[]).map(text).join('');}).join('');
+        const slug=text.replaceAll(/[ÀÁÂÃÄÅæ]/gi,'a').replaceAll(/ç/gi,'c').replaceAll(/ð/gi,'d').replaceAll(/[ÈÉÊË]/gi,'e').replaceAll(/[ÏÎÍÌ]/gi,'i').replaceAll(/Ñ/gi,'n').replaceAll(/[øœÕÔÓÒ]/gi,'o').replaceAll(/[ÜÛÚÙ]/gi,'u').replaceAll(/[ŸÝ]/gi,'y').replaceAll(/[^\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF\uAC00-\uD7AFa-z0-9- ]/gi,'').replaceAll(' ','-').toLowerCase();
+        props.id=`${headingIndex++}__${slug}`; props.className = 'group flex items-center'; props.dataMarkdownHeading = true;
         node.children = [{type:'element',tagName:'span',properties:{},children:node.children},{type:'element',tagName:'a',properties:{href:`#${props.id}`,className:'heading-anchor center ml-2 inline-flex cursor-pointer select-none text-accent opacity-0 transition-opacity duration-200 group-hover:opacity-100 focus-visible:opacity-100',ariaLabel:'此标题的链接',dataPagefindIgnore:true},children:[{type:'element',tagName:'i',properties:{className:'i-mingcute-hashtag-line'},children:[]}]}];
       }
       if (node.tagName === 'img') return SKIP;

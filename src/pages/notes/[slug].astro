@@ -1,9 +1,10 @@
 ---
 import Article from '../../layouts/Article.astro';
-import { articles } from '../../lib/content';
+import { articles,articlePath,withBase } from '../../lib/content';
 export async function getStaticPaths() {
-  return (await articles('notes')).map(entry => ({ params: { slug: entry.data.slug }, props: { entry } }));
+  return (await articles('notes')).flatMap(entry => [{ params: { slug: String(entry.data.nid ?? entry.data.slug) }, props: { entry,alias:false } }, ...(entry.data.nid?[{params:{slug:entry.data.slug},props:{entry,alias:true}}]:[])]);
 }
-const { entry } = Astro.props;
+const { entry,alias } = Astro.props;
+if(alias)return Astro.redirect(withBase(articlePath(entry)),302);
 ---
 <Article entry={entry} />

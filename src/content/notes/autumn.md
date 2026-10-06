@@ -4,6 +4,7 @@ description: 傍晚走过熟悉的路，风已经有了秋天的味道。把一�
 published: 2026-10-05T19:00:00+08:00
 category: 日常
 categorySlug: daily
+nid: 2
 slug: autumn
 tags: [生活]
 ---
