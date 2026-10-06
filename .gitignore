@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.astro/
+.research/
+.env
+.env.*
+!.env.example
+.verification/
+*.log
+.DS_Store

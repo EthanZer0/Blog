@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import { withBase } from '../lib/content';
+---
+<Base title="搜索">
+  <main id="main" class="mx-auto mt-[120px] min-h-[60vh] max-w-3xl px-6" data-pagefind-ignore>
+    <h1 class="mb-12 text-3xl font-medium">搜索</h1>
+    <div id="search" class="search-panel" data-pagefind-path={withBase('/pagefind/')}><p id="search-status" role="status" class="opacity-60">正在准备搜索…</p></div>
+    <noscript><p>搜索需要启用 JavaScript；你也可以从文稿列表和时光页浏览文章。</p></noscript>
+  </main>
+  <script>
+    const target = document.querySelector<HTMLElement>('#search');
+    const path = target?.dataset.pagefindPath;
+    if (target && path) {
+      const style = document.createElement('link'); style.rel = 'stylesheet'; style.href = `${path}pagefind-ui.css`; document.head.append(style);
+      const script = document.createElement('script'); script.src = `${path}pagefind-ui.js`;
+      script.onload = () => {
+        document.querySelector('#search-status')?.remove();
+        const PagefindUI = (window as unknown as { PagefindUI: new (options: Record<string, unknown>) => unknown }).PagefindUI;
+        new PagefindUI({ element: '#search', bundlePath: path, showSubResults: true, translations: { placeholder: '搜索文稿与手记', zero_results: '没有找到与 [SEARCH_TERM] 相关的内容', search_label: '搜索文章', clear_search: '清除', load_more: '更多结果' } });
+      };
+      script.onerror = () => { const status = document.querySelector('#search-status'); if (status) status.textContent = '搜索索引尚未生成。请构建站点后使用预览服务。'; };
+      document.head.append(script);
+    }
+  </script>
+</Base>

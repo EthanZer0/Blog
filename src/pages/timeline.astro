@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import { articles, articlePath, withBase, formatDate } from '../lib/content';
+const entries = [...await articles('posts'), ...await articles('notes')].sort((a,b) => b.data.published.getTime()-a.data.published.getTime());
+const years = [...new Set(entries.map(entry => Number(new Intl.DateTimeFormat('en',{year:'numeric',timeZone:'Asia/Shanghai'}).format(entry.data.published))))];
+---
+<Base title="时光">
+  <main id="main" class="mx-auto mt-[120px] min-h-[60vh] max-w-3xl px-6">
+    <h1 class="mb-8 text-3xl font-medium">时光</h1>
+    <div class="mb-12 flex gap-4 text-sm" data-timeline-filter>{[['all','全部'],['posts','文稿'],['notes','手记']].map(([type,label]) => <button type="button" data-filter={type} aria-pressed={type==='all'} class="rounded-full border px-4 py-1.5 transition aria-pressed:border-accent aria-pressed:text-accent">{label}</button>)}</div>
+    {years.map(year => <section class="mb-12" data-year-group><h2 class="mb-6 text-2xl font-medium">{year}</h2><ul class="shiro-timeline">{entries.filter(entry => Number(new Intl.DateTimeFormat('en',{year:'numeric',timeZone:'Asia/Shanghai'}).format(entry.data.published))===year).map(entry => <li class="flex items-baseline justify-between gap-4 py-3!" data-entry-type={entry.collection}><a href={withBase(articlePath(entry))}>{entry.data.title}</a><time class="shrink-0 text-xs opacity-50" datetime={entry.data.published.toISOString()}>{formatDate(entry.data.published)}</time></li>)}</ul></section>)}
+  </main>
+</Base>

@@ -1,0 +1,12 @@
+---
+import { siteConfig } from '../site.config';
+import { withBase } from '../lib/content';
+---
+<!-- Shiro Footer.tsx spacing and FooterInfo structure. -->
+<footer class="relative z-[1] mt-32 border-t py-6 text-base-content/80" data-pagefind-ignore>
+  <div class="px-4 sm:px-8"><div class="relative mx-auto max-w-7xl lg:px-8">
+    <div class="flex flex-wrap items-center gap-4"><b class="font-medium">更多 <span class="ml-2 opacity-50">›</span></b><a href={withBase('/about/')} class="shiro-link--underline">关于</a><a href={withBase('/feed.xml')} class="shiro-link--underline">RSS</a><a href={withBase('/timeline/')} class="shiro-link--underline">时光</a></div>
+    <p class="mt-6 text-sm opacity-70">© {new Date().getUTCFullYear()} {siteConfig.owner} <span class="mx-2 opacity-50">|</span> Powered by <a href="https://astro.build/">Astro</a> & <a href="https://github.com/Innei/Shiro">白 / Shiro</a></p>
+    <div class="mt-6 flex justify-center md:absolute md:right-0 md:bottom-0 md:mt-0"><button type="button" id="theme-toggle" aria-label="切换深浅主题" aria-pressed="false" class="center inline-flex size-9 rounded-full border transition hover:text-accent"><i class="i-mingcute-sun-line dark:hidden" aria-hidden="true"></i><i class="i-mingcute-moon-line hidden dark:block" aria-hidden="true"></i></button></div>
+  </div></div>
+</footer>

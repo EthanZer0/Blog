@@ -1,0 +1,39 @@
+---
+import '../styles/global.css';
+import '@fontsource/manrope/latin-300.css';
+import '@fontsource/manrope/latin-400.css';
+import '@fontsource/manrope/latin-500.css';
+import '@fontsource/noto-serif-sc/400.css';
+import 'katex/dist/katex.min.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { siteConfig } from '../site.config';
+import { withBase } from '../lib/content';
+interface Props { title?: string; description?: string; article?: boolean; }
+const { title, description = siteConfig.description, article = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname.replace(/\/404\/?$/, '/404.html'), Astro.site);
+---
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title ? `${title} · ${siteConfig.title}` : siteConfig.title}</title>
+    <meta name="description" content={description} /><meta name="generator" content={Astro.generator} />
+    {Astro.url.pathname.match(/\/404\/?$/) && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} /><link rel="icon" href={withBase('/favicon.ico')} />
+    <link rel="alternate" type="application/rss+xml" title={siteConfig.title} href={withBase('/feed.xml')} />
+    <meta property="og:title" content={title || siteConfig.title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} /><meta property="og:type" content={article ? 'article' : 'website'} />
+    <script is:inline>
+      (() => { let theme; try { theme = localStorage.getItem('shiro-theme'); } catch {} theme = theme === 'dark' || theme === 'light' ? theme : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; document.documentElement.dataset.theme = theme; })();
+    </script>
+  </head>
+  <body class="min-h-screen text-base-content antialiased">
+    <a href="#main" class="skip-link">跳到正文</a>
+    <Header />
+    <slot />
+    <Footer />
+    <script>
+      import '../scripts/site';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+---
+import Listing from '../../layouts/Listing.astro';
+import { articles } from '../../lib/content';
+export async function getStaticPaths() {
+  const entries = [...await articles('posts'), ...await articles('notes')];
+  return [...new Set(entries.map(entry => entry.data.categorySlug))].map(category => {
+    const filtered = entries.filter(entry => entry.data.categorySlug === category);
+    return { params: { category }, props: { title: filtered[0].data.category, entries: filtered } };
+  });
+}
+const { title, entries } = Astro.props;
+---
+<Listing title={`分类：${title}`} entries={entries} />

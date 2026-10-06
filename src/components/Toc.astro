@@ -1,0 +1,9 @@
+---
+import type { MarkdownHeading } from 'astro';
+interface Props { headings: MarkdownHeading[]; }
+const { headings } = Astro.props;
+---
+<nav aria-label="文章目录" data-toc data-pagefind-ignore>
+  <ul class="toc-list text-sm">{headings.map(heading => <li style={`padding-left:${Math.max(0,heading.depth-2)*.6}rem`}><a title={heading.text} href={`#${heading.slug}`}>{heading.text}</a></li>)}</ul>
+  <div class="mt-6 px-2"><progress class="reading-progress" data-reading-progress max="100" value="0" aria-label="阅读进度"></progress></div>
+</nav>

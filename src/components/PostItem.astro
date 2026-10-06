@@ -1,0 +1,14 @@
+---
+import { articlePath, formatDate, withBase, type Entry } from '../lib/content';
+interface Props { entry: Entry; }
+const { entry } = Astro.props;
+---
+<!-- Adapted from Shiro PostLooseItem: title, summary, meta, hover bounds and spacing. -->
+<a href={withBase(articlePath(entry))} class="post-item relative flex flex-col py-8">
+  <h2 class="relative break-words text-2xl font-medium">{entry.data.title}{entry.data.pin && <i class="i-mingcute-pin-line ml-2 text-base text-accent" aria-label="置顶"></i>}</h2>
+  <div class="relative mt-8 space-y-2"><p class="break-words leading-loose text-zinc-800/90 dark:text-zinc-200/90">{entry.data.description}</p></div>
+  <div class="mt-2 flex select-none flex-wrap items-center justify-end gap-4 text-base-content/60">
+    <div class="mr-auto flex flex-wrap items-center gap-2 text-sm"><i class="i-mingcute-time-line" aria-hidden="true"></i><time datetime={entry.data.published.toISOString()}>{formatDate(entry.data.published)}</time><span>· {entry.data.category}</span></div>
+    <span class="flex items-center gap-1 text-accent">阅读全文<i class="i-mingcute-arrow-right-line text-lg" aria-hidden="true"></i></span>
+  </div>
+</a>

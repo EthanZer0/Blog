@@ -1,0 +1,6 @@
+---
+import Listing from '../../layouts/Listing.astro';
+import { articles } from '../../lib/content';
+const entries = await articles('notes');
+---
+<Listing title="手记" entries={entries} />

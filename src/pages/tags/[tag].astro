@@ -1,0 +1,10 @@
+---
+import Listing from '../../layouts/Listing.astro';
+import { articles } from '../../lib/content';
+export async function getStaticPaths() {
+  const entries = [...await articles('posts'), ...await articles('notes')];
+  return [...new Set(entries.flatMap(entry => entry.data.tags))].map(tag => ({ params: { tag }, props: { tag, entries: entries.filter(entry => entry.data.tags.includes(tag)) } }));
+}
+const { tag, entries } = Astro.props;
+---
+<Listing title={`标签：${tag}`} entries={entries} />
