@@ -4,4 +4,4 @@ import { articles } from '../../lib/content';
 const entries = await articles('posts');
 entries.sort((a,b) => Number(b.data.pin)-Number(a.data.pin));
 ---
-<Listing title="文稿" entries={entries} />
+<Listing title="文稿" entries={entries} showTitle={false} />

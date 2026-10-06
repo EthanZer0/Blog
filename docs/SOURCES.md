@@ -2,47 +2,10 @@
 
 统一参考提交：`891bb24cd59aff7c9baaf4d9a3579ca4275da3b7`，作者 Innei，仓库 https://github.com/Innei/Shiro。
 
-| 本地 | 上游 apps/web/src/ | 适配 |
-| --- | --- | --- |
-| src/styles/upstream/tailwindcss.css | styles/tailwindcss.css | 扫描路径加入 Astro，去掉未使用的编辑器扫描路径 |
-| src/styles/upstream/variables.css | styles/variables.css | 保留主题变量 |
-| src/styles/upstream/theme.css | styles/theme.css | 保留深浅代码主题等规则 |
-| src/styles/upstream/layer.css | styles/layer.css | 保留时间线、辅助类与纸张阴影 |
-| src/styles/upstream/animation.css | styles/animation.css | 原动画样式 |
-| src/styles/upstream/image-zoom.css | styles/image-zoom.css | 原图片缩放样式 |
-| src/styles/upstream/markdown*.css | components/ui/markdown/markdown*.css | 仅改 Tailwind reference 相对路径 |
-| src/styles/upstream/Shiki.css | components/ui/code-highlighter/shiki/Shiki.css | 原代码块样式；仅改 reference 路径 |
-| src/components/upstream/spring.ts | constants/spring.ts | 原 Spring 参数 |
-| src/components/upstream/Logo.tsx | components/layout/header/internal/Logo.tsx | 原 SVG 标志；替换 className 合并工具，移除重复的装饰 path id |
-| src/components/upstream/menu-collection.tsx | components/icons/menu-collection.tsx | 原导航图标 |
-| src/components/Hero.tsx | app/[locale]/(home)/components/Hero.tsx、TwoColumnLayout.tsx | 原布局类；配置显式导入，Image 换 img，标题/描述/社交/页脚入场保留原 Spring 与延时；品牌色和按压缩放复用 SocialIcon/MotionButton；静态 HTML 初始可见 |
-| src/components/Header.astro | components/layout/header/Header.tsx、internal/HeaderContent.tsx | 原网格与胶囊样式；DesktopNav.tsx 复用光斑算法、197–247px 淡出、600px 向上滚动浮现与 120ms 防抖；认证去掉，添加搜索入口 |
-| src/components/Footer.astro | components/layout/footer/Footer.tsx、FooterInfo.tsx | 原间距与链接布局；主题在浏览器管理 |
-| src/pages/index.astro | app/[locale]/(home)/components/Activity*.tsx、HomePageTimeLine.tsx | 原双栏、活动列表及时间线骨架，数据来自公开内容 |
-| src/components/PostItem.astro | components/modules/post/PostItem.tsx | 原 loose 模式标题、摘要和 meta 布局；site.ts/global.css 移植 MagneticHoverEffect 的 0.05 位移、变换原点、背景和缓动；无互动计数 |
-| src/layouts/Article.astro | app/[locale]/posts/(post-detail)/Container.tsx、[category]/[slug]/page*.tsx、components/layout/container/Paper.tsx | 文稿原居中标题/主栏/200px 侧栏；手记恢复 notes/layout.tsx 的 60rem 主栏、xl 三栏、左对齐标题和 Paper；正文构建时渲染；文稿版权区域复用 PostCopyright 排版 |
-| src/components/Toc.astro | components/modules/shared/ArticleRightAside.tsx、ReadIndicator.tsx、modules/toc/TocItem.tsx、TocTree.tsx | 原目录文字间距、章节标记、圆环百分比与回到顶部；目录由构建结果产生 |
-| src/components/YearTimeline.astro | app/[locale]/(home)/components/HomePageTimeLine.tsx | 原月节点、2px 每日短线、同日堆叠、3px 月累计柱、标签位置和遮罩揭示；按上海时区分组公开内容 |
-| src/lib/rehype-shiro.mjs | components/ui/banner/Banner.tsx、components/icons/status.tsx、markdown/renderers/table.tsx | 提示容器复用原色彩、布局和 SVG 路径，表格复用原 DaisyUI 类 |
-| public/avatar.png、favicon.ico | apps/web/public/android-chrome-512x512.png、favicon.ico | 上游站点图标，演示占位，需换成用户资料 |
+当前完整来源表和差异记录见 [前端源码审查](FRONTEND_AUDIT.md)。以该报告的当前状态为准。
 
-没有使用上游个人文章、签名、私有赞助版代码。示例文稿为本移植项目的演示内容。
+CSS、SVG 与主要展示结构来自公开 Shiro；保留 AGPL 和 ADDITIONAL_TERMS。没有使用私有赞助版代码或作者个人文章。示例内容是本项目编写的演示资料，`public/avatar.png` 和 `favicon.ico` 为上游公开图标占位。
 
-## 视觉边界
+`npm run audit:source` 比对15份原样式、Spring常量和共同展示依赖；`scripts/sync-code-icons.mjs` 从固定源码生成代码语言 SVG 与颜色。构建可独立完成，不依赖 `.research`；来源校验与重新生成图标需要该源码目录。
 
-Hero 文案与格式在上游本来就由个人配置提供，此处为可编辑的演示配置。公开仓库不能唯一确定作者站点的所有个人配置。
-
-页面切换采用普通链接，导航跨页面的共享 layoutId 动画因此未复刻；手机菜单和手机目录目前仍为原生 details，尚未迁移原版 Drawer/TocFAB。年度时间线保留几何与遮罩动画，逐日弹簧延时动画和 FloatPopover 仍使用静态标记及原生 title；动态列表仍是静态公开内容适配。文章列表摘要、前后篇入口、代码块工具栏尚有适配差异，代码字体仍为系统回退。头像和个人信息是占位。未获得同一固定版本、同一配置的原站截图，当前为源码尺寸/样式校准与本地集中检查，不能称为已完成像素级验收。
-
-正文无衬线与手记衬线字体遵循上游 `lib/fonts.ts` 的 Manrope 300/400/500 和 Noto Serif SC 400；以 Fontsource 本地字体替代 Next Google Font 构建器，读者浏览不依赖 Google Fonts 请求。
-
-## 用户截图校正：首页首屏与时间轴文案
-
-- 依用户提供的部署截图和明确要求，Hero 底部一言/下箭头从绝对定位改为首屏 Hero 之后的正常文档流。Hero 至少占一屏，桌面撤去没有 Content 顶部占位配合的负边距；保留原文字颜色、间距与箭头动画。此位置以用户指定的滚动后显示效果为准。
-- 时间轴标题恢复固定版本 `messages/zh/home.json` 的 `timeline_title`：`热力图的千篇一律，\n不如做成了时间线？`，保留原两行与 typography 类，不再使用自创文案。
-
-## 首屏边缘定位：恢复固定版本原码
-
-上述“用户截图校正”中的文档流方案已撤销。恢复 `Content.tsx` 的 `pt-[4.5rem] px-4 md:px-0`，Hero 的 `lg:mt-[-4.5rem] lg:h-dvh lg:min-h-[800px]`，提示区域回到 TwoColumnLayout 内的 `inset-x-0 bottom-0 lg:absolute lg:mt-0`。手机保留原版 `mt-12` 正常流。没有添加自定义偏移、隐藏规则或首屏外留白。
-
-固定参考版本的桌面原码把提示区域放在 Hero **内部底边**；入场动画结束后可以在首屏底部看到。部署参考截图中的“滚动前完全隐藏”不能由这份固定源码保证，不能把两者宣称为一致。
+移植不是逐字复制整个 Next 应用。框架和静态内容部分使用 Astro；尚存视觉/交互差异在审查报告 D1–D8 中明确列出，不能宣称已经完成像素级验收。

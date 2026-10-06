@@ -60,4 +60,4 @@ slug 与 categorySlug 使用小写英文、数字及连字符。文稿地址为 
 
 上游作者 Innei，项目 https://github.com/Innei/Shiro，参考提交 `891bb24cd59aff7c9baaf4d9a3579ca4275da3b7`。
 
-保留上游 `LICENSE` 与 `ADDITIONAL_TERMS.md`，沿用 AGPLv3 和上游附加商业使用条款。源码来源与适配变更见 `docs/SOURCES.md`，迁移范围和待完成事项见 `docs/MIGRATION.md`。
+保留上游 `LICENSE` 与 `ADDITIONAL_TERMS.md`，沿用 AGPLv3 和上游附加商业使用条款。源码来源与适配变更见 `docs/SOURCES.md`，迁移范围见 `docs/MIGRATION.md`，最新逐文件审查及剩余视觉差异见 `docs/FRONTEND_AUDIT.md`。

@@ -20,8 +20,9 @@ for (const file of outputFiles.filter(file => file.endsWith('.html'))) {
   const html = await readFile(file, 'utf8');
   const $ = load(html);
   pages.set(file, $);
-  if ($('h1').length !== 1) errors.push(`${path.relative(root,file)}: expected one h1, found ${$('h1').length}`);
-  if ($('#main').length !== 1) errors.push(`${file}: missing main navigation target`);
+  const redirect = $('meta[http-equiv=refresh]').length > 0;
+  if (!redirect && $('h1').length !== 1) errors.push(`${path.relative(root,file)}: expected one h1, found ${$('h1').length}`);
+  if (!redirect && $('#main').length !== 1) errors.push(`${file}: missing main navigation target`);
   const ids = new Set();
   $('[id]').each((_, element) => { const id = $(element).attr('id'); if(ids.has(id)) errors.push(`${file}: duplicate id ${id}`); ids.add(id); });
 }

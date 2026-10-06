@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import { withBase } from '../lib/content';
 ---
 <Base title="搜索">
-  <main id="main" class="mx-auto mt-[120px] min-h-[60vh] max-w-3xl px-6" data-pagefind-ignore>
+  <main id="main" data-header-hide-bg class="mx-auto mt-14 max-w-3xl px-2 lg:mt-[80px] lg:px-0 2xl:max-w-4xl" data-pagefind-ignore>
     <h1 class="mb-12 text-3xl font-medium">搜索</h1>
     <div id="search" class="search-panel" data-pagefind-path={withBase('/pagefind/')}><p id="search-status" role="status" class="opacity-60">正在准备搜索…</p></div>
     <noscript><p>搜索需要启用 JavaScript；你也可以从文稿列表和时光页浏览文章。</p></noscript>

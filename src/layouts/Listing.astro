@@ -2,14 +2,14 @@
 import Base from './Base.astro';
 import PostItem from '../components/PostItem.astro';
 import type { Entry } from '../lib/content';
-interface Props { title: string; entries: Entry[]; description?: string; }
-const { title, entries, description } = Astro.props;
+interface Props { title: string; entries: Entry[]; description?: string; showTitle?: boolean; }
+const { title, entries, description, showTitle = true } = Astro.props;
 ---
 <Base title={title} description={description}>
-  <main id="main" class="mx-auto mt-[120px] min-h-[60vh] max-w-3xl px-6">
-    <h1 class="mb-12 text-3xl font-medium">{title}<small class="ml-4 align-middle text-sm font-normal opacity-50">{entries.length} 篇</small></h1>
+  <main id="main" data-header-hide-bg class="mx-auto mt-14 max-w-3xl px-2 lg:mt-[80px] lg:px-0 2xl:max-w-4xl [&_header.prose]:mb-[80px]">
+    <h1 class:list={[showTitle ? 'mb-12 text-3xl font-medium' : 'sr-only']}>{title}</h1>
     <slot />
-    <div class="divide-y divide-zinc-200/50 dark:divide-zinc-800">{entries.map(entry => <PostItem entry={entry} />)}</div>
+    <div>{entries.map(entry => <PostItem entry={entry} />)}</div>
     {entries.length === 0 && <p class="py-12 opacity-60">这里还没有文章。</p>}
   </main>
 </Base>

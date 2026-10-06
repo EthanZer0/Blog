@@ -1,5 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import { withBase } from '../lib/content';
+import { NotFoundArtwork } from '../components/upstream/NotFoundArtwork';
 ---
-<Base title="页面未找到"><main id="main" class="mx-auto mt-[120px] min-h-[60vh] max-w-3xl px-6 text-center"><p class="py-12 text-8xl font-light opacity-30">404</p><h1 class="mb-8 text-2xl">这页纸还没有写下文字。</h1><a href={withBase('/')} class="shiro-link--underline">回到首页</a></main></Base>
+<Base title="页面未找到"><main id="main" class="fixed inset-0 flex flex-col items-center justify-center space-y-6"><h1 class="sr-only">页面未找到</h1><NotFoundArtwork className="size-[400px] max-w-full" /><p>这颗星球还没有知识哦，去其他地方探索吧</p></main></Base>

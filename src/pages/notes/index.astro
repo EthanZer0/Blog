@@ -1,6 +1,7 @@
 ---
-import Listing from '../../layouts/Listing.astro';
-import { articles } from '../../lib/content';
+import { articles, articlePath, withBase } from '../../lib/content';
+import Base from '../../layouts/Base.astro';
 const entries = await articles('notes');
+if (entries.length) return Astro.redirect(withBase(articlePath(entries[0])),302);
 ---
-<Listing title="手记" entries={entries} />
+<Base title="手记"><main id="main" class="mx-auto mt-14 max-w-3xl px-2 lg:mt-[80px] lg:px-0"><h1>手记</h1><p>这里还没有手记。</p></main></Base>

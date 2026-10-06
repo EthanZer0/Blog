@@ -1,0 +1,16 @@
+import fs from 'node:fs/promises';
+import ts from 'typescript';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { createElement } from 'react';
+const root='.research/Shiro/apps/web/src/components/';
+const icons = await fs.readFile(root+'ui/code-highlighter/language-icons.tsx','utf8');
+const status = await fs.readFile(root+'icons/status.tsx','utf8');
+const constants = await fs.readFile(root+'ui/code-highlighter/constants.tsx','utf8');
+const transpile = source => ts.transpileModule(source,{compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.ESNext}}).outputText;
+await fs.mkdir('.verification',{recursive:true});
+await fs.writeFile('.verification/language-icons.mjs',transpile(icons));
+await fs.writeFile('.verification/status.mjs',transpile(status));
+await fs.writeFile('.verification/code-constants.mjs',transpile(constants).replaceAll("'~/components/icons/status'","'./status.mjs'").replaceAll("'./language-icons'","'./language-icons.mjs'"));
+const {languageToIconMap,languageToColorMap}=await import('../.verification/code-constants.mjs');
+const record=Object.fromEntries(Object.entries(languageToIconMap).map(([lang,Icon])=>[lang,{color:languageToColorMap[lang],svg:renderToStaticMarkup(createElement(Icon,{className:'size-4'}))}]));
+await fs.writeFile('src/lib/upstream-code-languages.json',JSON.stringify(record,null,2)+'\n');

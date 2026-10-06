@@ -57,3 +57,15 @@ GitHub Actions 工作流已提供，但尚未建立远程仓库或进行真实 P
 - 固定版本原码在入场完成后允许首屏底部看到提示，不能承诺滚动前完全隐藏。前一节“首屏之外”的测量属于已撤销方案。
 - 类型检查、构建与全站静态产物验证通过。
 - 截图：`.verification/home-original-edge.jpg`。
+
+## 完整前端源码审查验证
+
+- 逐文件映射覆盖当前 64 个前端源码文件；完整结论和剩余差异见 `FRONTEND_AUDIT.md`，不宣称严格一致。
+- `npm run audit:source` 验证固定上游提交、15 份原样式的 CSS 规则、Spring 常量及共同展示依赖版本。
+- Astro / TypeScript：53 个文件，0 errors / warnings / hints。
+- 根路径 `/` 与 `/shiro-test` 分别完整构建并通过 `npm run verify`：15 个 HTML 页面、4 篇公开内容的 Pagefind 索引。
+- Markdown 实际渲染管线检查标题、图注、表格、脚注、代码文件名/图标/高亮/展开及 gallery。发现数学公式误入代码高亮后已修复，并增加独立回归断言。
+- 集中浏览器抽查搜索、手机导航和目录抽屉。最终 390px 正文没有页面横向溢出，含 1 个复制代码按钮和 1 个块级公式，浏览器 error / warn 为空。
+- 手机目录截图：`.verification/audit-mobile-toc.png`（本地忽略）。目录链接可关闭抽屉并启动章节定位。
+- 构建存在原 DaisyUI `@property --radialprogress` 的 CSS 优化提示；Pagefind 略过 `/notes/` 的静态重定向文件。这两项不等同于 TypeScript 错误，也没有通过修改原 CSS 隐藏提示。
+- 剩余纯前端差异未全部消除；尚未进行相同版本、个人配置与视口下的原站像素级对照。

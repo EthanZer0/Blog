@@ -1,9 +1,9 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-@source "../../**/*.{astro,js,jsx,ts,tsx}";
+@source "../../**/*.{astro,js,mjs,jsx,ts,tsx}";
 
-@source inline("font-light text-3xl rounded p-1 bg-zinc-200 dark:bg-zinc-800/0 hover:dark:bg-zinc-800/100 bg-opacity-0 hover:bg-opacity-100 transition-background w-[1px] h-8 -bottom-2 bg-zinc-800/80 dark:bg-zinc-200/80 group-hover:opacity-100 transition-opacity group-hover:animation-blink w-full! w-full");
+@source inline("left-2 right-2 font-light text-3xl rounded p-1 bg-zinc-200 dark:bg-zinc-800/0 hover:dark:bg-zinc-800/100 bg-opacity-0 hover:bg-opacity-100 transition-background w-[1px] h-8 -bottom-2 bg-zinc-800/80 dark:bg-zinc-200/80 group-hover:opacity-100 transition-opacity group-hover:animation-blink w-full! w-full");
 
 @plugin "@tailwindcss/typography";
 @plugin "@egoist/tailwindcss-icons";

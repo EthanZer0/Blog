@@ -8,6 +8,7 @@ import remarkDirective from 'remark-directive';
 import { shiroDirectives } from './src/lib/remark-shiro.mjs';
 import { rehypeShiro } from './src/lib/rehype-shiro.mjs';
 import { unified } from '@astrojs/markdown-remark';
+import { rehypeShiroHighlight } from './src/lib/rehype-shiro-highlight.mjs';
 import rehypeSlug from 'rehype-slug';
 
 const site = process.env.SITE_URL || 'https://example.com';
@@ -21,10 +22,10 @@ export default defineConfig({
   integrations: [react(), sitemap()],
   vite: { plugins: [tailwindcss()] },
   markdown: {
-    shikiConfig: { themes: { light: 'github-light', dark: 'github-dark' } },
+    syntaxHighlight: false,
     processor: unified({
       remarkPlugins: [remarkMath, remarkDirective, shiroDirectives],
-      rehypePlugins: [rehypeKatex, rehypeSlug, rehypeShiro],
+      rehypePlugins: [rehypeShiroHighlight, rehypeKatex, rehypeSlug, rehypeShiro],
       remarkRehype: { footnoteLabel: '脚注', footnoteBackLabel: '返回引用' },
     }),
   },

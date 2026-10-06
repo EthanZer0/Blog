@@ -36,7 +36,7 @@ export default function DesktopNav({ pathname }: { pathname: string }) {
     const update = () => {
       const y = window.scrollY;
       // Header hooks.ts: threshold 84 + 63 + 50, fade distance 50.
-      setOpacity(1 - Math.floor(Math.max(0, Math.min(1, (y - 197) / 50)) * 100) / 100);
+      setOpacity(document.querySelector('[data-header-hide-bg]') ? 1 : 1 - Math.floor(Math.max(0, Math.min(1, (y - 197) / 50)) * 100) / 100);
       const show = y > 600 && y < lastY;
       clearTimeout(timer); timer = setTimeout(() => setFloating(show), 120);
       lastY = y; frame = 0;

@@ -1,13 +1,19 @@
 ---
 import Base from '../layouts/Base.astro';
-import { articles, articlePath, withBase, formatDate } from '../lib/content';
+import TimelineProgress from '../components/TimelineProgress';
+import { articles, articlePath, withBase } from '../lib/content';
 const entries = [...await articles('posts'), ...await articles('notes')].sort((a,b) => b.data.published.getTime()-a.data.published.getTime());
-const years = [...new Set(entries.map(entry => Number(new Intl.DateTimeFormat('en',{year:'numeric',timeZone:'Asia/Shanghai'}).format(entry.data.published))))];
+const yearOf = (date: Date) => Number(new Intl.DateTimeFormat('en',{year:'numeric',timeZone:'Asia/Shanghai'}).format(date));
+const years = [...new Set(entries.map(entry => yearOf(entry.data.published)))];
 ---
-<Base title="时光">
-  <main id="main" class="mx-auto mt-[120px] min-h-[60vh] max-w-3xl px-6">
-    <h1 class="mb-8 text-3xl font-medium">时光</h1>
-    <div class="mb-12 flex gap-4 text-sm" data-timeline-filter>{[['all','全部'],['posts','文稿'],['notes','手记']].map(([type,label]) => <button type="button" data-filter={type} aria-pressed={type==='all'} class="rounded-full border px-4 py-1.5 transition aria-pressed:border-accent aria-pressed:text-accent">{label}</button>)}</div>
-    {years.map(year => <section class="mb-12" data-year-group><h2 class="mb-6 text-2xl font-medium">{year}</h2><ul class="shiro-timeline">{entries.filter(entry => Number(new Intl.DateTimeFormat('en',{year:'numeric',timeZone:'Asia/Shanghai'}).format(entry.data.published))===year).map(entry => <li class="flex items-baseline justify-between gap-4 py-3!" data-entry-type={entry.collection}><a href={withBase(articlePath(entry))}>{entry.data.title}</a><time class="shrink-0 text-xs opacity-50" datetime={entry.data.published.toISOString()}>{formatDate(entry.data.published)}</time></li>)}</ul></section>)}
+<Base title="时间线">
+  <main id="main" data-header-hide-bg class="mx-auto mt-14 max-w-3xl px-2 lg:mt-[80px] lg:px-0 2xl:max-w-4xl [&_header.prose]:mb-[80px]">
+    <header class="prose prose-p:my-2"><h1>时间线</h1><h3>共有{entries.length}篇，再接再厉</h3><hr class="my-8 h-[0.5px] w-[80px] border-0 bg-black/30 dark:bg-white/30" /><TimelineProgress client:load /><p>活在当下，珍惜眼下</p></header>
+    <div class="mt-10 text-zinc-950/80 dark:text-zinc-50/80">
+      {years.map(year => { const rows = entries.filter(entry => yearOf(entry.data.published)===year); return <section class="my-4" data-year-group>
+        <h2 class="relative mb-4 ml-3 rounded-md text-lg font-medium before:absolute before:inset-y-[4px] before:-left-3 before:w-[2px] before:bg-accent before:content-['']">{year}<small class="ml-2">({rows.length})</small></h2>
+        <ul class="shiro-timeline">{rows.map(entry => <li class="flex items-center justify-between" data-entry-type={entry.collection} data-id={entry.id}><span class="flex min-w-0 shrink items-center"><time datetime={entry.data.published.toISOString()} class="mr-2 inline-block w-12 tabular-nums">{new Intl.DateTimeFormat('en-us',{month:'2-digit',day:'2-digit',timeZone:'Asia/Shanghai'}).format(entry.data.published)}</time><a class="min-w-0 truncate leading-6" href={withBase(articlePath(entry))}>{entry.data.title}</a></span><span class="hidden text-sm lg:inline">{entry.collection === 'posts' ? `${entry.data.category}/博文` : '手记'}</span></li>)}</ul>
+      </section>; })}
+    </div>
   </main>
 </Base>
