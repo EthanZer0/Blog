@@ -13,7 +13,7 @@ import { ClientRouter, fade } from 'astro:transitions';
 import { Toaster } from '../components/upstream/Toaster';
 import ModalRoot from '../components/ModalRoot';
 const publicEntries=[...await articles('posts'),...await articles('notes')];
-const pageFade = fade({ duration: '0.2s' });
+const pageFade = fade({ duration: '0.8s' });
 interface Props { title?: string; description?: string; article?: boolean; }
 const { title, description = siteConfig.description, article = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname.replace(/\/404\/?$/, '/404.html'), Astro.site);
