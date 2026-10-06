@@ -37,7 +37,7 @@ details summary {
 }
 
 ::view-transition-new(root) {
-  animation: turnOff 800ms ease-in-out;
+  animation: turnOff 500ms ease-in-out;
 }
 ::view-transition-old(root) {
   animation: none;
@@ -53,7 +53,7 @@ details summary {
 }
 
 [data-theme='dark']::view-transition-new(root) {
-  animation: turnOn 800ms ease-in-out;
+  animation: turnOn 500ms ease-in-out;
 }
 ::view-transition-old(root) {
   animation: none;

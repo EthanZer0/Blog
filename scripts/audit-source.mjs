@@ -7,8 +7,15 @@ assert.equal(execFileSync('git',['-C',upstream,'rev-parse','HEAD'],{encoding:'ut
 const mappings = Object.fromEntries(['variables','theme','tailwindcss','layer','animation','image-zoom','scrollbar','mask','print','webfont'].map(name => [`${name}.css`,`styles/${name}.css`]));
 Object.assign(mappings,{'markdown.css':'components/ui/markdown/markdown.css','markdown-variants.css':'components/ui/markdown/markdown-variants.css','Shiki.css':'components/ui/code-highlighter/shiki/Shiki.css','Gallery.css':'components/ui/gallery/Gallery.css','ZoomedImage.css':'components/ui/image/ZoomedImage.css','LinkCard.css':'components/ui/link-card/LinkCard.css','markdown-renderers.css':'components/ui/markdown/renderers/index.css'});
 const normalize = source => source.replace(/\r\n/g,'\n').replace(/^@reference[^\n]*\n/gm,'').replace(/^@source[^\n]*\n/gm,'').replace(/\n{2,}/g,'\n\n').trim();
+const normalizeLocal = (local, source) => {
+  const normalized = normalize(source);
+  // The static port intentionally keeps Shiro's native curtain transition while using 500ms.
+  return local === 'variables.css'
+    ? normalized.replace(/animation: (turn(?:On|Off)) 500ms ease-in-out/g, 'animation: $1 800ms ease-in-out')
+    : normalized;
+};
 for (const [local,original] of Object.entries(mappings)) {
-  assert.equal(normalize(await readFile(`src/styles/upstream/${local}`,'utf8')),normalize(await readFile(`${upstream}/apps/web/src/${original}`,'utf8')),`${local}: unexpected style divergence`);
+  assert.equal(normalizeLocal(local, await readFile(`src/styles/upstream/${local}`,'utf8')),normalize(await readFile(`${upstream}/apps/web/src/${original}`,'utf8')),`${local}: unexpected style divergence`);
 }
 assert.equal((await readFile('src/components/upstream/spring.ts','utf8')).replace(/\r\n/g,'\n'),(await readFile(`${upstream}/apps/web/src/constants/spring.ts`,'utf8')).replace(/\r\n/g,'\n'));
 const pkg = JSON.parse(await readFile('package.json','utf8'));
