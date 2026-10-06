@@ -9,16 +9,17 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { siteConfig } from '../site.config';
 import { articles, articlePath, withBase } from '../lib/content';
-import { ClientRouter } from 'astro:transitions';
+import { ClientRouter, fade } from 'astro:transitions';
 import { Toaster } from '../components/upstream/Toaster';
 import ModalRoot from '../components/ModalRoot';
 const publicEntries=[...await articles('posts'),...await articles('notes')];
+const pageFade = fade({ duration: '0.2s' });
 interface Props { title?: string; description?: string; article?: boolean; }
 const { title, description = siteConfig.description, article = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname.replace(/\/404\/?$/, '/404.html'), Astro.site);
 ---
 <!doctype html>
-<html lang="zh-CN" class="noise themed" data-theme="light">
+<html transition:animate={pageFade} lang="zh-CN" class="noise themed" data-theme="light">
   <head>
     <ClientRouter />
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
