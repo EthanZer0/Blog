@@ -16,8 +16,8 @@ export const siteConfig = {
     hitokoto: '如纸的纯净，似雪的清新。',
   },
   social: [
-    { label: 'GitHub', url: 'https://github.com/', icon: 'i-mingcute-github-line' },
-    { label: 'RSS', url: '/feed.xml', icon: 'i-mingcute-rss-line' },
+    { label: 'GitHub', url: 'https://github.com/', icon: 'i-mingcute-github-line', color: '#181717' },
+    { label: 'RSS', url: '/feed.xml', icon: 'i-mingcute-rss-line', color: '#FFA500' },
   ],
   nav: [
     { title: '首页', path: '/', icon: 'i-mingcute-home-4-line' },

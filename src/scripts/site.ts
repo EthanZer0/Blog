@@ -11,6 +11,36 @@ themeToggle?.addEventListener('click', () => {
   syncThemeButton();
 });
 
+// Port MagneticHoverEffect's bounds, 0.05 attraction and exact easing.
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+document.querySelectorAll<HTMLElement>('.post-item').forEach(item => {
+  item.addEventListener('pointerenter', event => {
+    if (reducedMotion.matches || event.pointerType !== 'mouse') return;
+    const rect = item.getBoundingClientRect();
+    item.style.transition = 'transform 0.2s cubic-bezier(0.33, 1, 0.68, 1)';
+    item.style.setProperty('--origin-x', `${(event.clientX - rect.left) / rect.width * 100}%`);
+    item.style.setProperty('--origin-y', `${(event.clientY - rect.top) / rect.height * 100}%`);
+  });
+  item.addEventListener('pointermove', event => {
+    if (reducedMotion.matches || event.pointerType !== 'mouse') return;
+    const rect = item.getBoundingClientRect();
+    item.style.transform = `translate(${(event.clientX - rect.left - rect.width / 2) * .05}px, ${(event.clientY - rect.top - rect.height / 2) * .05}px)`;
+  });
+  item.addEventListener('pointerleave', () => {
+    item.style.transform = 'translate(0px, 0px)';
+    item.style.transition = 'transform 0.4s cubic-bezier(0.33, 1, 0.68, 1)';
+  });
+});
+
+const headerLogo = document.querySelector<HTMLElement>('.header-logo');
+let headerFrame = 0;
+function updateHeaderLogo() {
+  if (headerLogo) headerLogo.style.opacity = String(1 - Math.floor(Math.max(0, Math.min(1, (window.scrollY - 197) / 50)) * 100) / 100);
+  headerFrame = 0;
+}
+window.addEventListener('scroll', () => { if (!headerFrame) headerFrame = requestAnimationFrame(updateHeaderLogo); }, { passive: true });
+updateHeaderLogo();
+
 const article = document.querySelector<HTMLElement>('[data-article-body]');
 if (article) {
   mediumZoom(article.querySelectorAll<HTMLImageElement>('img'), { background: 'var(--color-root-bg)', margin: 24 });
@@ -28,13 +58,24 @@ if (article) {
   });
   const headings = Array.from(article.querySelectorAll<HTMLElement>('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]'));
   const tocLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-toc] a'));
-  const progress = document.querySelectorAll<HTMLProgressElement>('[data-reading-progress]');
+  const progress = document.querySelectorAll<HTMLElement>('[data-reading-progress]');
   let scheduled = false;
   function updateReading() {
     const top = article!.getBoundingClientRect().top + window.scrollY;
     const range = Math.max(1, article!.offsetHeight - window.innerHeight + 120);
     const percent = Math.max(0, Math.min(100, (window.scrollY - top + 120) / range * 100));
-    progress.forEach(bar => { bar.value = percent; });
+    progress.forEach(bar => {
+      const rounded = Math.round(percent);
+      bar.setAttribute('aria-valuenow', String(rounded));
+      const label = bar.querySelector('[data-progress-label]');
+      if (label) label.textContent = `${rounded}%`;
+      bar.querySelector('[data-progress-ring]')?.setAttribute('stroke-dashoffset', String(100 - percent));
+    });
+    document.querySelectorAll<HTMLElement>('[data-back-to-top]').forEach(link => {
+      link.style.opacity = percent > 10 ? '.5' : '0';
+      link.style.pointerEvents = percent > 10 ? 'auto' : 'none';
+      link.tabIndex = percent > 10 ? 0 : -1;
+    });
     const active = headings.filter(heading => heading.getBoundingClientRect().top <= 140).at(-1) || headings[0];
     tocLinks.forEach(link => {
       if (active && decodeURIComponent(link.hash.slice(1)) === active.id) link.setAttribute('aria-current', 'location');

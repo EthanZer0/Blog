@@ -1,15 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero';
+import YearTimeline from '../components/YearTimeline.astro';
 import { articles, articlePath, formatDate, withBase } from '../lib/content';
 const posts = await articles('posts');
 const notes = await articles('notes');
 const entries = [...posts, ...notes].sort((a,b) => b.data.published.getTime() - a.data.published.getTime());
-const today = new Date();
-const months = Array.from({ length: 12 }, (_, i) => {
-  const date = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() - 11 + i, 1));
-  return { label: `${date.getUTCFullYear()}.${date.getUTCMonth()+1}`, entries: entries.filter(entry => entry.data.published.getUTCFullYear() === date.getUTCFullYear() && entry.data.published.getUTCMonth() === date.getUTCMonth()) };
-});
 ---
 <Base>
   <main id="main" class="min-w-0">
@@ -38,9 +34,6 @@ const months = Array.from({ length: 12 }, (_, i) => {
         </div></div>
       </div>
     </section>
-    <section class="mt-24 w-full" data-pagefind-ignore>
-      <h2 class="my-5 text-center text-2xl font-medium">文字留下的足迹</h2>
-      <div class="year-chart my-12"><div class="year-chart-inner mx-auto max-w-[1800px]"><div class="year-chart-line">{months.map(month => <div class="year-chart-month"><span>{month.label}</span>{month.entries.map((entry,i) => <a href={withBase(articlePath(entry))} title={`${formatDate(entry.data.published)} · ${entry.data.title}`} aria-label={entry.data.title} style={`left:${entry.data.published.getUTCDate()/32*90}%;height:${24+(i%4)*14}px`}></a>)}</div>)}</div></div></div>
-    </section>
+    <YearTimeline entries={entries} />
   </main>
 </Base>

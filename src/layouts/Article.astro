@@ -16,12 +16,13 @@ const note = entry.collection === 'notes';
 const ld = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: entry.data.title, description: entry.data.description, datePublished: entry.data.published.toISOString(), dateModified: (entry.data.updated || entry.data.published).toISOString(), author: { '@type': 'Person', name: siteConfig.owner }, url: new URL(withBase(articlePath(entry)), Astro.site).href };
 ---
 <Base title={entry.data.title} description={entry.data.description} article>
-  <div id="main" class="container mx-auto mt-[120px] max-w-7xl px-4 md:px-6 lg:px-4 xl:px-0">
-    <div class="reading-layout relative min-h-[120px]">
-      <main class:list={['relative w-full min-w-0', note && 'note-paper -m-4 rounded-[0_6px_6px_0] border-zinc-200/70 bg-white p-[2rem_1rem] shadow-perfect perfect-sm md:m-0 lg:border lg:p-[30px_45px] dark:border-neutral-800 dark:bg-zinc-900']}>
-        <div class="mb-8">
-          <h1 class="mb-8 text-center text-4xl font-bold leading-tight text-balance" data-pagefind-meta="title">{entry.data.title}</h1>
-          <div class="mb-8 flex flex-wrap justify-center gap-2 text-sm text-neutral" data-pagefind-ignore>
+  <div id="main" class:list={[note ? 'note-layout relative mx-auto mt-12 grid min-h-[calc(100vh-6.5rem-10rem)] max-w-[60rem] gap-4 px-4 md:mt-24 md:grid-cols-1 md:px-0 xl:max-w-[calc(60rem+400px)] xl:grid-cols-[1fr_minmax(auto,60rem)_1fr]' : 'container mx-auto mt-[120px] max-w-7xl px-2 md:px-6 lg:px-4 xl:px-0']}>
+    {note && <div class="hidden min-w-0 xl:block" aria-hidden="true"></div>}
+    <div class:list={['reading-layout relative min-h-[120px]', note && 'reading-layout--note']}>
+      <main class:list={['relative min-w-0', !note && 'w-full', note && 'note-paper -m-4 rounded-[0_6px_6px_0] border-zinc-200/70 bg-white p-[2rem_1rem] shadow-perfect perfect-sm md:m-0 lg:border lg:p-[30px_45px] dark:border-neutral-800 dark:bg-zinc-900']}>
+        <div class:list={[!note && 'mb-8']}>
+          <h1 class:list={['text-4xl font-bold leading-tight text-balance', note ? 'my-8 text-left text-base-content/95' : 'mb-8 text-center']} data-pagefind-meta="title">{entry.data.title}</h1>
+          <div class:list={['flex flex-wrap items-center gap-2 text-sm', note ? 'text-neutral/60' : 'mb-8 justify-center text-neutral']} data-pagefind-ignore>
             <span class="flex items-center gap-1"><i class="i-mingcute-time-line" aria-hidden="true"></i><time datetime={entry.data.published.toISOString()}>{formatDate(entry.data.published)}</time></span>
             <span class="flex items-center gap-1"><i class="i-mingcute-hashtag-line" aria-hidden="true"></i><a href={withBase(`/categories/${entry.data.categorySlug}/`)}>{entry.data.category}</a>{entry.data.tags.length > 0 && <span>/ {entry.data.tags.map((tag,i) => <><a href={withBase(tagPath(tag))} class="shiro-link--underline">{tag}</a>{i < entry.data.tags.length-1 ? ', ' : ''}</>)}</span>}</span>
           </div>
@@ -30,14 +31,21 @@ const ld = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline:
         <article class:list={['prose markdown', note && 'markdown--note']} data-article-body data-pagefind-body>
           <Content />
         </article>
-        <div class="mt-12 rounded-lg border px-4 py-3 text-sm leading-loose text-base-content/60" data-pagefind-ignore>本文作者：{siteConfig.owner}<br />转载请注明作者与文章出处。</div>
+        {!note && <section id="copyright" class="mt-4 text-sm leading-loose text-zinc-600 dark:text-neutral-400" data-pagefind-ignore>
+          <p>文章标题：{entry.data.title}</p><p>文章作者：{siteConfig.owner}</p>
+          <p>文章链接：<a href={withBase(articlePath(entry))}>{ld.url}</a></p>
+          <p>最后修改：{entry.data.updated ? formatDate(entry.data.updated) : '暂无修改'}</p>
+          <hr class="my-4 h-[0.5px] border-0 bg-black/30 dark:bg-white/30" />
+          <p>转载请注明作者与文章出处。</p>
+        </section>}
         <nav aria-label="前后篇文章" class="article-navigation mt-8 flex justify-between gap-6 border-t pt-6" data-pagefind-ignore>
           <div class="w-1/2">{previous && <a href={withBase(articlePath(previous))} class="shiro-link--underline"><small class="block opacity-50">上一篇</small>{previous.data.title}</a>}</div>
           <div class="w-1/2 text-right">{next && <a href={withBase(articlePath(next))} class="shiro-link--underline"><small class="block opacity-50">下一篇</small>{next.data.title}</a>}</div>
         </nav>
       </main>
-      <aside class="reading-aside relative" data-pagefind-ignore><div class="sticky top-[120px] mt-[120px] ml-4"><Toc headings={headings} /></div></aside>
+      {!note && <aside class="reading-aside relative" data-pagefind-ignore><div class="sticky top-[120px] mt-[120px] ml-4"><Toc headings={headings} /></div></aside>}
     </div>
+    {note && <aside class="relative hidden xl:block" data-pagefind-ignore><div class="sticky top-[120px] mt-[120px] ml-4"><Toc headings={headings} /></div></aside>}
   </div>
   <script type="application/ld+json" set:html={JSON.stringify(ld).replace(/</g, '\\u003c')} />
 </Base>

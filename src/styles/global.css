@@ -23,16 +23,20 @@ button { cursor: pointer; }
 .mobile-menu-panel a { padding: .75rem; }
 .skip-link { position: fixed; z-index: 50; top: -100px; left: 1rem; padding: .75rem; background: var(--color-root-bg); }
 .skip-link:focus { top: 1rem; }
-.post-item::before { content: ''; position: absolute; inset: 0 -1.5rem; z-index: -1; border-radius: 12px; background: var(--color-accent); opacity: 0; transition: opacity .2s; }
-.post-item:hover::before { opacity: .035; }
-.post-item:hover h2 { color: var(--color-accent); }
+.post-item { cursor: pointer; transition: transform .2s cubic-bezier(.33,1,.68,1); }
+.post-item::before { content: ''; position: absolute; inset: 0 -1.5rem; z-index: -1; border-radius: 12px; background: rgb(0 0 0 / .03); opacity: 0; transform: scale(.92); transform-origin: var(--origin-x,50%) var(--origin-y,50%); backdrop-filter: blur(8px); transition: opacity .2s, transform .2s; }
+[data-theme='dark'] .post-item::before { background: rgb(255 255 255 / .1); }
+.post-item:hover::before, .post-item:focus-visible::before { opacity: 1; transform: scale(1); }
 .reading-layout { display: grid; grid-template-columns: minmax(0, 1fr); }
+.reading-layout--note { min-width: 0; }
 .reading-aside { display: none; }
-.toc-list a { display: inline-block; position: relative; max-width: 100%; line-height: normal; margin-bottom: 1.5px; padding: .35rem .5rem; color: var(--color-neutral); opacity: .5; transition: all .5s; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.toc-list a { display: inline-block; position: relative; max-width: 100%; line-height: 1.5; margin-bottom: 1.5px; padding: 0 .5rem; color: var(--color-neutral); opacity: .5; transition: all .5s; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .toc-list a:hover { opacity: .8; }
 .toc-list a[aria-current='location'] { opacity: 1; margin-left: .5rem; }
-.toc-list { max-height: 55vh; overflow-y: auto; }
-.reading-progress { width: 100%; height: 2px; accent-color: var(--color-accent); }
+.toc-list li { position: relative; }
+.toc-list li:has(a[aria-current='location'])::before { content: ''; position: absolute; top: 3px; bottom: 3px; left: 0; width: 2px; border-radius: 2px; background: var(--color-accent); }
+.toc-list { max-height: 75vh; overflow-y: auto; }
+[data-back-to-top]:hover { opacity: 1 !important; }
 .mobile-toc { margin: 1.5rem 0; }
 .mobile-toc summary { cursor: pointer; }
 .prose.markdown p { line-height: 1.8; }
@@ -52,19 +56,17 @@ button { cursor: pointer; }
 .shiro-container--gallery img { margin: 0; }
 .medium-zoom-overlay, .medium-zoom-image--opened { z-index: 30; }
 .year-chart { overflow-x: auto; }
-.year-chart-inner { position: relative; display: flex; min-width: 900px; height: 200px; align-items: end; padding: 0 3rem 3rem; }
-.year-chart-line { display: flex; width: 100%; height: 1px; background: var(--color-accent); }
-.year-chart-month { position: relative; width: calc(100% / 12); }
-.year-chart-month > span { position: absolute; top: 12px; font-size: .75rem; opacity: .6; }
-.year-chart-month::before { content: ''; position: absolute; width: 1px; height: 6px; background: var(--color-accent); }
-.year-chart-month > a { position: absolute; bottom: 3px; width: 4px; border-radius: 4px; background: var(--color-accent); }
+.year-entry::before { content: ''; position: absolute; inset: -4px; }
 .search-panel { --pagefind-ui-primary: var(--color-accent); --pagefind-ui-text: var(--color-base-content); --pagefind-ui-background: var(--color-root-bg); --pagefind-ui-border: var(--color-border); --pagefind-ui-font: var(--font-sans); }
 @media (min-width: 1024px) {
   .header-logo { grid-area: left; }
   .reading-layout { grid-template-columns: minmax(0,1fr) 200px; }
+  .reading-layout--note { grid-template-columns: minmax(0,1fr); }
   .reading-aside { display: block; }
   .mobile-toc { display: none; }
+  .note-layout .mobile-toc { display: block; }
 }
+@media (min-width: 1280px) { .note-layout .mobile-toc { display: none; } }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }

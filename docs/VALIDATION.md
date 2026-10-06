@@ -28,3 +28,15 @@
 以上验证确认首轮迁移可以运行与静态部署，不能替代与固定 Shiro 参考截图的逐项视觉对照。当前个人信息、头像和文章为演示占位。
 
 GitHub Actions 工作流已提供，但尚未建立远程仓库或进行真实 Pages 部署。实际部署需要 GitHub 仓库地址及 Pages 设置。
+
+## 第二轮视觉校准验证
+
+- Astro / TypeScript：36 个文件，0 errors / warnings / hints。
+- 根路径及 `/shiro-test` 构建、Pagefind 和产物验证通过，15 个 HTML、4 篇公开内容。
+- 集中检查桌面 1440×900 和手机 390×844，深浅主题持久化正常，浏览器 error / warn 为空。
+- 桌面手记纸张宽度实测 840px（14px 根字号 × 60rem），标题左对齐，正文 Noto Serif SC，目录位于独立右栏。
+- 发现并当场修复手机纸张的 w-full/负边距冲突；纸张修复后覆盖可用视口宽度，无页面横向溢出。
+- 首页社交按钮实测 GitHub `rgb(24,23,23)`、RSS `rgb(255,165,0)`，与上游色值一致。
+- 阅读目录锚点可定位正文，选中章节及圆环百分比随滚动更新；长文向上滚动到约 1879px 时，浮动导航可见，胶囊宽度实测 329px。
+- 截图：`.verification/phase2-home-desktop.jpg`、`phase2-note-desktop.jpg`、`phase2-note-mobile-dark.jpg`、`phase2-reading-dark.jpg`（本地忽略）。
+- 本轮依据固定上游源码校准；未获得相同版本与个人配置的原站截图，不宣称像素级一致。剩余差异在 SOURCES.md 中逐项记录。

@@ -1,0 +1,46 @@
+---
+// HomePageTimeLine.tsx geometry. Publication data is grouped at build time in the site's timezone.
+import { articlePath, formatDate, withBase, type Entry } from '../lib/content';
+interface Props { entries: Entry[]; }
+const { entries } = Astro.props;
+const calendar = (date: Date) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(date).reduce<Record<string,number>>((result, part) => { if (['year','month','day'].includes(part.type)) result[part.type] = Number(part.value); return result; }, {});
+const today = calendar(new Date());
+const months = Array.from({ length: 12 }, (_, index) => {
+  const date = new Date(Date.UTC(today.year, today.month - 12 + index, 1));
+  const year = date.getUTCFullYear(), month = date.getUTCMonth() + 1;
+  const days = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  return { label: `${year}.${month}`, days, entries: entries.filter(entry => { const published = calendar(entry.data.published); return published.year === year && published.month === month; }) };
+});
+---
+<section class="mt-24 w-full" data-pagefind-ignore>
+  <h2 class="my-5 whitespace-pre-line text-balance text-center text-2xl font-medium">文字留下的足迹</h2>
+  <div class="year-chart scrollbar-none mx-auto my-12 w-full overflow-x-auto overflow-y-hidden" data-year-scroll>
+    <div class="relative mx-auto flex h-[200px] min-w-[900px] max-w-[1800px] items-end px-6 pb-12 lg:px-12 xl:px-16 2xl:px-36" data-year-reveal>
+      <span class="mr-1 flex translate-y-[6px] select-none items-center -space-x-2 text-accent" aria-hidden="true">{[0,1,2].map(() => <svg width="1em" height="1em" viewBox="0 0 256 256"><path fill="currentColor" d="M144 128a16 16 0 1 1-16-16a16 16 0 0 1 16 16" /></svg>)}</span>
+      <div class="relative flex h-px w-full justify-center rounded-md bg-accent">
+        <div class="relative w-[calc(100%-1%-30px)]">
+          {months.map((month,index) => <div class="absolute h-[2px]" style={`left:${index / 12 * 99 + 2}%;width:${99/12}%`}>
+            {month.entries.map((entry, entryIndex) => {
+              const day = calendar(entry.data.published).day;
+              const stack = month.entries.slice(0,entryIndex).filter(item => calendar(item.data.published).day === day).length;
+              return <a href={withBase(articlePath(entry))} title={`${entry.data.title} · ${formatDate(entry.data.published)}`} aria-label={entry.data.title} class="year-entry absolute top-0 h-4 w-[2px] rounded-full bg-accent" style={`left:${day/month.days*90+10}%;transform:translateX(-50%) translateY(calc(-100% - ${stack*16}px))`}></a>;
+            })}
+            <div class="absolute left-0 top-1/2 size-[8px] -translate-x-1/4 -translate-y-1/2 rounded-full bg-accent"></div>
+            <div title={`发布了 ${month.entries.length} 篇文章`} class="absolute left-0 w-[3px] rounded-md bg-accent" style={`top:calc(50% + 2px);height:${Math.min(month.entries.length*12,250)}px;transform:translateX(calc(100% - .5px)) translateY(-100%)`}></div>
+            <span class="pointer-events-none absolute left-0 top-1/2 mt-4 inline-block -translate-x-1/2">{month.label}</span>
+          </div>)}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  const scroll = document.querySelector<HTMLElement>('[data-year-scroll]');
+  const reveal = document.querySelector<HTMLElement>('[data-year-reveal]');
+  const scrollToLatest = () => { if (scroll) scroll.scrollLeft = scroll.scrollWidth; };
+  scrollToLatest(); window.addEventListener('resize', scrollToLatest, { passive: true });
+  if (reveal && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const observer = new IntersectionObserver(entries => { if (entries.some(entry => entry.isIntersecting)) { reveal.classList.add('timeline-reveal'); observer.disconnect(); } }, { threshold: .1 });
+    observer.observe(reveal);
+  }
+</script>
