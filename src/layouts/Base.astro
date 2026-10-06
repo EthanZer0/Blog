@@ -18,7 +18,7 @@ const { title, description = siteConfig.description, article = false } = Astro.p
 const canonical = new URL(Astro.url.pathname.replace(/\/404\/?$/, '/404.html'), Astro.site);
 ---
 <!doctype html>
-<html transition:animate="none" lang="zh-CN" class="noise themed" data-theme="light">
+<html lang="zh-CN" class="noise themed" data-theme="light">
   <head>
     <ClientRouter />
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -32,7 +32,7 @@ const canonical = new URL(Astro.url.pathname.replace(/\/404\/?$/, '/404.html'), 
       (() => { let theme; try { theme = localStorage.getItem('shiro-theme'); } catch {} document.documentElement.dataset.themePreference = theme || 'system'; theme = theme === 'dark' || theme === 'light' ? theme : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; document.documentElement.dataset.theme = theme; })();
     </script>
   </head>
-  <body transition:animate="none" class="min-h-screen text-base-content antialiased">
+  <body class="min-h-screen text-base-content antialiased">
     <a href="#main" class="skip-link">跳到正文</a>
     <Header />
     <div class="fill-content relative z-[1] px-4 pt-[4.5rem] md:px-0"><slot /></div>
