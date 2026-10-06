@@ -8,7 +8,7 @@ const notes = await articles('notes');
 const entries = [...posts, ...notes].sort((a,b) => b.data.published.getTime() - a.data.published.getTime());
 ---
 <Base>
-  <main id="main" class="min-w-0">
+  <main id="main" class="fill-content relative z-[1] min-w-0 px-4 pt-[4.5rem] md:px-0">
     <Hero client:load />
     <!-- Original ActivityScreen / TwoColumnLayout proportions; activities now build from public files. -->
     <section id="recent" class="mx-auto mt-24 max-w-[1800px] scroll-mt-24" data-pagefind-ignore>

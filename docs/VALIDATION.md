@@ -49,3 +49,11 @@ GitHub Actions 工作流已提供，但尚未建立远程仓库或进行真实 P
 - 手机 390×844 检查无页面横向溢出，Hero 最小高度为一屏。
 - 类型检查、静态构建及全站产物验证通过；没有为这两处样式/文案修改增加重复实现的测试。
 - 截图：`.verification/home-corrected-first-fold.jpg`。
+
+## 恢复原码边缘定位（取代上一项首屏外方案）
+
+- 首页 Content 恢复原 63px 顶部 padding，Hero 原 -63px 桌面外边距抵消，Hero 顶部实测为 0。
+- 1440×900：Hero 底边实测 900px，提示区域底边同为 900px；提示 absolute / bottom 0px / margin-top 0px，无额外 42px 文档流间隔。
+- 固定版本原码在入场完成后允许首屏底部看到提示，不能承诺滚动前完全隐藏。前一节“首屏之外”的测量属于已撤销方案。
+- 类型检查、构建与全站静态产物验证通过。
+- 截图：`.verification/home-original-edge.jpg`。
