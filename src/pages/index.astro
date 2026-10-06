@@ -37,6 +37,6 @@ const entries = [...posts, ...notes].sort((a,b) => b.data.published.getTime() - 
       </div>
     </section>
     <YearTimeline publications={entries.map(entry => ({id:entry.id,title:entry.data.title,created:entry.data.published.toISOString(),url:withBase(articlePath(entry))}))} client:load />
-    <Windsock client:load />
+    <Windsock latestNotePath={notes[0] ? articlePath(notes[0]) : '/notes/'} client:load />
   </main>
 </Base>
