@@ -1,10 +1,13 @@
 ---
 import { siteConfig } from '../site.config';
-import { withBase } from '../lib/content';
+import { articlePath, articles, withBase } from '../lib/content';
 import DesktopNav from './DesktopNav';
 import MobileMenu from './MobileMenu';
 import SearchDialog from './SearchDialog';
 const pathname = Astro.url.pathname;
+const notes = await articles('notes');
+const latestNotePath = notes[0] ? articlePath(notes[0]) : '/notes/';
+const nav = siteConfig.nav.map(item => item.title === '手记' ? { ...item, path: latestNotePath } : item);
 ---
 <!-- Shiro Header grid, sizing and ForDesktop capsule styles, without auth providers. -->
 <header transition:persist="shiro-header" class="site-header fixed top-0 z-[9] h-[4.5rem] w-0 lg:inset-x-0 lg:w-auto" data-pagefind-ignore>
@@ -12,9 +15,9 @@ const pathname = Astro.url.pathname;
     <div class="header-logo center flex">
       <a href={withBase('/')} aria-label={`${siteConfig.title}首页`}><span class="pointer-events-none relative z-[9] block size-[40px] select-none"><span class="mask mask-squircle block overflow-hidden"><img src={withBase(siteConfig.avatar)} alt={`${siteConfig.owner} 的头像`} width="40" height="40" class="ring-2 ring-slate-200 dark:ring-neutral-800" /></span></span></a>
     </div>
-    <div class="mobile-menu center flex lg:hidden"><MobileMenu client:load /></div>
+    <div class="mobile-menu center flex lg:hidden"><MobileMenu nav={nav} client:load /></div>
     <div class="center hidden min-w-0 grow lg:flex">
-      <DesktopNav pathname={pathname} client:load />
+      <DesktopNav pathname={pathname} nav={nav} client:load />
     </div>
     <div class="flex size-full items-center"><SearchDialog client:load /></div>
   </div>

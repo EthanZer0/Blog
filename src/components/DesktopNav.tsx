@@ -1,13 +1,13 @@
 // Shiro HeaderContent: original spotlight, scroll thresholds and Motion transitions.
 import { useEffect, useState } from 'react';
 import { AnimatePresence, LayoutGroup, motion, useMotionTemplate, useMotionValue, useReducedMotion } from 'motion/react';
-import { siteConfig } from '../site.config';
+import type { NavItem } from '../site.config';
 import MenuPopover from './MenuPopover';
 import { withBase } from '../lib/url';
 import { FaSolidDotCircle, IcTwotoneSignpost, FaSolidFeatherAlt, FaSolidHistory } from './upstream/menu-collection';
 
 const icons = [FaSolidDotCircle, IcTwotoneSignpost, FaSolidFeatherAlt, FaSolidHistory];
-function Capsule({ pathname, label }: { pathname: string; label: string }) {
+function Capsule({ pathname, label, nav }: { pathname: string; label: string; nav: NavItem[] }) {
   const mouseX = useMotionValue(0), mouseY = useMotionValue(0), radius = useMotionValue(0);
   const background = useMotionTemplate`radial-gradient(${radius}px circle at ${mouseX}px ${mouseY}px, var(--spotlight-color) 0%, transparent 65%)`;
   return <nav aria-label={label} onPointerMove={event => {
@@ -17,7 +17,7 @@ function Capsule({ pathname, label }: { pathname: string; label: string }) {
   }} className="group pointer-events-auto relative rounded-full bg-gradient-to-b from-zinc-50/70 to-white/90 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur-md duration-200 [--spotlight-color:oklch(from_var(--color-accent)_l_c_h_/_0.12)] dark:from-zinc-900/70 dark:to-zinc-800/90 dark:ring-zinc-100/10">
     <motion.div aria-hidden="true" className="pointer-events-none absolute -inset-px rounded-full opacity-0 transition-opacity duration-500 group-hover:opacity-100" style={{ background }} />
     <div className="flex px-4 font-medium text-zinc-800 dark:text-zinc-200">
-      {siteConfig.nav.map((item, index) => {
+      {nav.map((item, index) => {
         const href=withBase(item.path),sub=item.subMenu?.find(sub=>pathname===withBase(sub.path)||(sub.path.includes('/series/')&&pathname.startsWith(withBase(sub.path)))),active=Boolean(sub)||pathname.split('?')[0]===href||(item.path!=='/'&&pathname.startsWith(href));
         const Icon = icons[index];
         return <MenuPopover key={href} subMenu={item.subMenu}><div><a href={href} aria-current={active ? 'page' : undefined} className={`relative block whitespace-nowrap px-4 py-2 transition duration-200 ${active ? 'text-accent' : 'hover:text-accent/80'}`}>
@@ -29,7 +29,7 @@ function Capsule({ pathname, label }: { pathname: string; label: string }) {
   </nav>;
 }
 
-export default function DesktopNav({ pathname: initialPathname }: { pathname: string }) {
+export default function DesktopNav({ pathname: initialPathname, nav }: { pathname: string; nav: NavItem[] }) {
   const [pathname,setPathname]=useState(initialPathname);
   const [opacity, setOpacity] = useState(1), [floating, setFloating] = useState(false);
   const reduced = useReducedMotion();
@@ -49,7 +49,7 @@ export default function DesktopNav({ pathname: initialPathname }: { pathname: st
     return () => { window.removeEventListener('scroll', schedule);document.removeEventListener('astro:page-load',navigate); cancelAnimationFrame(frame); clearTimeout(timer); };
   }, []);
   return <>
-    <LayoutGroup id="header-main"><div className="duration-100" style={{ opacity, visibility: opacity === 0 ? 'hidden' : 'visible' }}><Capsule pathname={pathname} label="主导航" /></div></LayoutGroup>
-    <AnimatePresence>{floating && <motion.div initial={reduced ? false : { y: -20 }} animate={{ y: 0 }} exit={{ y: -20, opacity: 0 }} className="pointer-events-none fixed inset-x-0 top-4 z-10 flex justify-center"><LayoutGroup id="header-floating"><Capsule pathname={pathname} label="浮动导航" /></LayoutGroup></motion.div>}</AnimatePresence>
+    <LayoutGroup id="header-main"><div className="duration-100" style={{ opacity, visibility: opacity === 0 ? 'hidden' : 'visible' }}><Capsule pathname={pathname} label="主导航" nav={nav} /></div></LayoutGroup>
+    <AnimatePresence>{floating && <motion.div initial={reduced ? false : { y: -20 }} animate={{ y: 0 }} exit={{ y: -20, opacity: 0 }} className="pointer-events-none fixed inset-x-0 top-4 z-10 flex justify-center"><LayoutGroup id="header-floating"><Capsule pathname={pathname} label="浮动导航" nav={nav} /></LayoutGroup></motion.div>}</AnimatePresence>
   </>;
 }

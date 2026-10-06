@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { Drawer } from 'vaul';
-import { siteConfig } from '../site.config';
+import type { NavItem } from '../site.config';
 import { withBase } from '../lib/url';
 import { reboundPreset } from './upstream/spring';
 import { FaSolidDotCircle, IcTwotoneSignpost, FaSolidFeatherAlt, FaSolidHistory } from './upstream/menu-collection';
 
 const icons = [FaSolidDotCircle, IcTwotoneSignpost, FaSolidFeatherAlt, FaSolidHistory];
 // HeaderDrawerButton + HeaderDrawerContent + PresentSheet, with static menu data.
-export default function MobileMenu() {
+export default function MobileMenu({ nav }: { nav: NavItem[] }) {
   const [open, setOpen] = useState(false), [opacity, setOpacity] = useState(1);
   const reduced = useReducedMotion();
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function MobileMenu() {
         <div className="mx-auto mb-8 h-1.5 w-12 shrink-0 rounded-full bg-zinc-300 dark:bg-neutral-800" />
         <Drawer.Title className="sr-only">导航</Drawer.Title>
         <nav aria-label="手机导航" className="scrollbar-none mt-12 max-h-[80dvh] w-[90vw] space-y-4 overflow-auto pb-24">
-          {siteConfig.nav.map((item, index) => {
+          {nav.map((item, index) => {
             const Icon = icons[index];
             return <motion.section key={item.path} initial={reduced ? false : { y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ ...reboundPreset, delay: index * .08 }}>
               <a className="block" href={withBase(item.path)} onClick={() => setOpen(false)}><span className="flex items-center space-x-2 py-2 text-lg"><i>{Icon ? <Icon /> : <i className={item.icon} />}</i><h2>{item.title}</h2></span></a>
