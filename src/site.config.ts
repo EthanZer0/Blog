@@ -1,4 +1,6 @@
 // Personal information is demo content. Layout and design are ported from Shiro.
+import type { JSX } from 'react';
+export type HeroTemplateItem = { type: keyof JSX.IntrinsicElements; text?: string; class?: string };
 export type NavItem={title:string;path:string;icon:string;subMenu?:NavItem[]};
 export const siteConfig = {
   topics: [] as {slug:string;name:string;icon?:string;introduce:string;description?:string}[],
@@ -9,10 +11,14 @@ export const siteConfig = {
   hero: {
     title: {
       template: [
-        { type: 'h1' as const, text: '你好，我是 ', class: 'text-4xl font-light' },
-        { type: 'span' as const, text: 'Sylvan', class: 'text-4xl font-medium text-accent' },
-        { type: 'span' as const, text: '。', class: 'text-4xl font-light' },
-      ],
+        { type: 'h1', text: '你好，我是 ', class: 'text-4xl font-light' },
+        { type: 'span', text: 'Sylvan', class: 'text-4xl font-medium text-accent' },
+        { type: 'span', text: '。', class: 'text-4xl font-light' },
+        { type: 'br' },
+        { type: 'span', text: '如纸的纯净，', class: 'text-4xl font-light' },
+        { type: 'br' },
+        { type: 'span', text: '似雪的清新。', class: 'text-4xl font-light' },
+      ] satisfies HeroTemplateItem[],
     },
     description: '在文字里，收藏日常的微光。',
     hitokoto: '如纸的纯净，似雪的清新。',

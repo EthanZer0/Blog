@@ -10,14 +10,14 @@ export default function Hero() {
   const reduced = useReducedMotion();
   useEffect(() => {
     if (reduced) return;
-    const letters = siteConfig.hero.title.template.reduce((sum, item) => sum + Array.from(item.text).length, 0);
-    const controls = animate('.hero-letter', { opacity: [0.001, 1], y: [10, 0] }, {
+    const letters = siteConfig.hero.title.template.reduce((sum, item) => sum + Array.from(item.text ?? '').length, 0);
+    const controls = letters > 0 ? animate('.hero-letter', { opacity: [0.001, 1], y: [10, 0] }, {
       ...microReboundPreset, duration: 0.1, delay: stagger(0.05),
-    });
+    }) : undefined;
     const title = animate('.hero-title, .hero-foot', { opacity: [0.001, 1], y: [50, 0] }, softBouncePreset);
     const description = animate('.hero-description', { opacity: [0.001, 1], y: [50, 0] }, { ...softBouncePreset, delay: letters * .05 + .5 });
     const social = animate('.hero-social', { opacity: [0.001, 1], y: [50, 0] }, { ...softBouncePreset, delay: stagger(.1, { startDelay: letters * .05 + .5 }) });
-    return () => { controls.stop(); title.stop(); description.stop(); social.stop(); };
+    return () => { controls?.stop(); title.stop(); description.stop(); social.stop(); };
   }, [animate, reduced]);
   return (
     <div ref={scope} className="mx-auto mt-20 min-w-0 max-w-7xl overflow-hidden lg:mt-[-4.5rem] lg:h-dvh lg:min-h-[800px] lg:px-8">
@@ -25,8 +25,10 @@ export default function Hero() {
         <div className="center mt-[120px] flex w-full flex-col lg:mt-0 lg:h-1/2 lg:w-1/2">
           <div className="relative max-w-full lg:max-w-2xl">
             <div className="hero-title group relative text-center leading-[4] lg:text-left [&_*]:inline-block">
-              {siteConfig.hero.title.template.map((item, i) => createElement(item.type, { className: item.class, key: i },
-                <span>{Array.from(item.text).map((letter, j) => <span key={j} className="hero-letter inline-block whitespace-pre">{letter}</span>)}</span>))}
+              {siteConfig.hero.title.template.map((item, i) => item.text
+                ? createElement(item.type, { className: item.class, key: i },
+                  <span>{Array.from(item.text).map((letter, j) => <span key={j} className="hero-letter inline-block whitespace-pre">{letter}</span>)}</span>)
+                : createElement(item.type, { className: item.class, key: i }))}
             </div>
             <div className="hero-description my-3 text-center lg:text-left"><span className="opacity-80">{siteConfig.hero.description}</span></div>
             <ul className="center mx-[60px] mt-8 flex flex-wrap gap-4 gap-y-6 lg:mx-auto lg:mt-28 lg:justify-start lg:gap-y-4">
