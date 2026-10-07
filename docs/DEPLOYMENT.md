@@ -7,7 +7,7 @@
 - 首页：嗨！我是凌晨Feng／一隅清净地，且行，且留。／`<Student & Developer />`；小字：`Roam far,and store the quiet musings.`。
 - 社交：GitHub 仓库、Bilibili 用户 383490657、本站 RSS。
 - 使用默认项目 Pages 地址 `https://ethanzer0.github.io/Blog/`；未指定自定义域名。
-- 头像、图标及示例文章暂保留；关于页作者随配置更新，其余演示介绍未改。
+- 头像使用用户提供的 avatar.jpg；图标及示例文章暂保留；关于页作者随配置更新，其余演示介绍未改。
 
 个人资料位于 `src/site.config.ts`，关于页位于 `src/pages/about.astro`，文章位于 `src/content/`，头像和图标位于 `public/`。
 
@@ -46,3 +46,9 @@
 - 正式地址：[凌晨Feng - 静思，笃行](https://ethanzer0.github.io/Blog/)。
 - 集中线上检查通过：站点标题、三行首页模板、小字、GitHub/Bilibili/RSS 地址、原 Bilibili SVG、RSS 频道地址、Sitemap、Pagefind 搜索（写作返回 2 条）、文稿与手记导航、返回首页和 390px 无横向溢出；无页面错误或同站失败资源。
 - 头像、图标和演示文章仍保留；尚未配置自定义域名。后续 main 的代码推送会自动部署。
+
+## 头像与名字样式更新（2026-10-07）
+
+- 使用用户提供的 JPG 头像，首页与导航栏共用 /avatar.jpg，保留原圆形/导航图标遮罩样式。
+- 名字恢复参考站 font-medium mx-2 text-4xl，移除 text-accent，后接 👋；亮色使用原文字黑色，暗色随原主题文字色显示。
+- 原 avatar.png 仍由示例文章使用，保留以避免文章图片失效。

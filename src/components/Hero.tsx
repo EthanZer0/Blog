@@ -41,7 +41,7 @@ export default function Hero() {
         <div className="center flex w-full flex-col lg:h-auto lg:w-1/2 lg:items-end lg:justify-end">
           <div className="relative max-w-full lg:max-w-2xl">
             <div className="mt-24 size-[200px] lg:mt-0 lg:size-[300px]">
-              <img height={300} width={300} src={withBase(siteConfig.avatar)} alt={`${siteConfig.owner} 的头像（演示占位图）`} fetchPriority="high" className="aspect-square w-full rounded-full border border-slate-200 dark:border-neutral-800" />
+              <img height={300} width={300} src={withBase(siteConfig.avatar)} alt={`${siteConfig.owner} 的头像`} fetchPriority="high" className="aspect-square w-full rounded-full border border-slate-200 dark:border-neutral-800" />
             </div>
           </div>
         </div>

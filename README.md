@@ -25,7 +25,7 @@ npm run preview
 - `src/site.config.ts`：站点名称、简介、Hero、头像、社交链接、导航。
 - `src/content/posts/*.md`：文稿。
 - `src/content/notes/*.md`：手记。
-- `public/avatar.png`：当前为上游图标占位；替换成你自己的头像。
+- `public/avatar.jpg`：当前个人头像，首页与导航栏共用；路径由 `siteConfig.avatar` 配置。
 - `src/pages/about.astro`：个人介绍。
 
 首页大字使用 `hero.title.template` 按顺序组合，沿用 Shiro 的 `type`、可选 `text` 和可选 `class`。换行写作 `{ type: 'br' }`，不需要填写文字；字体与字号配置在各片段的 `class`，小字简介在 `hero.description`。当前包含两行介绍与一行 code，可直接替换：
@@ -33,7 +33,8 @@ npm run preview
 ```ts
 template: [
   { type: 'h1', text: '嗨！我是', class: 'text-4xl font-light' },
-  { type: 'span', text: '凌晨Feng', class: 'text-4xl font-medium text-accent' },
+  { type: 'span', text: '凌晨Feng', class: 'font-medium mx-2 text-4xl' },
+  { type: 'span', text: '👋', class: 'font-light text-4xl' },
   { type: 'br' },
   { type: 'span', text: '一隅清净地，且行，且留。', class: 'text-4xl font-light' },
   {

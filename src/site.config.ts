@@ -7,12 +7,13 @@ export const siteConfig = {
   title: '凌晨Feng - 静思，笃行',
   description: '一隅清净地，且行，且留。',
   owner: '凌晨Feng',
-  avatar: '/avatar.png',
+  avatar: '/avatar.jpg',
   hero: {
     title: {
       template: [
         { type: 'h1', text: '嗨！我是', class: 'text-4xl font-light' },
-        { type: 'span', text: '凌晨Feng', class: 'text-4xl font-medium text-accent' },
+        { type: 'span', text: '凌晨Feng', class: 'font-medium mx-2 text-4xl' },
+        { type: 'span', text: '👋', class: 'font-light text-4xl' },
         { type: 'br' },
         { type: 'span', text: '一隅清净地，且行，且留。', class: 'text-4xl font-light' },
         {
