@@ -132,3 +132,8 @@
 - site.ts 对应 ImmersiveReadingInteractionProvider、TocAside；原 300ms 检测、20% 目录透明度、pointerEvents 与 smooth Spring 保留。仅文稿和自定义页启用，手记不启用。
 - 模态栈新增按弹窗选择点击外部关闭，分享沿用原设置；其他弹窗行为保持原配置。
 - 本轮类型检查、源码审计、根路径/子路径构建及集中功能验证通过；实际系统分享使用模拟验证，未进行全面像素对照。
+
+## 参考站目录颜色校准（2026-10-07）
+
+- 用户指定参考站：https://www.xiaohanwu.com/posts/life/20241202 。实际目录使用 text-neutral-8，亮色 #52525b、暗色 #d4d4d8；未选中/悬停/沉浸父层透明度仍为 0.5/0.8/0.2。
+- TocTree 明确采用上述主题文字色，覆盖桌面目录及手机目录抽屉。此项以参考站实测为标准，是相对于固定上游提交 text-neutral (#c7c7cc) 的明确差异；没有修改全站 neutral 变量或上游样式文件。
