@@ -38,3 +38,11 @@
 - 移除产物验证中的作者名硬编码；检查实际静态首页文字。
 - 产物验证新增 canonical、og:url 和 RSS 频道地址与构建部署地址一致性检查。
 - 本地预览依旧使用默认根路径产物；子路径验证产物单独保存在忽略目录中。
+
+## 首次发布完成（2026-10-07）
+
+- 配置提交 `732499b` 已推送至 origin/main；Pages build_type 已设置为 workflow。
+- 构建与部署成功：[Actions 运行记录](https://github.com/EthanZer0/Blog/actions/runs/37587761527)。
+- 正式地址：[凌晨Feng - 静思，笃行](https://ethanzer0.github.io/Blog/)。
+- 集中线上检查通过：站点标题、三行首页模板、小字、GitHub/Bilibili/RSS 地址、原 Bilibili SVG、RSS 频道地址、Sitemap、Pagefind 搜索（写作返回 2 条）、文稿与手记导航、返回首页和 390px 无横向溢出；无页面错误或同站失败资源。
+- 头像、图标和演示文章仍保留；尚未配置自定义域名。后续 main 的代码推送会自动部署。

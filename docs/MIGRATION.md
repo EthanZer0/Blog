@@ -57,9 +57,11 @@
 
 2026-10-07 首页整体收尾已完成：Hero 包裹和声明式初始动画、社交提示、Activity 双栏与滚动组件对齐；共享 FloatPopover 的 Portal 问题当阶段修复。验证细目见 VALIDATION.md，个人文案与静态动态数据仍是配置/数据适配。
 
+2026-10-07 已按用户资料配置并实际部署至 https://ethanzer0.github.io/Blog/；GitHub Actions 构建、部署及线上检查通过。头像与示例文章尚未替换，当前部署记录见 DEPLOYMENT.md。
+
 - 首页与正文针对固定参考截图做细节校准。
 - 目前已支持 Spoiler、Tabs、tag、grid、masonry、carousel、静态 LinkCard 和视频等扩展；任意 React 执行与 Lexical 数据不在静态迁移范围。
-- 替换个人资料与演示内容，验证实际 GitHub Pages 部署。工作流已准备，当前未配置 Git 远程。
+- 后续替换头像与演示文章；站点资料与 GitHub Pages 首次实际部署已完成，origin 已配置。
 - 视需要添加思考、项目、友链、系列。
 
 ## 永久移除

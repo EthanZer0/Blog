@@ -125,3 +125,10 @@ GitHub Actions 工作流已提供，但尚未建立远程仓库或进行真实 P
 - 修复项目子路径下 RSS 频道地址；移除首页静态文字验证的 Sylvan 硬编码。
 - 新增 canonical / og:url / RSS 频道地址校验。默认根路径及独立测试域名下 /shiro-test 构建、Pagefind、20 页面产物检查通过；负向检查确认错误部署域名会被拒绝。
 - 个人资料、头像及演示文章保留，待用户提供目标仓库和替换内容。本轮未做浏览器视觉测试。
+
+## 个人配置与实际 Pages 发布（2026-10-07）
+
+- 使用用户提供的仓库 EthanZer0/Blog、站点名称、首页文案及 GitHub/Bilibili/RSS。Bilibili 复用原 SVG 与 #00A1D6 配色；姓名继续使用既有品牌色样式。
+- Astro 检查 0 errors / warnings（保留原 6 hints）；根路径与 https://ethanzer0.github.io + /Blog 的构建、Pagefind 与 20 页面产物校验通过。
+- 推送配置提交 732499b，启用 GitHub Actions Pages；运行 37587761527 构建及部署成功。
+- 正式地址 https://ethanzer0.github.io/Blog/ 的集中功能检查通过：用户文案、社交链接、RSS / Sitemap、搜索（写作 2 条）、跨页导航与 390px 无横向溢出。没有页面错误或同站资源失败。
