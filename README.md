@@ -1,6 +1,6 @@
 # Shiro Astro
 
-基于公开 Shiro 的静态移植版本，专注视觉设计与阅读体验。主要页面、扩展 Markdown、手记字形设置、分享和原沉浸阅读交互已接入，尚未完成全部视觉对照验收及实际 Pages 部署。无需 Mix Space 后端或 Node 生产服务器。
+基于公开 Shiro 的静态移植版本，专注视觉设计与阅读体验。主要页面、扩展 Markdown、手记字形设置、分享和原沉浸阅读交互已接入，已部署 GitHub Pages，尚未完成全部视觉对照验收。无需 Mix Space 后端或 Node 生产服务器。
 
 ## 本地运行
 
@@ -23,6 +23,7 @@ npm run preview
 ## 写作与配置
 
 - `src/site.config.ts`：站点名称、简介、Hero、头像、社交链接、导航。
+- `src/site.config.ts` 的 `autumnBackground`：秋季银杏动态背景开关。手机、正文阅读页、打印及减少动态偏好下自动隐藏；当前固定秋季效果，不随季节切换。
 - `src/content/posts/*.md`：文稿。
 - `src/content/notes/*.md`：手记。
 - `public/avatar.jpg`：当前个人头像，首页与导航栏共用；路径由 `siteConfig.avatar` 配置。

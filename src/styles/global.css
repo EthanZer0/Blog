@@ -21,6 +21,9 @@
 :root { --app-font-sans: 'Manrope'; --app-font-serif: 'Noto Serif SC'; --reference-neutral-text: #52525b; }
 html[data-theme='dark'] { --reference-neutral-text: #d4d4d8; }
 body { margin: 0; }
+.autumn-background[hidden] { display: none; }
+@media (max-width: 1024px), (prefers-reduced-motion: reduce) { .autumn-background { display: none; } }
+@media print { .autumn-background { display: none; } }
 button, summary, a { touch-action: manipulation; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 4px; }

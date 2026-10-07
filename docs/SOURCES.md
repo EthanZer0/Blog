@@ -9,3 +9,6 @@ CSS、SVG 与主要展示结构来自公开 Shiro；保留 AGPL 和 ADDITIONAL_T
 `npm run audit:source` 比对17份原样式、Spring常量和共同展示依赖；`scripts/sync-code-icons.mjs` 从固定源码生成代码语言 SVG 与颜色。构建可独立完成，不依赖 `.research`；来源校验与重新生成图标需要该源码目录。
 
 移植不是逐字复制整个 Next 应用。框架和静态内容部分使用 Astro；D1–D8 的对齐结果与静态适配边界在审查报告中逐项列出，不能宣称已经完成像素级验收。
+# 独立秋季背景适配
+
+`src/components/AutumnBackground.astro` 与 `src/scripts/autumn-background.ts` 为本地独立实现。视觉参考为 https://www.xiaohanwu.com/ 的秋季银杏落叶；其 Shiroi 季节背景不在本仓库固定的公开 Shiro 源码中。本项目自行绘制叶片并使用 Canvas 2D，未纳入参考站增强版组件或 shader。

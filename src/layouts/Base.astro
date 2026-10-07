@@ -12,6 +12,7 @@ import { articles, articlePath, withBase } from '../lib/content';
 import { ClientRouter } from 'astro:transitions';
 import { Toaster } from '../components/upstream/Toaster';
 import ModalRoot from '../components/ModalRoot';
+import AutumnBackground from '../components/AutumnBackground.astro';
 const publicEntries=[...await articles('posts'),...await articles('notes')];
 interface Props { title?: string; description?: string; article?: boolean; }
 const { title, description = siteConfig.description, article = false } = Astro.props;
@@ -33,6 +34,7 @@ const canonical = new URL(Astro.url.pathname.replace(/\/404\/?$/, '/404.html'), 
     </script>
   </head>
   <body class="min-h-screen text-base-content antialiased">
+    {siteConfig.autumnBackground && <AutumnBackground />}
     <a href="#main" class="skip-link">跳到正文</a>
     <Header />
     <div class="fill-content relative z-[1] px-4 pt-[4.5rem] md:px-0"><slot /></div>

@@ -3,6 +3,7 @@ import type { JSX } from 'react';
 export type HeroTemplateItem = { type: keyof JSX.IntrinsicElements; text?: string; class?: string };
 export type NavItem={title:string;path:string;icon:string;subMenu?:NavItem[]};
 export const siteConfig = {
+  autumnBackground: true,
   topics: [] as {slug:string;name:string;icon?:string;introduce:string;description?:string}[],
   title: '凌晨Feng - 静思，笃行',
   description: '一隅清净地，且行，且留。',
