@@ -167,3 +167,9 @@
 - HomeActivity 使用原 ScrollArea 及同版本 Radix 1.2.10，恢复桌面/手机 400px 高度、80vh 上限、mask 与滚动条。上游文件仅替换 import 及本地 stopPropagation；已纳入源码审计。动态数据只包含公开文章发布事件，无后台模拟。
 - 集中检查发现 FloatPopover 将原生 Portal 直接作为 AnimatePresence 子节点而被过滤；把 AnimatePresence 放入 Portal 内修复，保留定位、外观与入退场参数。社交提示、时间线提示、Escape 关闭与手机抽屉已验证。
 - YearTimeline / Windsock 的展示类名与动效参数复核未发现本轮需改动项；静态数据与导航子集仍是既有适配。未进行全面像素验收。
+
+## 全站 neutral 文字统一（2026-10-07）
+
+- 按用户要求，全站原 text-neutral 及 /60、/90 变体替换为 text-neutral-8；覆盖文稿元信息、列表、手记时间线、专栏简介、页脚与风向标。
+- global.css 定义统一主题文字 token：亮色 #52525b、暗色 #d4d4d8；目录从显式色值改为复用该 token。风向标的旧暗色色阶覆盖移除，使用统一 token。
+- 本项是用户指定的全站文字色例外；带编号的其他 neutral 色阶及背景、边框 token 保留各自用途，17 份原样式文件没有修改。

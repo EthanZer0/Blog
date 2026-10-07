@@ -31,7 +31,7 @@ export const NoteTopicDetail: FC<{ topic: StaticTopic;notes:TopicNote[] }> = (pr
         )}
       </a>
 
-      <div className="line-clamp-2 break-all text-neutral">
+      <div className="line-clamp-2 break-all text-neutral-8">
         <NoteTopicMarkdownRender>{topic.introduce}</NoteTopicMarkdownRender>
       </div>
       {topic.description && (

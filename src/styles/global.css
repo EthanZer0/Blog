@@ -17,7 +17,9 @@
 @import './upstream/markdown-renderers.css';
 
 /* Static adapter styles: replace React renderer wrappers and removed providers. */
-:root { --app-font-sans: 'Manrope'; --app-font-serif: 'Noto Serif SC'; }
+@theme inline { --color-neutral-8: var(--reference-neutral-text); }
+:root { --app-font-sans: 'Manrope'; --app-font-serif: 'Noto Serif SC'; --reference-neutral-text: #52525b; }
+html[data-theme='dark'] { --reference-neutral-text: #d4d4d8; }
 body { margin: 0; }
 button, summary, a { touch-action: manipulation; }
 button { cursor: pointer; }
