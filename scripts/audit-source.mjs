@@ -31,3 +31,9 @@ assert.equal(normalize(fontIcons.slice(fontIcons.indexOf('export const SansFont'
 console.log('Verified original note font preview SVGs.');
 for (const name of ['Twitter', 'Telegram']) assert.equal(normalize(await readFile(`src/components/upstream/${name}.tsx`, 'utf8')), normalize(await readFile(`${upstream}/apps/web/src/components/icons/platform/${name}.tsx`, 'utf8')), `${name}: unexpected icon divergence`);
 console.log('Verified original sharing platform SVGs.');
+for (const name of ['Progress', 'status']) {
+  const stripUnusedReact = source => normalize(source.replace(/import \* as React from 'react'\r?\n/g, ''));
+  assert.equal(stripUnusedReact(await readFile(`src/components/upstream/${name}.tsx`, 'utf8')), stripUnusedReact(await readFile(`${upstream}/apps/web/src/components/icons/${name}.tsx`, 'utf8')), `${name}: unexpected icon divergence`);
+}
+assert.equal(normalize(await readFile('src/components/upstream/Banner.tsx', 'utf8')), normalize((await readFile(`${upstream}/apps/web/src/components/ui/banner/Banner.tsx`, 'utf8')).replace("'../../icons/status'", "'./status'")), 'Banner: unexpected display divergence');
+console.log('Verified original progress/status SVGs and Banner presentation.');

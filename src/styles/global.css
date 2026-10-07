@@ -40,12 +40,6 @@ body[data-zoom-preparing] .medium-zoom-image--opened { visibility: hidden; }
 .reading-layout { display: grid; grid-template-columns: minmax(0, 1fr); }
 .reading-layout--note { min-width: 0; }
 .reading-aside { display: none; }
-.toc-list a { display: inline-block; position: relative; max-width: 100%; line-height: 1.5; margin-bottom: 1.5px; padding: 0 .5rem; color: var(--color-neutral); opacity: .5; transition: all .5s; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.toc-list a:hover { opacity: .8; }
-.toc-list a[aria-current='location'] { opacity: 1; margin-left: .5rem; }
-.toc-list li { position: relative; }
-.toc-list li:has(a[aria-current='location'])::before { content: ''; position: absolute; top: 3px; bottom: 3px; left: 0; width: 2px; border-radius: 2px; background: var(--color-accent); }
-.toc-list { max-height: 75vh; overflow-y: auto; }
 [data-back-to-top]:hover { opacity: 1 !important; }
 .prose.markdown pre { position: relative; background: transparent !important; overflow-x: auto; }
 [data-theme='dark'] .astro-code, [data-theme='dark'] .astro-code span { color: var(--shiki-dark) !important; font-style: var(--shiki-dark-font-style) !important; font-weight: var(--shiki-dark-font-weight) !important; text-decoration: var(--shiki-dark-text-decoration) !important; }

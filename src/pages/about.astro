@@ -5,9 +5,9 @@ import { siteConfig } from '../site.config';
 ---
 <Base title="关于">
   <main id="main" class="container m-auto mt-[120px] max-w-5xl px-2 md:px-6 lg:px-0">
-    <div class="reading-layout relative min-h-[120px]"><div data-reading-region>
+    <div class="reading-layout relative min-h-[120px]"><div>
     <h1 class="mb-12 text-3xl font-medium">关于</h1>
-    <article data-article-body data-focus-reading class="prose markdown min-w-0 overflow-hidden"><p>你好，我是 {siteConfig.owner}。</p><p>这里是我的个人博客，记录生活，也分享思考。</p><p>如纸的纯净，似雪的清新。</p><hr /><p class="text-sm opacity-60">当前个人介绍和头像为演示占位内容，可以在站点配置中替换。</p></article>
+    <article data-article-body data-reading-region data-focus-reading class="prose markdown min-w-0 overflow-hidden"><p>你好，我是 {siteConfig.owner}。</p><p>这里是我的个人博客，记录生活，也分享思考。</p><p>如纸的纯净，似雪的清新。</p><hr /><p class="text-sm opacity-60">当前个人介绍和头像为演示占位内容，可以在站点配置中替换。</p></article><div data-article-end aria-hidden="true"></div>
     </div><aside class="reading-aside relative" data-pagefind-ignore><div class="sticky top-[120px] mt-[120px] ml-4 h-[calc(100vh-6rem-4.5rem-150px-120px)]"><Toc headings={[]} /></div></aside></div>
   </main>
 </Base>

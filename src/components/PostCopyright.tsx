@@ -24,9 +24,9 @@ const format={dateTime:(value:Date,options:Intl.DateTimeFormatOptions)=>new Intl
         {t('copyright_link')}
         <span>{link}</span>{' '}
         <a
-          onClick={() => {
-            navigator.clipboard.writeText(link)
-            toast.success(tCommon('copy_article_link'))
+          onClick={async () => {
+            try { await navigator.clipboard.writeText(link); toast.success(tCommon('copy_article_link')); }
+            catch { toast.error('复制失败，请检查浏览器的剪贴板权限。'); }
           }}
           data-hide-print
           className="cursor-pointer select-none"

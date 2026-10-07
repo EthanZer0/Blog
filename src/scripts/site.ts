@@ -63,29 +63,28 @@ if (article) {
     }
   }
   import('../components/ArticleEnhancements').then(({mountArticleEnhancements})=>{if(!signal.aborted)cleanups.push(mountArticleEnhancements(article));});
-  const progress = document.querySelectorAll<HTMLElement>('[data-reading-progress]');
-  let scheduled = false;
+  let scheduled = 0, endVisible = false, lastScroll = window.scrollY, scrollingDown = false;
   function updateReading() {
+    scrollingDown = window.scrollY > lastScroll; lastScroll = window.scrollY;
     const region = document.querySelector<HTMLElement>('[data-reading-region]') || article!;
     const top = region.getBoundingClientRect().top + window.scrollY;
     const percent = Math.floor(Math.max(0, Math.min(100, (window.scrollY - top + Math.min(window.scrollY, window.innerHeight)) / Math.max(1,region.offsetHeight) * 100)));
     const vertical = document.querySelector<HTMLElement>('[data-progress-vertical]'); if (vertical) vertical.style.height = `${percent}%`;
-    const rail = document.querySelector<HTMLElement>('[data-reading-vertical]'); if (rail) rail.style.opacity = percent >= 100 ? '0' : '1';
-    progress.forEach(bar => {
-      const rounded = Math.round(percent);
-      bar.setAttribute('aria-valuenow', String(rounded));
-      const label = bar.querySelector('[data-progress-label]');
-      if (label) label.textContent = `${rounded}%`;
-      bar.querySelector('[data-progress-ring]')?.setAttribute('stroke-dashoffset', String(100 - percent));
-    });
-    document.querySelectorAll<HTMLElement>('[data-back-to-top]').forEach(link => {
-      link.style.opacity = percent > 10 ? '.5' : '0';
-      link.style.pointerEvents = percent > 10 ? 'auto' : 'none';
-      link.tabIndex = percent > 10 ? 0 : -1;
-    });
-    scheduled = false;
+    const rail = document.querySelector<HTMLElement>('[data-reading-vertical]');
+    const indicator = document.querySelector<HTMLElement>('[data-reading-indicator]');
+    const rect = indicator?.getBoundingClientRect();
+    const indicatorVisible = !!indicator?.getClientRects().length && !!rect && rect.bottom > 0 && rect.top < innerHeight;
+    if (rail) { rail.hidden = indicatorVisible; rail.style.opacity = endVisible ? '0' : '1'; }
+    article!.dataset.readPercent = String(percent);
+    document.dispatchEvent(new Event('shiro:reading-progress'));
+    scheduled = 0;
   }
-  const schedule = () => { if (!scheduled) { scheduled = true; requestAnimationFrame(updateReading); } };
+  const schedule = () => { if (!scheduled) { scheduled = requestAnimationFrame(updateReading); } };
+  const resize = new ResizeObserver(schedule); resize.observe(article);
+  const endMarker = document.querySelector('[data-article-end]');
+  const endObserver = new IntersectionObserver(([entry]) => { if (entry.isIntersecting || !scrollingDown) { endVisible = entry.isIntersecting; schedule(); } });
+  if (endMarker) endObserver.observe(endMarker);
+  cleanups.push(() => { resize.disconnect(); endObserver.disconnect(); cancelAnimationFrame(scheduled); });
   window.addEventListener('scroll', schedule, { passive: true, signal });
   window.addEventListener('resize', schedule, { passive: true, signal });
   window.addEventListener('load', schedule, { once: true, signal });
