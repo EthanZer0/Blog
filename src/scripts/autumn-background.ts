@@ -1,5 +1,6 @@
 // Shiroi's seasonal component is not in the public Shiro source snapshot.
 // Draw our own ginkgo sprites; match the reference's autumn motion parameters.
+import type { BackgroundRenderer } from './background/types';
 type Leaf = {
   x: number; y: number; depth: number; size: number; alpha: number;
   seed: number; rotation: number; spin: number; tilt: number; tumble: number; phase: number;
@@ -60,14 +61,9 @@ function createSprites() {
   });
 }
 
-export function mountAutumnBackground() {
-  const canvas = document.querySelector<HTMLCanvasElement>('[data-autumn-background]');
-  const ctx = canvas?.getContext('2d');
-  if (!canvas || !ctx) return;
-  const mobile = matchMedia('(max-width: 1024px)');
-  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-  let sprites: ReturnType<typeof createSprites> | undefined;
-  let width = 0, height = 0, frame = 0, lastTime = 0, elapsed = 0;
+export function createAutumnBackground(ctx: CanvasRenderingContext2D): BackgroundRenderer {
+  const sprites = createSprites();
+  let width = 0, height = 0, elapsed = 0;
   let leaves: Leaf[] = [];
 
   function spawn(initial: boolean): Leaf {
@@ -82,17 +78,13 @@ export function mountAutumnBackground() {
     };
   }
 
-  function resize() {
-    if (width === innerWidth && height === innerHeight) return;
-    width = innerWidth; height = innerHeight;
-    // Reference uses CSS-pixel resolution; retain the same soft distant edges.
-    canvas!.width = width; canvas!.height = height;
+  function resize(w: number, h: number) {
+    width = w; height = h;
     leaves = Array.from({ length: Math.round(clamp(width * height / 20000, 45, 280)) }, () => spawn(true));
   }
 
-  function draw(now: number) {
-    const dt = lastTime ? clamp((now - lastTime) / 1000, .001, .05) : 0;
-    lastTime = now; elapsed += dt;
+  function draw(_now: number, dt: number) {
+    elapsed += dt;
     ctx!.clearRect(0, 0, width, height);
     const wind = 12 + 4 * (.5 * Math.sin(elapsed * .2) + .5) * Math.sin(elapsed * .8) * 1.5;
     for (let i = 0; i < leaves.length; i++) {
@@ -124,26 +116,6 @@ export function mountAutumnBackground() {
       ctx!.drawImage(sprite, -size / 2, -size / 2, size, size);
       ctx!.restore();
     }
-    frame = requestAnimationFrame(draw);
   }
-
-  function update() {
-    const hidden = mobile.matches || reducedMotion.matches || !!document.querySelector('[data-article-body]');
-    canvas!.hidden = hidden;
-    if (hidden || document.hidden) {
-      cancelAnimationFrame(frame); frame = 0; lastTime = 0;
-      return;
-    }
-    resize();
-    sprites ??= createSprites();
-    if (!frame) frame = requestAnimationFrame(draw);
-  }
-
-  // Persist one canvas across Astro swaps; never accumulate animation loops.
-  document.addEventListener('astro:page-load', update);
-  document.addEventListener('visibilitychange', update);
-  window.addEventListener('resize', update, { passive: true });
-  mobile.addEventListener('change', update);
-  reducedMotion.addEventListener('change', update);
-  update();
+  return { resize, draw };
 }

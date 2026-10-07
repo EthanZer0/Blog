@@ -23,7 +23,11 @@ npm run preview
 ## 写作与配置
 
 - `src/site.config.ts`：站点名称、简介、Hero、头像、社交链接、导航。
-- `src/site.config.ts` 的 `autumnBackground`：秋季银杏动态背景开关。手机、正文阅读页、打印及减少动态偏好下自动隐藏；当前固定秋季效果，不随季节切换。
+- `src/site.config.ts` 的 `background`：`'auto'` 按访客本地月份和亮暗主题自动选择背景；可设置 `'spring'`、`'summer'`、`'autumn'`、`'winter'` 固定季节，或 `'none'` 关闭。手机、正文阅读页、打印及减少动态偏好下自动隐藏。
+
+背景月份分段参照参考站：2–5 月樱花、9–11 月银杏；6–8 月及 12–1 月在亮色主题使用彩色粒子，暗色主题分别使用发光粒子和雪花。固定季节配置可用于本地验收，验收后恢复 `'auto'`。效果为本地 Canvas 2D 独立适配，尚未完成全部季节的视觉验收。
+
+夏冬亮色粒子按个人设计使用全屏均匀、零散的柔和纯色圆点（直径 2.6–4.2px），约每 170px 网格一个，漂浮速度 2–4px/s；不发光、不闪烁、不响应滚动，也不在中央淡出。
 - `src/content/posts/*.md`：文稿。
 - `src/content/notes/*.md`：手记。
 - `public/avatar.jpg`：当前个人头像，首页与导航栏共用；路径由 `siteConfig.avatar` 配置。

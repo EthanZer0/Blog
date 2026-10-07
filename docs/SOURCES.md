@@ -11,4 +11,4 @@ CSS、SVG 与主要展示结构来自公开 Shiro；保留 AGPL 和 ADDITIONAL_T
 移植不是逐字复制整个 Next 应用。框架和静态内容部分使用 Astro；D1–D8 的对齐结果与静态适配边界在审查报告中逐项列出，不能宣称已经完成像素级验收。
 # 独立秋季背景适配
 
-`src/components/AutumnBackground.astro` 与 `src/scripts/autumn-background.ts` 为本地独立实现。视觉参考为 https://www.xiaohanwu.com/ 的秋季银杏落叶；其 Shiroi 季节背景不在本仓库固定的公开 Shiro 源码中。本项目自行绘制叶片并使用 Canvas 2D，未纳入参考站增强版组件或 shader。
+`src/components/SeasonalBackground.astro`、`src/scripts/seasonal-background.ts`、`src/scripts/autumn-background.ts` 与 `src/scripts/background/` 为本地独立实现。视觉及季节选择逻辑参考 https://www.xiaohanwu.com/；其 Shiroi 季节背景不在本仓库固定的公开 Shiro 源码中。本项目自行绘制银杏、樱花、雪花和彩色/发光粒子，使用 Canvas 2D，未纳入参考站增强版组件或 shader。秋季已由用户验收，新增季节效果等待用户视觉验收。
