@@ -29,3 +29,5 @@ const fontSource = await readFile(`${upstream}/apps/web/src/components/modules/n
 const fontIcons = await readFile('src/components/upstream/note-font-icons.tsx', 'utf8');
 assert.equal(normalize(fontIcons.slice(fontIcons.indexOf('export const SansFont'))), normalize(fontSource.slice(fontSource.indexOf('export const SansFont'))), 'Note font preview glyphs: unexpected source divergence');
 console.log('Verified original note font preview SVGs.');
+for (const name of ['Twitter', 'Telegram']) assert.equal(normalize(await readFile(`src/components/upstream/${name}.tsx`, 'utf8')), normalize(await readFile(`${upstream}/apps/web/src/components/icons/platform/${name}.tsx`, 'utf8')), `${name}: unexpected icon divergence`);
+console.log('Verified original sharing platform SVGs.');

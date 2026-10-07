@@ -35,7 +35,7 @@
 - 浏览器集中检查桌面与390px手机：跨页导航、列表设置、标签栈、目录定位、正文与图片。没有进行大量逐页面截图测试。
 - DaisyUI 原 `@property --radialprogress` 在构建优化器中保留提示；不为消除提示而改原 CSS。开发模式中 Vaul 的旧 ref 访问可能触发 React19提示，共同依赖仍严格按上游锁定。
 
-上述“对齐”指列出的展示结构、参数与交互已接入。API 数据源、框架路由生命周期、静态图片处理、内容格式支持及个人配置仍有明确适配，不能称整个 Shiro 已100%逐字或逐像素迁移。分享、完整阅读设置、任意 React 扩展等未列入本轮已完成项，也不归类为已删除的后台能力。
+上述“对齐”指列出的展示结构、参数与交互已接入。API 数据源、框架路由生命周期、静态图片处理、内容格式支持及个人配置仍有明确适配，不能称整个 Shiro 已100%逐字或逐像素迁移。后续手记字形、分享和原沉浸阅读的当前实现见下文与 MIGRATION.md；任意 React 扩展不在静态迁移范围。
 
 ## 新组件逐文件来源
 
@@ -125,3 +125,10 @@
 | `src/styles/upstream/ZoomedImage.css` | `components/ui/image/ZoomedImage.css` | 自动源码比对通过：仅 reference/source 扫描路径和空行适配，无样式规则修改。 |
 
 共覆盖 64 个本地前端源码文件。`src/content/` 示例 Markdown 为用户写作数据，非主题实现；根配置、生成脚本和依赖锁另已审查。
+
+## 分享与原沉浸阅读补齐（2026-10-07）
+
+- ArticleShare.tsx 对应原 Post/NoteActionAside、ActionAsideContainer、ShareModal；复用原平台 SVG、二维码尺寸、桌面面板与按钮动效。移除后台操作后仅保留分享，窄屏面板与错误处理有明确适配。
+- site.ts 对应 ImmersiveReadingInteractionProvider、TocAside；原 300ms 检测、20% 目录透明度、pointerEvents 与 smooth Spring 保留。仅文稿和自定义页启用，手记不启用。
+- 模态栈新增按弹窗选择点击外部关闭，分享沿用原设置；其他弹窗行为保持原配置。
+- 本轮类型检查、源码审计、根路径/子路径构建及集中功能验证通过；实际系统分享使用模拟验证，未进行全面像素对照。

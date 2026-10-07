@@ -1,5 +1,6 @@
 import { animateValue, animate } from 'motion';
 import { Spring,softBouncePreset,softSpringPreset } from '../components/upstream/spring';
+import { throttle } from 'lodash-es';
 let dispose:(()=>void)|undefined;
 function initializePage(){
  dispose?.();const controller=new AbortController(),signal=controller.signal,cleanups:Array<()=>void>=[];
@@ -41,6 +42,26 @@ updateHeaderLogo();
 
 const article = document.querySelector<HTMLElement>('[data-article-body]');
 if (article) {
+  // Original immersive-reading provider: focus pages, 300ms mouse bounds check,
+  // TocAside's opacity/pointer behavior and smooth spring. Notes stay unchanged.
+  if (article.hasAttribute('data-focus-reading')) {
+    const toc = document.querySelector<HTMLElement>('[data-toc]');
+    if (toc) {
+      let inside = false;
+      let fading: ReturnType<typeof animate> | undefined;
+      const move = throttle((event: MouseEvent) => {
+        const rect = article.getBoundingClientRect();
+        const next = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom;
+        if (inside === next) return;
+        inside = next;
+        fading?.stop();
+        toc.style.pointerEvents = inside ? 'none' : 'auto';
+        fading = animate(toc, { opacity: inside ? .2 : 1 }, reducedMotion.matches ? { duration: 0 } : Spring.presets.smooth);
+      }, 300);
+      document.addEventListener('mousemove', move, { passive: true, signal });
+      cleanups.push(() => { move.cancel(); fading?.stop(); });
+    }
+  }
   import('../components/ArticleEnhancements').then(({mountArticleEnhancements})=>{if(!signal.aborted)cleanups.push(mountArticleEnhancements(article));});
   const progress = document.querySelectorAll<HTMLElement>('[data-reading-progress]');
   let scheduled = false;

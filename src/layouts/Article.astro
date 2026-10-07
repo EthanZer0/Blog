@@ -8,6 +8,7 @@ import NoteMetadata from '../components/NoteMetadata';
 import Base from './Base.astro';
 import Toc from '../components/Toc.astro';
 import TocDialog from '../components/TocDialog';
+import ArticleShare from '../components/ArticleShare';
 import { MdiClockOutline, MdiClockTimeThreeOutline } from '../components/upstream/clock';
 import { FeHash } from '../components/upstream/fa-hash';
 import { articles, articlePath, formatDate, tagPath, withBase, type Entry } from '../lib/content';
@@ -41,14 +42,16 @@ const ld = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline:
           </div>
         </div>
         {(note || headings.length > 0) && <TocDialog headings={headings} note={note} client:load />}
-        <article class:list={['prose markdown', note && 'markdown--note']} data-article-body data-image-records={JSON.stringify(entry.data.images.map(image=>({...image,src:withBase(image.src)})))} data-pagefind-body>
+        <article class:list={['prose markdown', note && 'markdown--note']} data-article-body data-focus-reading={!note ? true : undefined} data-image-records={JSON.stringify(entry.data.images.map(image=>({...image,src:withBase(image.src)})))} data-pagefind-body>
           <span hidden data-pagefind-meta="subtitle">{note?'手记':entry.data.category}</span>
           <Content />
         </article>
+        <div data-article-end aria-hidden="true"></div>
         </div>
         {!note && related.length>0 && <div data-hide-print class="prose mb-5 mt-8"><h3 class="flex items-center gap-2 text-lg font-medium"><i class="i-mingcute-question-line"/><span>关联阅读</span></h3><ul class="ml-0 mt-4 list-inside list-disc pl-0 text-base leading-relaxed">{related.map(item=><li><a class="shiro-link--underline" href={withBase(articlePath(item))}>{item.data.title}</a></li>)}</ul></div>}
         {!note && <PostCopyright title={entry.data.title} name={siteConfig.owner} link={ld.url} date={entry.data.updated?.toISOString()} license={entry.data.license} client:load />}
         {note && topic && <NoteBottomTopic topic={topic} notes={topicNotes} client:load />}
+        <ArticleShare title={entry.data.title} text={entry.body || entry.data.description} path={withBase(articlePath(entry))} note={note} client:load />
         {note && (previous || next) && <nav aria-label="前后篇文章" class="article-navigation relative mt-4 py-2 text-center" data-pagefind-ignore>
           <div class="flex items-center justify-between [&>*]:inline-flex [&>*]:items-center [&>*]:space-x-2 [&>*]:p-2">
             <span>{previous && <a href={withBase(articlePath(previous))} class="inline-flex items-center space-x-2 hover:text-accent"><i class="i-mingcute-arrow-left-line" /><span>前一篇</span></a>}</span>
@@ -57,9 +60,9 @@ const ld = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline:
           <a href={`${withBase('/timeline/')}?type=note&selectId=${encodeURIComponent(entry.id)}`} class="absolute inset-y-0 left-1/2 flex -translate-x-1/2 items-center space-x-2 text-accent opacity-80 hover:text-accent"><span>时间线</span><MdiClockTimeThreeOutline /></a>
         </nav>}
       </main>
-      {!note && <aside class="reading-aside relative" data-pagefind-ignore><div class="sticky top-[120px] mt-[120px] ml-4 h-[calc(100vh-6rem-4.5rem-150px-120px)]"><Toc headings={headings} /></div></aside>}
+      {!note && <aside class="reading-aside relative" data-pagefind-ignore><div class="sticky top-[120px] mt-[120px] ml-4 h-[calc(100vh-6rem-4.5rem-150px-120px)]"><Toc headings={headings} /><ArticleShare title={entry.data.title} text={entry.body || entry.data.description} path={withBase(articlePath(entry))} note={note} aside client:load /></div></aside>}
     </div>
-    {note && <aside class="relative hidden xl:block" data-pagefind-ignore><div class="sticky top-[120px] mt-[120px] ml-4 h-[calc(100vh-6rem-4.5rem-150px-120px)]"><Toc headings={headings} /></div></aside>}
+    {note && <aside class="relative hidden xl:block" data-pagefind-ignore><div class="sticky top-[120px] mt-[120px] ml-4 h-[calc(100vh-6rem-4.5rem-150px-120px)]"><Toc headings={headings} /><ArticleShare title={entry.data.title} text={entry.body || entry.data.description} path={withBase(articlePath(entry))} note={note} aside client:load /></div></aside>}
   </div>
   <div class="fixed inset-y-0 right-px z-[99] w-px transition-opacity duration-200 ease-in-out lg:hidden" data-reading-vertical aria-hidden="true"><div class="absolute top-0 w-full bg-accent/80 duration-75 ease-linear" data-progress-vertical /></div>
   <script type="application/ld+json" set:html={JSON.stringify(ld).replace(/</g, '\\u003c')} />
