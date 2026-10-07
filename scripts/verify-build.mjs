@@ -23,6 +23,13 @@ for (const file of outputFiles.filter(file => file.endsWith('.html'))) {
   const redirect = $('meta[http-equiv=refresh]').length > 0;
   if (!redirect && $('h1').length !== 1) errors.push(`${path.relative(root,file)}: expected one h1, found ${$('h1').length}`);
   if (!redirect && $('#main').length !== 1) errors.push(`${file}: missing main navigation target`);
+  if (!redirect) {
+    const relative = path.relative(root, file).split(path.sep).join('/');
+    const pagePath = relative === 'index.html' ? '' : relative.replace(/index\.html$/, '');
+    const expected = new URL(`${base}/${pagePath}`, site).href;
+    if ($('link[rel="canonical"]').attr('href') !== expected) errors.push(`${relative}: canonical does not match deployment URL ${expected}`);
+    if ($('meta[property="og:url"]').attr('content') !== expected) errors.push(`${relative}: og:url does not match deployment URL ${expected}`);
+  }
   const ids = new Set();
   $('[id]').each((_, element) => { const id = $(element).attr('id'); if(ids.has(id)) errors.push(`${file}: duplicate id ${id}`); ids.add(id); });
 }
@@ -55,7 +62,7 @@ for (const [file, $] of pages) {
   for (const element of $('astro-island').toArray()) {
     for (const key of ['component-url','renderer-url']) await checkUrl($(element).attr(key),file);
   }
-  if ($('astro-island[component-url*="Hero"]').length && !$.html().includes('Sylvan')) errors.push('Hero missing static text');
+  if ($('astro-island[component-url*="Hero"]').length && !$('.hero-title').text().trim()) errors.push('Hero missing static text');
 }
 for (const file of outputFiles.filter(file => /\.(html|xml|json|js|txt)$/.test(file))) {
   const text = await readFile(file,'utf8');
@@ -66,6 +73,7 @@ for (const required of ['feed.xml','sitemap-index.xml','robots.txt','pagefind/pa
   try { await stat(path.join(root, required)); } catch { errors.push(`Missing ${required}`); }
 }
 const rss = load(await readFile(path.join(root,'feed.xml'),'utf8'),{xml:true});
+if (rss('channel > link').text() !== new URL(`${base}/`, site).href) errors.push('RSS channel URL does not match deployment homepage');
 // The about page reuses the reader enhancement hook but is not an RSS entry.
 const articleCount = [...pages.entries()].filter(([file, $]) => $('[data-article-body]').length > 0 && !file.endsWith(`${path.sep}about${path.sep}index.html`)).length;
 if(rss('item').length !== articleCount) errors.push(`RSS has ${rss('item').length} items for ${articleCount} published article pages`);

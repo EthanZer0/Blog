@@ -68,6 +68,8 @@ slug 与 categorySlug 使用小写英文、数字及连字符。文稿地址为 
 
 ## GitHub Pages
 
+首次部署与个人资料替换步骤见 [部署记录](docs/DEPLOYMENT.md)。
+
 1. 将仓库推送到 GitHub，主分支为 `main`。
 2. 仓库 Settings → Pages → Source 选择 GitHub Actions。
 3. 提交后工作流自动检查、构建、索引并部署。
