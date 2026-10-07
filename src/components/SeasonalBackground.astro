@@ -3,7 +3,7 @@ import type { BackgroundMode } from '../scripts/background/types';
 interface Props { mode: BackgroundMode; }
 const { mode } = Astro.props;
 ---
-<canvas data-seasonal-background data-background-mode={mode} class="seasonal-background pointer-events-none fixed inset-0 z-0 size-full" aria-hidden="true" hidden transition:persist="seasonal-background"></canvas>
+<canvas data-seasonal-background data-background-mode={mode} class="seasonal-background pointer-events-none fixed inset-0 z-0 size-full" aria-hidden="true" hidden transition:persist="seasonal-background" transition:name="seasonal-background" transition:animate="none"></canvas>
 <script>
   import { mountSeasonalBackground } from '../scripts/seasonal-background';
   mountSeasonalBackground();

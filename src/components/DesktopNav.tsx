@@ -10,7 +10,7 @@ const icons = [FaSolidDotCircle, IcTwotoneSignpost, FaSolidFeatherAlt, FaSolidHi
 function Capsule({ pathname, label, nav }: { pathname: string; label: string; nav: NavItem[] }) {
   const mouseX = useMotionValue(0), mouseY = useMotionValue(0), radius = useMotionValue(0);
   const background = useMotionTemplate`radial-gradient(${radius}px circle at ${mouseX}px ${mouseY}px, var(--spotlight-color) 0%, transparent 65%)`;
-  return <nav aria-label={label} onPointerMove={event => {
+  return <motion.nav layout="size" aria-label={label} onPointerMove={event => {
     const bounds = event.currentTarget.getBoundingClientRect();
     mouseX.set(event.clientX - bounds.left); mouseY.set(event.clientY - bounds.top);
     radius.set(Math.hypot(bounds.width, bounds.height) / 2.5);
@@ -26,7 +26,7 @@ function Capsule({ pathname, label, nav }: { pathname: string; label: string; na
         </a></div></MenuPopover>;
       })}
     </div>
-  </nav>;
+  </motion.nav>;
 }
 
 export default function DesktopNav({ pathname: initialPathname, nav }: { pathname: string; nav: NavItem[] }) {
@@ -45,8 +45,10 @@ export default function DesktopNav({ pathname: initialPathname, nav }: { pathnam
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
     const navigate=()=>{setPathname(location.pathname+location.search);setFloating(false);lastY=scrollY;update();};
-    update(); window.addEventListener('scroll', schedule, { passive: true });document.addEventListener('astro:page-load',navigate);
-    return () => { window.removeEventListener('scroll', schedule);document.removeEventListener('astro:page-load',navigate); cancelAnimationFrame(frame); clearTimeout(timer); };
+    // Update on the committed DOM swap; keep the original Motion layout animation
+    // in the header's own View Transition layer, separate from the root curtain.
+    update(); window.addEventListener('scroll', schedule, { passive: true });document.addEventListener('astro:after-swap',navigate);
+    return () => { window.removeEventListener('scroll', schedule);document.removeEventListener('astro:after-swap',navigate); cancelAnimationFrame(frame); clearTimeout(timer); };
   }, []);
   return <>
     <LayoutGroup id="header-main"><div className="duration-100" style={{ opacity, visibility: opacity === 0 ? 'hidden' : 'visible' }}><Capsule pathname={pathname} label="主导航" nav={nav} /></div></LayoutGroup>

@@ -196,3 +196,14 @@
 - 使用六种固定柔和粉/蓝/绿/米/紫色纯色圆点，直径 1.6–2.8px、固定透明度 .6–.8，速度 .8–2.2px/s，方向缓慢变化；无发光、亮度脉冲或滚动加速。
 - 移除旧亮色粒子的色相范围、渐变精灵和滚动惯性代码。暗色夏季发光粒子的现有参数独立保留，其他季节及选择逻辑保持现有实现。
 - 根据用户本地验收反馈，小幅提高可见度和动量：直径调整为 2.6–4.2px，透明度 .75–.9，速度 2–4px/s，并加深六种柔和纯色。密度和缓慢转向机制保留；不做视觉验证，不发布远程。
+
+## 导航栏目切换动画（2026-10-07，仅本地）
+
+- 原 header-menu-icon / active-nav-item layoutId 及文字 layout 已保留，但导航与 root 共用切页层；新增 Header 的 transition:name=shiro-header 与 transition:animate=none，让导航使用独立实时新图层，隐藏旧快照且不叠加 Astro 淡入淡出。
+- Capsule 从普通 nav 恢复原 motion.nav layout=size。路由状态从 astro:page-load 改为 astro:after-swap，按已提交的新 URL 更新；初次加载和持久化组件的监听清理保持现有流程。
+- 136 文件类型检查及本地构建通过；一次无截图功能检查确认首页 → 文稿 → 手记 → 首页的 Motion transform 在过渡中插值，Header 保持同一节点、独立层旧图透明/新图无动画、root 窗帘仍为 500ms，无页面错误。视觉由用户验收，未推送远程。
+
+## 切页中背景连续播放（2026-10-07，仅本地）
+
+- 为持久化 Canvas 增加 transition:name=seasonal-background 与 transition:animate=none，将背景从 root 窗帘快照中分离，保留实时新图层且隐藏旧快照。不新增 Canvas、RAF 或过渡监听。
+- 本地构建通过；一次无截图功能检查确认首页 → 文稿列表切页中背景像素持续变化、同一 Canvas、独立层旧图透明/新图无动画、root 仍为 500ms，无页面错误。正文阅读隐藏及后台暂停策略保留，未推送远程。
