@@ -18,7 +18,6 @@ export const siteConfig = {
         { type: 'span', text: '如纸的纯净，', class: 'text-4xl font-light' },
         { type: 'br' },
         { type: 'span', text: '似雪的清新。', class: 'text-4xl font-light' },
-        { type: 'br' },
         {
           type: 'code',
           text: '<Student & Developer />',

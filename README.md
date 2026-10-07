@@ -38,7 +38,6 @@ template: [
   { type: 'span', text: '如纸的纯净，', class: 'text-4xl font-light' },
   { type: 'br' },
   { type: 'span', text: '似雪的清新。', class: 'text-4xl font-light' },
-  { type: 'br' },
   {
     type: 'code',
     text: '<Student & Developer />',
@@ -46,6 +45,8 @@ template: [
   },
 ]
 ```
+
+`code` 前沿用参考站的自动换行，不额外插入 `br`；这样文字块按内容撑开，保持原双栏布局的左侧起点。
 
 文章元数据示例：
 
