@@ -1,11 +1,13 @@
 # 个人配置与首次部署
 
-## 待确定的资料
+## 已确定的配置
 
-- 目标 GitHub 仓库地址（本地尚未设置 remote）。
-- 站点名称、首页文案、社交链接是否沿用当前配置。
-- 头像、图标、关于页以及示例文章是否替换；未确认前保留现有文件。
-- 是否使用自定义域名。
+- 目标仓库：`git@github.com:EthanZer0/Blog.git`，检查时为空的公开仓库；已设置 origin。
+- 站点名称：凌晨Feng - 静思，笃行；作者：凌晨Feng。
+- 首页：嗨！我是凌晨Feng／一隅清净地，且行，且留。／`<Student & Developer />`；小字：`Roam far,and store the quiet musings.`。
+- 社交：GitHub 仓库、Bilibili 用户 383490657、本站 RSS。
+- 使用默认项目 Pages 地址 `https://ethanzer0.github.io/Blog/`；未指定自定义域名。
+- 头像、图标及示例文章暂保留；关于页作者随配置更新，其余演示介绍未改。
 
 个人资料位于 `src/site.config.ts`，关于页位于 `src/pages/about.astro`，文章位于 `src/content/`，头像和图标位于 `public/`。
 
@@ -31,7 +33,7 @@
 
 ## 当前准备结果
 
-- GitHub CLI 已登录；尚未选择目标仓库、设置 remote 或执行发布。
+- GitHub CLI 已登录，origin 已设置；发布完成状态见后续记录。
 - 修复子路径部署时 RSS 频道地址缺少仓库路径的问题。
 - 移除产物验证中的作者名硬编码；检查实际静态首页文字。
 - 产物验证新增 canonical、og:url 和 RSS 频道地址与构建部署地址一致性检查。

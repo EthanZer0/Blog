@@ -28,16 +28,14 @@ npm run preview
 - `public/avatar.png`：当前为上游图标占位；替换成你自己的头像。
 - `src/pages/about.astro`：个人介绍。
 
-首页大字使用 `hero.title.template` 按顺序组合，沿用 Shiro 的 `type`、可选 `text` 和可选 `class`。换行写作 `{ type: 'br' }`，不需要填写文字；字体与字号配置在各片段的 `class`，小字简介在 `hero.description`。当前包含三行介绍与一行 code，可直接替换：
+首页大字使用 `hero.title.template` 按顺序组合，沿用 Shiro 的 `type`、可选 `text` 和可选 `class`。换行写作 `{ type: 'br' }`，不需要填写文字；字体与字号配置在各片段的 `class`，小字简介在 `hero.description`。当前包含两行介绍与一行 code，可直接替换：
 
 ```ts
 template: [
-  { type: 'h1', text: '你好，我是 ', class: 'text-4xl font-light' },
-  { type: 'span', text: 'Sylvan', class: 'text-4xl font-medium text-accent' },
+  { type: 'h1', text: '嗨！我是', class: 'text-4xl font-light' },
+  { type: 'span', text: '凌晨Feng', class: 'text-4xl font-medium text-accent' },
   { type: 'br' },
-  { type: 'span', text: '如纸的纯净，', class: 'text-4xl font-light' },
-  { type: 'br' },
-  { type: 'span', text: '似雪的清新。', class: 'text-4xl font-light' },
+  { type: 'span', text: '一隅清净地，且行，且留。', class: 'text-4xl font-light' },
   {
     type: 'code',
     text: '<Student & Developer />',

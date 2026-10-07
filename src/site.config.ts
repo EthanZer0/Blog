@@ -1,23 +1,20 @@
-// Personal information is demo content. Layout and design are ported from Shiro.
+// Personal site configuration. Layout and design are ported from Shiro.
 import type { JSX } from 'react';
 export type HeroTemplateItem = { type: keyof JSX.IntrinsicElements; text?: string; class?: string };
 export type NavItem={title:string;path:string;icon:string;subMenu?:NavItem[]};
 export const siteConfig = {
   topics: [] as {slug:string;name:string;icon?:string;introduce:string;description?:string}[],
-  title: 'Sylvan 的小站',
-  description: '记录生活，分享思考。',
-  owner: 'Sylvan',
+  title: '凌晨Feng - 静思，笃行',
+  description: '一隅清净地，且行，且留。',
+  owner: '凌晨Feng',
   avatar: '/avatar.png',
   hero: {
     title: {
       template: [
-        { type: 'h1', text: '你好，我是 ', class: 'text-4xl font-light' },
-        { type: 'span', text: 'Sylvan', class: 'text-4xl font-medium text-accent' },
-        { type: 'span', text: '。', class: 'text-4xl font-light' },
+        { type: 'h1', text: '嗨！我是', class: 'text-4xl font-light' },
+        { type: 'span', text: '凌晨Feng', class: 'text-4xl font-medium text-accent' },
         { type: 'br' },
-        { type: 'span', text: '如纸的纯净，', class: 'text-4xl font-light' },
-        { type: 'br' },
-        { type: 'span', text: '似雪的清新。', class: 'text-4xl font-light' },
+        { type: 'span', text: '一隅清净地，且行，且留。', class: 'text-4xl font-light' },
         {
           type: 'code',
           text: '<Student & Developer />',
@@ -25,11 +22,12 @@ export const siteConfig = {
         },
       ] satisfies HeroTemplateItem[],
     },
-    description: '在文字里，收藏日常的微光。',
+    description: 'Roam far,and store the quiet musings.',
     hitokoto: '如纸的纯净，似雪的清新。',
   },
   social: [
-    { label: 'GitHub', url: 'https://github.com/', icon: 'i-mingcute-github-line', color: '#181717' },
+    { label: 'GitHub', url: 'https://github.com/EthanZer0/Blog', icon: 'i-mingcute-github-line', color: '#181717' },
+    { label: 'Bilibili', url: 'https://space.bilibili.com/383490657', icon: 'bilibili', color: '#00A1D6' },
     { label: 'RSS', url: '/feed.xml', icon: 'i-mingcute-rss-line', color: '#FFA500' },
   ],
   nav: [

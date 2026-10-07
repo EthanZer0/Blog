@@ -2,6 +2,7 @@ import { createElement } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { softBouncePreset, microReboundPreset } from './upstream/spring';
 import { FloatPopover } from './FloatPopover';
+import { BilibiliIcon } from './upstream/platform/BilibiliIcon';
 import { siteConfig } from '../site.config';
 import { withBase } from '../lib/url';
 
@@ -30,7 +31,7 @@ export default function Hero() {
               {siteConfig.social.map((social, i) => <motion.li className="hero-social inline-block" key={social.label} initial={reduced ? false : entrance} animate={{ opacity: 1, y: 0 }} transition={{ duration: .5, ...softBouncePreset, delay: reduced ? 0 : titleDelay + .5 + i * .1 }}>
                 <FloatPopover type="tooltip" triggerElement={
                   <motion.a href={withBase(social.url)} target="_blank" rel="noreferrer" aria-label={social.label} whileFocus={reduced ? undefined : { scale: 1.02 }} whileHover={reduced ? undefined : { scale: 1.02 }} whileTap={reduced ? undefined : { scale: .95 }} style={{ background: social.color }} className="social-link center flex aspect-square size-10 rounded-full text-2xl text-white">
-                    <i className={social.icon} aria-hidden="true" />
+                    {social.icon === 'bilibili' ? <BilibiliIcon /> : <i className={social.icon} aria-hidden="true" />}
                   </motion.a>
                 }>{social.label}</FloatPopover>
               </motion.li>)}
