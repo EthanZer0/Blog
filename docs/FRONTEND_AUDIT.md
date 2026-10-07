@@ -5,7 +5,8 @@
 - 原生窗帘切页动画保留，时长按用户要求为 500ms；源码检查显式允许这一个时长差异。
 - 图片放大已修复 Astro 切页造成的动态基础 CSS 丢失，以及首次克隆图解码和入场动画导致的闪烁。适配位于 global.css / ArticleEnhancements，不改变上游 ZoomedImage 源实现；用户验证通过。
 - 下面逐文件表包含早期审查结论，若与 D1–D8 当前状态或本节冲突，以当前状态为准。例如数字 nid、手记元数据、Tabs 等现已支持。
-- 手记字形选择 NoteFontFab 尚未接入；这项属于静态前端功能，本阶段按原源码补齐。原主题没有通用的字号与行距设置面板。
+- 手记字形选择 NoteFontFab 已接入：原四格布局、字形 SVG、字体栈与本地偏好；静态 adapter 处理 Astro 移除动态字体 link 的生命周期。图标逐字来源校验已加入 audit:source。原主题没有通用的字号与行距设置面板。
+- 新增文件 NoteFontSettings.tsx 对应 `components/modules/note/NoteFontFab.tsx`；upstream/note-font-icons.tsx 原样抽取该文件 SansFont 之后的预览字形。TocDialog 统一承接原 FABContainer 布局，手记目录隐藏断点改为 xl，与手记桌面侧栏衔接，修复中间宽度没有目录的问题。
 
 基准：公开 Shiro 提交 `891bb24cd59aff7c9baaf4d9a3579ca4275da3b7`，Shiro 6.6.7，来源 `.research/Shiro/apps/web/src`。本轮按此前 D1–D8 对齐展示组件和交互，优先移植原组件、原 CSS、原 SVG 和原弹簧参数。框架适配不等于逐字复制整个 Next 应用，也未做同配置、同视口的逐像素误差统计。
 

@@ -40,7 +40,7 @@ const ld = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline:
             {note && <NoteMetadata mood={entry.data.mood} weather={entry.data.weather} />}
           </div>
         </div>
-        {headings.length > 0 && <TocDialog headings={headings} client:load />}
+        {(note || headings.length > 0) && <TocDialog headings={headings} note={note} client:load />}
         <article class:list={['prose markdown', note && 'markdown--note']} data-article-body data-image-records={JSON.stringify(entry.data.images.map(image=>({...image,src:withBase(image.src)})))} data-pagefind-body>
           <span hidden data-pagefind-meta="subtitle">{note?'手记':entry.data.category}</span>
           <Content />

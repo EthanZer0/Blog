@@ -2,7 +2,7 @@ import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { load } from 'cheerio';
 
-const root = path.resolve('dist');
+const root = path.resolve(process.argv[2] || 'dist');
 const base = (process.env.BASE_PATH || '/').replace(/\/$/, '');
 const site = new URL(process.env.SITE_URL || 'https://example.com');
 const errors = [];

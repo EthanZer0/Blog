@@ -25,3 +25,7 @@ console.log(`Verified ${Object.keys(mappings).length} upstream stylesheets and a
 
 for(const [local,original] of Object.entries({'MobilePhotoView.tsx':'components/ui/image/MobilePhotoView.tsx','LazyLoad.tsx':'components/common/Lazyload.tsx','color.ts':'lib/color.ts'}))assert.equal(normalize(await readFile('src/components/upstream/'+local,'utf8')),normalize(await readFile(upstream+'/apps/web/src/'+original,'utf8')),local+': unexpected source divergence');
 console.log('Verified original MobilePhotoView, LazyLoad and color implementations.');
+const fontSource = await readFile(`${upstream}/apps/web/src/components/modules/note/NoteFontFab.tsx`, 'utf8');
+const fontIcons = await readFile('src/components/upstream/note-font-icons.tsx', 'utf8');
+assert.equal(normalize(fontIcons.slice(fontIcons.indexOf('export const SansFont'))), normalize(fontSource.slice(fontSource.indexOf('export const SansFont'))), 'Note font preview glyphs: unexpected source divergence');
+console.log('Verified original note font preview SVGs.');

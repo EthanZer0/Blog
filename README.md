@@ -1,6 +1,6 @@
 # Shiro Astro
 
-基于公开 Shiro 的静态移植版本，专注视觉设计与阅读体验。当前是可运行的迁移基础，尚未完成全部视觉对照验收。无需 Mix Space 后端或 Node 生产服务器。
+基于公开 Shiro 的静态移植版本，专注视觉设计与阅读体验。主要页面、扩展 Markdown 与手记字形设置已接入，尚未完成全部视觉对照验收及实际 Pages 部署。无需 Mix Space 后端或 Node 生产服务器。
 
 ## 本地运行
 
@@ -42,7 +42,7 @@ draft: false
 pin: false
 ```
 
-slug 与 categorySlug 使用小写英文、数字及连字符。文稿地址为 `/posts/<categorySlug>/<slug>/`，手记为 `/notes/<slug>/`。`draft: true` 的内容不会进入公开产物；若源码仓库公开，草稿源文件仍然公开，请勿提交私密内容。
+slug 与 categorySlug 使用小写英文、数字及连字符。文稿地址为 `/posts/<categorySlug>/<slug>/`，手记有 `nid` 时为 `/notes/<nid>/`，否则为 `/notes/<slug>/`。`draft: true` 的内容不会进入公开产物；若源码仓库公开，草稿源文件仍然公开，请勿提交私密内容。
 
 已支持常规 Markdown、GFM、脚注、折叠 HTML、KaTeX 公式、代码高亮、`:::note` / `:::tip` / `:::info` / `:::warning` / `:::danger` 与 `:::gallery` 容器。未实现的 Shiro 特殊容器会报告构建错误；完整扩展语法兼容状态见迁移文档。
 
@@ -67,3 +67,5 @@ slug 与 categorySlug 使用小写英文、数字及连字符。文稿地址为 
 手记可设置 `nid`（唯一正整数）、`mood`、`weather`、`topic`；专栏介绍配置在 `siteConfig.topics`。文稿 `related` 填公开文稿的 id 或 slug。`license` 默认为 `reserved`；`CC-BY-NC-SA-4.0` 才启用原 CC 声明。`images` 可填写 `src/width/height/accent/blurHash`，用于原图片占位和色彩展示。
 
 已接入 Tabs、spoiler、tag、grid、masonry、carousel、静态 LinkCard 和视频。完整来源与明确边界见 [前端源码审查](docs/FRONTEND_AUDIT.md)。
+
+手记右下角字形按钮提供原主题的四种字体选择，选择会在浏览器中保存。霞鹜文楷和悠哉沿用上游 CDN 按需加载，无需后端；网络不可用时使用备用字体。文稿不受手记字形偏好影响。
