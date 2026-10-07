@@ -1,5 +1,5 @@
 ---
-import { IcTwotoneSignpost, FaSolidFeatherAlt } from '../components/upstream/menu-collection';
+import HomeActivity from '../components/HomeActivity';
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero';
 import YearTimeline from '../components/YearTimeline';
@@ -14,24 +14,22 @@ const entries = [...posts, ...notes].sort((a,b) => b.data.published.getTime() - 
     <Hero client:load />
     <!-- Original ActivityScreen / TwoColumnLayout proportions; activities now build from public files. -->
     <section id="recent" class="mx-auto mt-24 max-w-[1800px] scroll-mt-24" data-pagefind-ignore>
-      <div class="relative mx-auto block w-full min-w-0 lg:flex">
-        <div class="center flex w-full flex-col px-4 lg:w-1/2"><div class="w-full max-w-2xl">
+      <div class="relative mx-auto block size-full min-w-0 max-w-[1800px] flex-col flex-wrap items-center lg:flex lg:flex-row">
+        <div class="center flex w-full flex-col lg:h-auto lg:w-1/2 px-4"><div class="relative w-full max-w-full lg:max-w-2xl">
           <section data-home-animation="posts" class="mt-8 flex flex-col gap-4 lg:mt-0">
-            <h2 class="text-2xl font-medium leading-loose">最近文稿</h2>
+            <h2 class="text-2xl font-medium leading-loose">最近更新的文稿</h2>
             <ul class="shiro-timeline mt-4">{posts.slice(0,5).map(entry => <li class="flex min-w-0 justify-between"><a class="min-w-0 truncate" href={withBase(articlePath(entry))}>{entry.data.title}</a><time data-relative-time data-absolute-after="180" class="ml-2 shrink-0 self-end text-xs opacity-70" datetime={entry.data.published.toISOString()}>{formatDate(entry.data.published)}</time></li>)}</ul>
-            <a class="flex items-center justify-end opacity-70 duration-200 hover:text-accent" href={withBase('/posts/')}><i class="i-mingcute-arrow-right-circle-line" aria-hidden="true"></i><span class="ml-2">更多</span></a>
+            <a class="flex items-center justify-end opacity-70 duration-200 hover:text-accent" href={withBase('/posts/')}><i class="i-mingcute-arrow-right-circle-line" aria-hidden="true"></i><span class="ml-2">还有更多</span></a>
             <hr class="my-4 h-[0.5px] border-0 bg-black/30 dark:bg-white/30" />
-            <h2 class="text-2xl font-medium leading-loose">最近手记</h2>
+            <h2 class="text-2xl font-medium leading-loose">最近更新的手记</h2>
             <ul class="shiro-timeline mt-4">{notes.slice(0,5).map(entry => <li class="flex min-w-0 justify-between"><a class="min-w-0 truncate" href={withBase(articlePath(entry))}>{entry.data.title}</a><time data-relative-time data-absolute-after="180" class="ml-2 shrink-0 self-end text-xs opacity-70" datetime={entry.data.published.toISOString()}>{formatDate(entry.data.published)}</time></li>)}</ul>
-            <a class="flex items-center justify-end opacity-70 duration-200 hover:text-accent" href={`${withBase('/timeline/')}?type=note`}><i class="i-mingcute-arrow-right-circle-line" aria-hidden="true"></i><span class="ml-2">更多</span></a>
+            <a class="flex items-center justify-end opacity-70 duration-200 hover:text-accent" href={`${withBase('/timeline/')}?type=note`}><i class="i-mingcute-arrow-right-circle-line" aria-hidden="true"></i><span class="ml-2">还有更多</span></a>
           </section>
         </div></div>
-        <div data-home-animation="recent" class="mt-8 block w-full px-4 text-lg lg:mt-0 lg:flex lg:w-1/2 lg:justify-center"><div class="w-full max-w-2xl">
+        <div class="center block w-full flex-col lg:h-auto lg:w-1/2 lg:flex px-4"><div class="relative w-full max-w-full lg:max-w-2xl">
+          <div data-home-animation="recent" class="mt-8 w-full text-lg lg:mt-0">
           <h2 class="mb-8 text-2xl font-medium leading-loose lg:ml-8">最近发生的事</h2>
-          <div class="relative max-h-[80vh] min-h-[200px] overflow-y-auto lg:h-[400px]">
-            <ul class="shiro-timeline mt-4 flex flex-col pb-8 pl-2">{entries.slice(0,8).map(entry => <li class="flex min-w-0 justify-between">
-              <div class="flex flex-col gap-2"><div class="flex translate-y-1/4 items-center gap-2"><span class="center inline-flex size-6 shrink-0 rounded-full border border-accent/30 text-xs text-accent">{entry.collection === 'posts' ? <IcTwotoneSignpost /> : <FaSolidFeatherAlt />}</span><small>发布了</small><a href={withBase(articlePath(entry))}><b>{entry.data.title}</b></a></div></div>
-            </li>)}</ul>
+          <HomeActivity publications={entries.map(entry => ({id:entry.id,title:entry.data.title,url:withBase(articlePath(entry)),type:entry.collection === 'posts' ? 'post' : 'note'}))} client:load />
           </div>
         </div></div>
       </div>

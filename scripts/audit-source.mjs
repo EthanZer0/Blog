@@ -37,3 +37,9 @@ for (const name of ['Progress', 'status']) {
 }
 assert.equal(normalize(await readFile('src/components/upstream/Banner.tsx', 'utf8')), normalize((await readFile(`${upstream}/apps/web/src/components/ui/banner/Banner.tsx`, 'utf8')).replace("'../../icons/status'", "'./status'")), 'Banner: unexpected display divergence');
 console.log('Verified original progress/status SVGs and Banner presentation.');
+assert.equal(pkg.dependencies['@radix-ui/react-scroll-area'], originalPkg.dependencies['@radix-ui/react-scroll-area'], 'ScrollArea: upstream version mismatch');
+const scrollSource = (await readFile(`${upstream}/apps/web/src/components/ui/scroll-area/ScrollArea.tsx`, 'utf8'))
+  .replace("import { stopPropagation } from '~/lib/dom'", "const stopPropagation = (event: React.SyntheticEvent) => event.stopPropagation()")
+  .replace("import { clsxm } from '~/lib/helper'", "import { clsxm } from './adapters'");
+assert.equal(normalize(await readFile('src/components/upstream/ScrollArea.tsx', 'utf8')), normalize(scrollSource), 'ScrollArea: unexpected display divergence');
+console.log('Verified original ScrollArea presentation and dependency version.');

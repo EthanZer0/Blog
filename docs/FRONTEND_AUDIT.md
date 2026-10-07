@@ -157,3 +157,13 @@
 - 原 Hero.tsx 使用模板项 type、可选 text/class 顺序创建元素；补齐无文字标签不传子节点的行为，支持原生 br 换行。
 - 本地类型限制为 React 原生标签，保留可选文字与类名；空模板不调用逐字动画。既有首页几何、字号及动画参数未改。
 - 三行示例是个人配置内容，不代表官方默认文案；官方默认模板为空。README 已说明配置方式。
+
+## 首页整体收尾（2026-10-07）
+
+- Hero 逐字包裹恢复 TextUpTransitionView 的 div；首屏容器、头像与底部位置类名继续沿用原码。title.template 的显式换行仍是个人配置；code 前采用参考站自动换行。
+- 移除 Hero 的命令式挂载动画，改为原渲染时声明初始值；分段文字延迟按原 UTF-16 长度累计，逐字仍按 Array.from 分割，简介和社交延迟/初始值/弹簧与原组件一致。保留减少动态偏好的适配。
+- 社交按钮补齐 FloatPopover 提示、键盘聚焦缩放和新标签链接；使用语义化 motion.a 替代原 button 内嵌 a，展示参数相同。
+- ActivityScreen 恢复 TwoColumnLayout 的 items-center、flex-wrap、左右包裹及手机 max-w-full；原中文标题和更多文案恢复。ActivityCard 恢复 text-base、pb-4 与图标/文字结构。
+- HomeActivity 使用原 ScrollArea 及同版本 Radix 1.2.10，恢复桌面/手机 400px 高度、80vh 上限、mask 与滚动条。上游文件仅替换 import 及本地 stopPropagation；已纳入源码审计。动态数据只包含公开文章发布事件，无后台模拟。
+- 集中检查发现 FloatPopover 将原生 Portal 直接作为 AnimatePresence 子节点而被过滤；把 AnimatePresence 放入 Portal 内修复，保留定位、外观与入退场参数。社交提示、时间线提示、Escape 关闭与手机抽屉已验证。
+- YearTimeline / Windsock 的展示类名与动效参数复核未发现本轮需改动项；静态数据与导航子集仍是既有适配。未进行全面像素验收。
