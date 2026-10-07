@@ -1,4 +1,6 @@
 /* Original Shiro tokens, Tailwind/DaisyUI themes and typography are retained. */
+/* Bundle the library's base styles so Astro head swaps cannot remove them. */
+@import 'medium-zoom/dist/style.css';
 @import './upstream/tailwindcss.css';
 @import './upstream/variables.css';
 @import './upstream/theme.css';
@@ -20,6 +22,12 @@ body { margin: 0; }
 button, summary, a { touch-action: manipulation; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 4px; }
+/* Zoom clones must not replay the original image's loading reveal. */
+.medium-zoom-image--opened.zoomed-image--loaded { animation: none; }
+/* Keep the source in place until the zoom clone is ready for its first paint. */
+body[data-zoom-preparing] .medium-zoom-overlay { opacity: 0; }
+body[data-zoom-preparing] .medium-zoom-image--hidden { visibility: visible; }
+body[data-zoom-preparing] .medium-zoom-image--opened { visibility: hidden; }
 .header-grid { grid-template-areas: 'left center right'; }
 .header-logo { grid-area: center; }
 .mobile-menu { grid-area: left; }

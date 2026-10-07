@@ -18,6 +18,23 @@ import 'react-photo-view/dist/react-photo-view.css';
 function Measure({element,children}:{element:HTMLElement;children:(width:number)=>ReactNode}){const [width,set]=useState(element.clientWidth);useEffect(()=>{const observer=new ResizeObserver(()=>set(element.clientWidth));observer.observe(element);return()=>observer.disconnect();},[element]);return <WrappedWidth value={width}>{children(width)}</WrappedWidth>;}
 export function mountArticleEnhancements(article:HTMLElement) {
   const roots:Root[]=[];
+  const zoomEvents=new AbortController();
+  let zoomGeneration=0;
+  const releaseZoom=()=>{zoomGeneration++;document.body.removeAttribute('data-zoom-preparing');};
+  document.addEventListener('medium-zoom:open',event=>{
+    if(!(event.target instanceof HTMLImageElement)||!article.contains(event.target))return;
+    const generation=++zoomGeneration;
+    const body=document.body;
+    body.setAttribute('data-zoom-preparing','');
+    // medium-zoom hides the source before its freshly cloned image is decoded.
+    // Keep the source visible until the replacement can be painted with the mask.
+    queueMicrotask(async()=>{
+      const images=Array.from(body.querySelectorAll<HTMLImageElement>('.medium-zoom-image--opened'));
+      await Promise.allSettled(images.map(image=>image.decode()));
+      if(generation===zoomGeneration)body.removeAttribute('data-zoom-preparing');
+    });
+  },{capture:true,signal:zoomEvents.signal});
+  document.addEventListener('medium-zoom:close',releaseZoom,{capture:true,signal:zoomEvents.signal});
   const query=<T extends Element>(selector:string)=>Array.from(article.querySelectorAll<T>(selector)).filter(el=>{const owner=(el.matches('[data-tabs],[data-masonry],[data-grid-images]')?el.parentElement:el)?.closest('[data-tabs],[data-masonry],[data-grid-images]');return !owner||!article.contains(owner);});
   const records:ImageRecord[]=JSON.parse(article.closest<HTMLElement>('[data-image-records]')?.dataset.imageRecords||'[]');
   query<HTMLVideoElement>('video[data-video-player]').forEach(video=>{const src=video.getAttribute('src');if(!src)return;const host=document.createElement('div');video.replaceWith(host);const root=createRoot(host);roots.push(root);root.render(<VideoPlayer src={src} className="mx-auto select-none" playsInline/>);});
@@ -38,5 +55,5 @@ export function mountArticleEnhancements(article:HTMLElement) {
     const props={src:image.getAttribute('src')!,alt:image.alt,title:image.title||undefined,width:Number(image.getAttribute('width'))||undefined,height:Number(image.getAttribute('height'))||undefined,containerWidth:figure.parentElement?.clientWidth||article.clientWidth};
     figure.replaceWith(host);const root=createRoot(host);roots.push(root);root.render(<ImageRecords value={records}><Measure element={host}>{width=><FixedZoomedImage {...props} containerWidth={width}/>}</Measure></ImageRecords>);
   });
-  return ()=>roots.forEach(root=>root.unmount());
+  return ()=>{zoomEvents.abort();releaseZoom();roots.forEach(root=>root.unmount());};
 }
