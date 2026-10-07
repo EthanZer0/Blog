@@ -18,6 +18,12 @@ export const siteConfig = {
         { type: 'span', text: '如纸的纯净，', class: 'text-4xl font-light' },
         { type: 'br' },
         { type: 'span', text: '似雪的清新。', class: 'text-4xl font-light' },
+        { type: 'br' },
+        {
+          type: 'code',
+          text: '<Student & Developer />',
+          class: 'font-medium mx-2 text-3xl rounded p-1 bg-gray-200/0 hover:bg-gray-200 dark:bg-gray-800/0 dark:hover:bg-gray-800 transition-colors duration-200',
+        },
       ] satisfies HeroTemplateItem[],
     },
     description: '在文字里，收藏日常的微光。',
