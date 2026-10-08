@@ -172,11 +172,12 @@ export const ShikiHighLighterWrapper = ({
         }}
       >
         <MotionButtonBase
+          aria-label="复制代码"
           onClick={handleCopy}
           className={clsx(
             'center absolute right-2 top-2 z-[3] flex text-xs',
             'rounded-md border border-accent/5 bg-accent/80 p-1.5 text-white backdrop-blur duration-200',
-            'opacity-0 group-hover:opacity-100',
+            'opacity-100 [@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-visible:opacity-100',
             filename && 'top-12!',
           )}
           style={{
@@ -242,7 +243,7 @@ export const ShikiHighLighterWrapper = ({
             >
               <button
                 onClick={() => setIsCollapsed(false)}
-                aria-hidden
+                aria-label="展开代码"
                 className="flex items-center justify-center text-xs"
               >
                 <i className="i-mingcute-arrow-to-down-line" />

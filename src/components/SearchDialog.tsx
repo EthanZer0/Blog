@@ -1,5 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { microDampingPreset } from './upstream/spring';
 import { EmptyIcon } from './upstream/empty';
@@ -14,8 +15,9 @@ export default function SearchDialog() {
   const [results, setResults] = useState<Result[]>([]), [selected, setSelected] = useState(0);
   const [loading, setLoading] = useState(false), [error, setError] = useState(false);
   const composing = useRef(false), listRef=useRef<HTMLUListElement>(null);
+  const [portalKey, setPortalKey] = useState(0);
   useEffect(()=>{listRef.current?.children[selected]?.scrollIntoView({block:"nearest",behavior:"smooth"});},[selected]);
-  useEffect(()=>{const close=()=>{setOpen(false);setKeyword("");};document.addEventListener("astro:before-swap",close);return()=>document.removeEventListener("astro:before-swap",close);},[]);
+  useEffect(()=>{const close=()=>flushSync(()=>{setOpen(false);setKeyword("");setPortalKey(key=>key+1);});document.addEventListener("astro:before-swap",close);return()=>document.removeEventListener("astro:before-swap",close);},[]);
   useEffect(() => {
     const hotkey = (event: KeyboardEvent) => { if (event.key === 'k' && (event.metaKey || event.ctrlKey)) { event.preventDefault(); setOpen(true); } };
     document.addEventListener('keydown',hotkey); return () => document.removeEventListener('keydown',hotkey);
@@ -36,7 +38,7 @@ export default function SearchDialog() {
   },[keyword]);
   return <Dialog.Root open={open} onOpenChange={setOpen}>
     <Dialog.Trigger asChild><button aria-label="搜索文章" className="group center flex size-10 rounded-full bg-base-100 px-3 text-sm ring-1 ring-zinc-900/5 transition dark:ring-white/10 dark:hover:ring-white/20"><i className="i-mingcute-search-line" /></button></Dialog.Trigger>
-    <Dialog.Portal forceMount><AnimatePresence>{open && <>
+    <Dialog.Portal key={portalKey} forceMount><AnimatePresence>{open && <>
       <Dialog.Overlay forceMount className="fixed inset-0 z-[19]" />
       <Dialog.Content forceMount asChild aria-describedby={undefined} onEscapeKeyDown={event => { if (composing.current) event.preventDefault(); }}>
         <motion.div initial={false} exit={{y:20,opacity:0}} animate={{y:0}} transition={microDampingPreset} className="fixed top-1/2 left-1/2 z-20 flex h-[600px] max-h-[80vh] min-h-[50px] w-[800px] max-w-screen -translate-x-1/2 -translate-y-1/2 flex-col rounded-none border-0 border-zinc-200 bg-zinc-50/80 shadow-2xl backdrop-blur-md md:h-screen md:max-h-[60vh] md:max-w-[80vw] md:rounded-xl md:border dark:border-zinc-800 dark:bg-neutral-900/80">

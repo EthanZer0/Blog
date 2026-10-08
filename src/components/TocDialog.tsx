@@ -5,6 +5,7 @@ import type { MarkdownHeading } from 'astro';
 import TocTree from './TocTree';
 import NoteFontSettings from './NoteFontSettings';
 import type { HTMLMotionProps } from 'motion/react';
+import { RootPortal } from './upstream/adapters';
 
 // FABBase appearance and entrance parameters from the original FABContainer.
 function ReadingButton({ className = '', ...props }: HTMLMotionProps<'button'>) {
@@ -17,10 +18,10 @@ function ReadingButton({ className = '', ...props }: HTMLMotionProps<'button'>) 
 export default function TocDialog({ headings, note = false }: { headings: MarkdownHeading[]; note?: boolean }) {
   const [hidden,setHidden] = useState(false);
   useEffect(() => { let previous = window.scrollY; const update = () => { setHidden(matchMedia('(max-width:1024px)').matches && window.scrollY > previous); previous=window.scrollY; }; window.addEventListener('scroll',update,{passive:true}); return () => window.removeEventListener('scroll',update); },[]);
-  return <>
+  return <RootPortal>
     <div className={`toc-fab fixed bottom-[calc(2rem+env(safe-area-inset-bottom))] left-[calc(100vw-3rem-1rem)] z-[9] flex flex-col transition-transform duration-300 ease-in-out ${note ? '' : 'lg:hidden'} ${hidden ? 'translate-x-[calc(100%+2rem)]' : ''}`} data-pagefind-ignore data-hide-print>
       {note && <NoteFontSettings triggerElement={<ReadingButton aria-label="手记字形设置"><i className="i-mingcute-font-line" /></ReadingButton>} />}
       {headings.length > 0 && <ReadingButton className={note ? 'xl:hidden' : ''} onClick={()=>presentModal("文章目录",<TocTree headings={headings} onItemClick={dismissAll} scrollInNextTick/>)} aria-label="文章目录"><i className="i-mingcute-list-expansion-line" /></ReadingButton>}
     </div>
-  </>;
+  </RootPortal>;
 }

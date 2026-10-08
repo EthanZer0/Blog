@@ -9,18 +9,30 @@ import { withBase } from '../lib/content';
     <noscript><p>搜索需要启用 JavaScript；你也可以从文稿列表和时光页浏览文章。</p></noscript>
   </main>
   <script>
+    let dispose: (() => void) | undefined;
+    function initializeSearch() {
+    dispose?.();
     const target = document.querySelector<HTMLElement>('#search');
     const path = target?.dataset.pagefindPath;
     if (target && path) {
       const style = document.createElement('link'); style.rel = 'stylesheet'; style.href = `${path}pagefind-ui.css`; document.head.append(style);
+      let active = true;
+      let ui: { destroy(): void } | undefined;
       const script = document.createElement('script'); script.src = `${path}pagefind-ui.js`;
-      script.onload = () => {
+      const mount = () => {
+        if (!active || !target.isConnected) return;
         document.querySelector('#search-status')?.remove();
-        const PagefindUI = (window as unknown as { PagefindUI: new (options: Record<string, unknown>) => unknown }).PagefindUI;
-        new PagefindUI({ element: '#search', bundlePath: path, showSubResults: true, translations: { placeholder: '搜索文稿与手记', zero_results: '没有找到与 [SEARCH_TERM] 相关的内容', search_label: '搜索文章', clear_search: '清除', load_more: '更多结果' } });
+        const PagefindUI = (window as unknown as { PagefindUI: new (options: Record<string, unknown>) => { destroy(): void } }).PagefindUI;
+        ui = new PagefindUI({ element: '#search', bundlePath: path, showSubResults: true, translations: { placeholder: '搜索文稿与手记', zero_results: '没有找到与 [SEARCH_TERM] 相关的内容', search_label: '搜索文章', clear_search: '清除', load_more: '更多结果' } });
       };
+      script.onload = mount;
       script.onerror = () => { const status = document.querySelector('#search-status'); if (status) status.textContent = '搜索索引尚未生成。请构建站点后使用预览服务。'; };
-      document.head.append(script);
+      if ('PagefindUI' in window) mount();
+      else document.head.append(script);
+      dispose = () => { active = false; ui?.destroy(); style.remove(); script.remove(); dispose = undefined; };
     }
+    }
+    document.addEventListener('astro:page-load', initializeSearch);
+    document.addEventListener('astro:before-swap', () => dispose?.());
   </script>
 </Base>

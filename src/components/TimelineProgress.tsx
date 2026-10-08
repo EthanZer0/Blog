@@ -17,17 +17,9 @@ export const TimelineProgress = () => {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
   const [currentDay, setCurrentDay] = useState(dayOfYear())
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const year = new Date().getFullYear()
-      const day = dayOfYear()
-      setCurrentDay(day)
-      setCurrentYear(year)
-    }, PROGRESS_DURATION)
-    return () => clearInterval(timer)
-  }, [])
-
   function updatePercent() {
+    setCurrentDay(dayOfYear())
+    setCurrentYear(new Date().getFullYear())
     const nowY = (dayOfYear() / daysOfYear(new Date().getFullYear())) * 100
     const nowD = (secondOfDay() / secondOfDays) * 100
     if (nowY !== percentOfYear) {
@@ -37,10 +29,9 @@ export const TimelineProgress = () => {
   }
   useEffect(() => {
     updatePercent()
-    let timer = setInterval(updatePercent, PROGRESS_DURATION)
+    const timer = setInterval(updatePercent, 1000)
     return () => {
-      // @ts-ignore
-      timer = clearInterval(timer)
+      clearInterval(timer)
     }
   }, [])
   return (

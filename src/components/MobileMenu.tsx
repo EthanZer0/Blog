@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { motion, useReducedMotion } from 'motion/react';
 import { Drawer } from 'vaul';
 import type { NavItem } from '../site.config';
@@ -10,13 +11,24 @@ const icons = [FaSolidDotCircle, IcTwotoneSignpost, FaSolidFeatherAlt, FaSolidHi
 // HeaderDrawerButton + HeaderDrawerContent + PresentSheet, with static menu data.
 export default function MobileMenu({ nav }: { nav: NavItem[] }) {
   const [open, setOpen] = useState(false), [opacity, setOpacity] = useState(1);
+  const [drawerKey, setDrawerKey] = useState(0);
   const reduced = useReducedMotion();
+  useEffect(() => {
+    // The header persists, but body portals do not. Dispose the drawer and its
+    // touch/scroll locks synchronously before Astro replaces the body.
+    const reset = () => flushSync(() => {
+      setOpen(false);
+      setDrawerKey(key => key + 1);
+    });
+    document.addEventListener('astro:before-swap', reset);
+    return () => document.removeEventListener('astro:before-swap', reset);
+  }, []);
   useEffect(() => {
     const update = () => setOpacity(1 - Math.floor(Math.max(0, Math.min(1, (window.scrollY - 197) / 50)) * 100) / 100);
     window.addEventListener('scroll', update, { passive: true }); update();
     return () => window.removeEventListener('scroll', update);
   }, []);
-  return <Drawer.Root open={open} onOpenChange={setOpen}>
+  return <Drawer.Root key={drawerKey} open={open} onOpenChange={setOpen}>
     <Drawer.Trigger asChild><button aria-label="展开导航" style={{ opacity, visibility: opacity === 0 ? 'hidden' : 'visible' }} className="group center relative flex size-10 rounded-full bg-base-100 px-3 text-sm ring-1 ring-zinc-900/5 transition dark:ring-white/10 dark:hover:ring-white/20"><i className="i-mingcute-menu-line" /></button></Drawer.Trigger>
     <Drawer.Portal>
       <Drawer.Overlay className="fixed inset-0 z-[999] bg-neutral-800/40" />
