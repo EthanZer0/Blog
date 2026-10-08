@@ -31,7 +31,7 @@
 
 触摸模拟不等同于真实 iOS Safari 或 Android 浏览器验收。系统原生分享、第三方分享网站、字体 CDN 网络可用性及剪贴板权限由设备和浏览器决定；本次验证本地复制成功与分享回退面板。当前公开文章未包含视频、Tabs 或多图 Gallery 示例，这些渲染器已做源码与现有静态语法检查，未宣称完成手机媒体播放、原生全屏及多图手势实机测试。
 
-## 二级菜单统一审查（2026-10-08）
+## 二级菜单统一审查（2026-10-08，历史方案，已由下方原主题还原替代）
 
 按实际入口及共享组件梳理，覆盖以下弹层：
 
@@ -51,3 +51,38 @@
 功能回归：桌面与手机搜索/目录/标签云的退出、快速重新打开、空白关闭和滚动锁释放；手机排序/顺序/列表模式、嵌套标签、字形选择及跨页保存、分享复制、独立搜索重复进入、320px 设置浮层边界均通过。检查无截图，视觉手感由用户验收。源码覆盖的空话题和未发布视频提示未另造页面进行实机验收。
 
 补充回归通过：桌面下拉框实际动画时长、Esc 逐层关闭、导航子菜单保持键盘焦点、四个字形选项；手机抽屉实际 240ms 入场、减少动态效果偏好及关闭后的锁释放。最终类型检查 0 errors/0 warnings（6 个既有 hints），构建及静态验证通过。
+
+## 连续路由后手机抽屉动画丢失（2026-10-08）
+
+复现：手机首页打开导航是 slideFromBottom / 240ms；通过导航进入文稿后，头部注入的 Vaul style 被 Astro 删除，后续导航的 animation-name 变成 none，时长与缓动变量仍正确。因此上轮仅检查时长不够，必须同时确认动画定义存在。
+
+修复：global.css 直接纳入锁定版本 Vaul 的完整基础样式。Vaul 1.1.2 未导出 CSS 子路径，使用依赖目录的相对路径导入，由构建工具打包；不使用切页后重新注入样式的脚本，也不更改组件状态和既有动画参数。
+
+生产构建预览回归：首页→文稿→手记→首页→文稿→关于→首页，六次导航的 animation-name、240ms 和缓动曲线一致；继续进入阅读演示，目录入场、点击空白收起和滚动锁释放均通过。verify-build 现在检查每个非重定向页面的 stylesheet 实际包含 Vaul 进出场及遮罩 keyframes，避免仅依赖运行时注入。构建及 verify 通过。Vaul 原始 CSS 包含一个无效 handle 选择器，构建工具会提示并忽略；当前项目使用自行绘制的 handle，不受该规则影响。
+
+## 按固定 Shiro 源码还原动画与外观（2026-10-08，当前方案）
+
+基准提交：891bb24cd59aff7c9baaf4d9a3579ca4275da3b7。移除上轮自行设计的 240/180ms 公共 tween、8px 位移、0.98 缩放、统一浮层外观及全局变量；删除 overlay-motion.ts。保留全站打包 Vaul 样式，防止 Astro 路由替换 head 后丢失动画。
+
+| 实现 | 上游文件 | 当前还原 |
+| --- | --- | --- |
+| 手机抽屉 | ui/sheet/Sheet.tsx；Vaul 1.1.2 | 不覆盖库的 500ms 动画和 cubic-bezier(.32,.72,0,1)，原 10px 顶部圆角及底色/遮罩 |
+| 手机导航栏目 | layout/header/internal/HeaderDrawerContent.tsx | y:30→0、opacity:0→1，reboundPreset，index×80ms 延迟 |
+| 目录条目 | modules/toc/TocTree.tsx；ui/transition/RightToLeftTransitionView.tsx；factor.tsx | x:42→0、opacity:.001→1，microReboundPreset，0.5s 配置及 index×50ms 延迟；退出 0.5s、50ms 延迟 |
+| 搜索 | modules/shared/SearchFAB.tsx | initial:true，目标 y:0，microDampingPreset；退出 y:20/opacity:0，保留 Motion 默认退出；恢复移动/桌面各自的圆角、边框、背景与模糊 |
+| 字形/文稿设置 | ui/float-panel/FloatPanel.tsx | opacity:.02/y:10→opacity:1/y:0，反向退出，沿用 Motion 默认 transition 和原样式 |
+| 小浮层及导航子菜单 | ui/float-popover/FloatPopover.tsx；导航子菜单 | y:10→0/淡入，microReboundPreset，退出 tween 200ms；恢复各自外观 |
+| 桌面共享弹窗 | ui/modal/stacked/constants.ts、modal.tsx | scale:.96/opacity:0→1，microReboundPreset；恢复原样式，底层弹窗缩至 .96 并下移 10px |
+| 排序选择框 | ui/select/Select.tsx | 恢复原样式及无额外动画的 Radix 实现 |
+
+必要适配继续保留：Astro body 更换前同步卸载 Portal/释放滚动锁、面板实际挂载后启动动画、默认空白关闭、Esc 逐层关闭、键盘焦点保持、窄屏尺寸约束、搜索快速重开时 opacity 恢复、减少动态效果偏好。手机共享弹窗仍在原生收起动画结束后移除，不照搬上游延迟 1000ms 清理的计时器。普通交互参数从上述原文件迁移；此前文本颜色及用户已批准的媒体查看/切页动画不在本轮回退范围。
+
+还原后验证：check 0 errors/0 warnings（6 个既有 hints）；build、verify、audit:source 通过。生产预览连续六次手机导航仍保留 slideFromBottom / 500ms / 原缓动，目录收起为 slideToBottom / 500ms；桌面标签云与嵌套标签逐层关闭、搜索快速重新打开、手机目录空白关闭/锚点跳转及滚动锁释放通过。未使用截图进行视觉验收。
+
+## 搜索专项设计（2026-10-08，用户明确授权）
+
+搜索是原主题还原后的单项定制，不改其他菜单。入口保持 40px 圆形，增加轻微 hover/tap 缩放；面板入场 opacity 0→1、y 16→0、scale .98→1，沿用 microDampingPreset 并指定 stiffness 300；退出 y 12/scale .98/opacity 0，200ms tween 使用 Vaul 相同的 cubic-bezier(.32,.72,0,1)，背景遮罩同步淡入淡出。减少动态效果偏好下即时切换。
+
+面板桌面最大 720×560px；手机两侧各 12px，20px 圆角，按 visualViewport 高度/offsetTop 与上下安全区域计算可用尺寸，键盘缩小时结果区域可内部滚动。浅色半透明背景与暗色配套；显式 44px 关闭/清空按钮，16px 输入字号；结果标题/摘要上下排列。保留输入法保护、键盘选择、Pagefind、快速重开及切页同步清理。
+
+功能检查覆盖 1440px、390px、320px：尺寸不越界、实际搜索结果、清除并保持输入焦点、关闭按钮/空白/Esc、快速重开、手机连续路由和锁释放通过；模拟缩小可视区和 offsetTop 的适配通过。不使用截图，真实手机键盘与视觉手感仍由用户验收。类型检查、构建及静态验证通过。

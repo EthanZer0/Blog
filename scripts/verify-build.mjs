@@ -16,6 +16,16 @@ async function files(directory) {
   return result;
 }
 const outputFiles = await files(root);
+// Runtime-injected Vaul styles disappear on Astro head swaps. Every real page
+// must load its animation definitions from a bundled stylesheet instead.
+const drawerStylesheets = new Set();
+for (const file of outputFiles.filter(file => file.endsWith('.css'))) {
+  const css = await readFile(file, 'utf8');
+  if (['slideFromBottom', 'slideToBottom', 'fadeIn', 'fadeOut'].every(name =>
+    new RegExp(`@keyframes\\s+${name}\\s*\\{`).test(css)) && css.includes('[data-vaul-drawer]')) {
+    drawerStylesheets.add(path.resolve(file));
+  }
+}
 for (const file of outputFiles.filter(file => file.endsWith('.html'))) {
   const html = await readFile(file, 'utf8');
   const $ = load(html);
@@ -24,6 +34,11 @@ for (const file of outputFiles.filter(file => file.endsWith('.html'))) {
   if (!redirect && $('h1').length !== 1) errors.push(`${path.relative(root,file)}: expected one h1, found ${$('h1').length}`);
   if (!redirect && $('#main').length !== 1) errors.push(`${file}: missing main navigation target`);
   if (!redirect) {
+    const hasDrawerStyles = $('link[rel="stylesheet"]').toArray().some(element => {
+      const url = new URL($(element).attr('href'), site);
+      return url.origin === site.origin && drawerStylesheets.has(path.resolve(root, `.${decodeURIComponent(url.pathname.slice(base.length))}`));
+    });
+    if (!hasDrawerStyles) errors.push(`${path.relative(root,file)}: missing bundled drawer animations (unsafe across route swaps)`);
     const relative = path.relative(root, file).split(path.sep).join('/');
     const pagePath = relative === 'index.html' ? '' : relative.replace(/index\.html$/, '');
     const expected = new URL(`${base}/${pagePath}`, site).href;

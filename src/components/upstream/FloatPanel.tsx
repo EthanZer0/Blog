@@ -1,11 +1,9 @@
 import type { Placement, Strategy } from '@floating-ui/react-dom'
 import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/react-dom'
-import { AnimatePresence, motion as m } from 'motion/react'
+import { AnimatePresence, motion as m, useReducedMotion } from 'motion/react'
 import type { FC, PropsWithChildren } from 'react'
 import { cloneElement, useEffect, useMemo, useState } from 'react'
 import { flushSync } from 'react-dom'
-
-import { useOverlayMotion } from '../../lib/overlay-motion'
 
 import { clsxm } from './adapters'
 
@@ -25,7 +23,7 @@ export const FloatPanel: FC<FloatPanelProps & PropsWithChildren> = (props) => {
     children,
   } = props
 
-  const presentation = useOverlayMotion()
+  const reduced = useReducedMotion()
   const [panelOpen, setPanelOpen] = useState(false)
   const [portalKey, setPortalKey] = useState(0)
 
@@ -72,11 +70,16 @@ export const FloatPanel: FC<FloatPanelProps & PropsWithChildren> = (props) => {
         <AnimatePresence>
           {panelOpen && (
             <m.div
-              {...presentation}
+              initial={reduced ? false : { opacity: 0.02, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0.02, y: reduced ? 0 : 10 }}
+              transition={reduced ? { duration: 0 } : undefined}
               className={clsxm(
-                'p-4 outline-hidden',
+                'shadow-out-sm! focus:shadow-out-sm! focus-visible:shadow-out-sm!',
+                'rounded-xl border border-zinc-400/20 p-4 shadow-lg outline-hidden backdrop-blur-lg dark:border-zinc-500/30',
+                'bg-zinc-50/80 dark:bg-neutral-900/80',
 
-                'shiro-overlay-surface relative z-[2] [&>main]:max-w-full',
+                'relative z-[2] [&>main]:max-w-full',
               )}
               ref={refs.setFloating}
               style={{

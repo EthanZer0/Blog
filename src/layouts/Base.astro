@@ -5,7 +5,6 @@ import '@fontsource/manrope/latin-400.css';
 import '@fontsource/manrope/latin-500.css';
 import '@fontsource/noto-serif-sc/400.css';
 import 'katex/dist/katex.min.css';
-import { overlayTokens } from '../lib/overlay-motion';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { siteConfig } from '../site.config';
@@ -20,7 +19,7 @@ const { title, description = siteConfig.description, article = false, noindex = 
 const canonical = new URL(Astro.url.pathname.replace(/\/404\/?$/, '/404.html'), Astro.site);
 ---
 <!doctype html>
-<html lang="zh-CN" class="noise themed" data-theme="light" style={overlayTokens}>
+<html lang="zh-CN" class="noise themed" data-theme="light">
   <head>
     <ClientRouter />
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
