@@ -2,7 +2,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { AnimatePresence, motion } from 'motion/react';
-import { microDampingPreset } from './upstream/spring';
+import { useOverlayMotion } from '../lib/overlay-motion';
 import { EmptyIcon } from './upstream/empty';
 import { withBase } from '../lib/url';
 type Result = { id: string; title: string; subtitle?:string; url: string };
@@ -11,6 +11,7 @@ let index: Promise<Pagefind> | undefined;
 
 // SearchFAB.tsx panel and result rows, with a local Pagefind query adapter.
 export default function SearchDialog() {
+  const presentation = useOverlayMotion(true);
   const [open, setOpen] = useState(false), [keyword, setKeyword] = useState('');
   const [results, setResults] = useState<Result[]>([]), [selected, setSelected] = useState(0);
   const [loading, setLoading] = useState(false), [error, setError] = useState(false);
@@ -41,7 +42,7 @@ export default function SearchDialog() {
     <Dialog.Portal key={portalKey} forceMount><AnimatePresence>{open && <>
       <Dialog.Overlay forceMount className="fixed inset-0 z-[19]" />
       <Dialog.Content forceMount asChild aria-describedby={undefined} onEscapeKeyDown={event => { if (composing.current) event.preventDefault(); }}>
-        <motion.div initial={false} exit={{y:20,opacity:0}} animate={{y:0}} transition={microDampingPreset} className="fixed top-1/2 left-1/2 z-20 flex h-[600px] max-h-[80vh] min-h-[50px] w-[800px] max-w-screen -translate-x-1/2 -translate-y-1/2 flex-col rounded-none border-0 border-zinc-200 bg-zinc-50/80 shadow-2xl backdrop-blur-md md:h-screen md:max-h-[60vh] md:max-w-[80vw] md:rounded-xl md:border dark:border-zinc-800 dark:bg-neutral-900/80">
+        <motion.div {...presentation} className="shiro-overlay-surface fixed top-1/2 left-1/2 z-20 flex h-[600px] max-h-[80vh] min-h-[50px] w-[800px] max-w-screen -translate-x-1/2 -translate-y-1/2 flex-col md:h-screen md:max-h-[60vh] md:max-w-[80vw]">
           <Dialog.Title className="sr-only">搜索</Dialog.Title>
           <input aria-label="搜索文稿与手记" autoFocus className="w-full shrink-0 border-b border-zinc-200 bg-transparent p-4 px-5 text-lg leading-4 dark:border-neutral-700" placeholder="搜索..." value={keyword} onChange={event => setKeyword(event.target.value)} onCompositionStart={() => {composing.current=true;}} onCompositionEnd={() => {composing.current=false;}} onKeyDown={event => {
             if (composing.current || event.nativeEvent.isComposing || !results.length) return;

@@ -5,6 +5,8 @@ import type { FC, PropsWithChildren } from 'react'
 import { cloneElement, useEffect, useMemo, useState } from 'react'
 import { flushSync } from 'react-dom'
 
+import { useOverlayMotion } from '../../lib/overlay-motion'
+
 import { clsxm } from './adapters'
 
 import { RootPortal } from './adapters'
@@ -23,6 +25,7 @@ export const FloatPanel: FC<FloatPanelProps & PropsWithChildren> = (props) => {
     children,
   } = props
 
+  const presentation = useOverlayMotion()
   const [panelOpen, setPanelOpen] = useState(false)
   const [portalKey, setPortalKey] = useState(0)
 
@@ -45,7 +48,7 @@ export const FloatPanel: FC<FloatPanelProps & PropsWithChildren> = (props) => {
       if (!(target instanceof Element) || target.closest('[role="listbox"]')) return
       if (!(elements.reference instanceof Element && elements.reference.contains(target)) && !elements.floating?.contains(target)) setPanelOpen(false)
     }
-    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') setPanelOpen(false) }
+    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape' && !event.defaultPrevented && !document.querySelector('[role="listbox"]')) setPanelOpen(false) }
     document.addEventListener('pointerdown', outside)
     document.addEventListener('keydown', escape)
     return () => { document.removeEventListener('pointerdown', outside); document.removeEventListener('keydown', escape) }
@@ -69,15 +72,11 @@ export const FloatPanel: FC<FloatPanelProps & PropsWithChildren> = (props) => {
         <AnimatePresence>
           {panelOpen && (
             <m.div
-              initial={{ opacity: 0.02, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0.02, y: 10 }}
+              {...presentation}
               className={clsxm(
-                'shadow-out-sm! focus:shadow-out-sm! focus-visible:shadow-out-sm!',
-                'rounded-xl border border-zinc-400/20 p-4 shadow-lg outline-hidden backdrop-blur-lg dark:border-zinc-500/30',
-                'bg-zinc-50/80 dark:bg-neutral-900/80',
+                'p-4 outline-hidden',
 
-                'relative z-[2] [&>main]:max-w-full',
+                'shiro-overlay-surface relative z-[2] [&>main]:max-w-full',
               )}
               ref={refs.setFloating}
               style={{
