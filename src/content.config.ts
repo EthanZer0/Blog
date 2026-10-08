@@ -5,6 +5,7 @@ import { glob } from 'astro/loaders';
 const article = z.object({
   title: z.string(),
   description: z.string(),
+  cover: z.string().optional(),
   published: z.coerce.date(),
   updated: z.coerce.date().optional(),
   category: z.string().default('随笔'),

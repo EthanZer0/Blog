@@ -57,6 +57,7 @@ template: [
 ```yaml
 title: 我的第一篇文章
 description: 文章摘要
+cover: /images/cover.png # 可选；列表预览优先使用封面，否则取正文第一张图片
 published: 2026-10-06T18:00:00+08:00
 slug: my-first-post
 category: 随笔

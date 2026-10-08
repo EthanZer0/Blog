@@ -7,7 +7,7 @@ import { PhPushPinFill } from './upstream/pin';
 import { FeHash } from './upstream/fa-hash';
 interface Props { entry: Entry; }
 const { entry } = Astro.props;
-const previewImage = entry.body?.match(/!\[[^\]]*\]\(([^\s)]+)(?:[^)]*)\)/)?.[1];
+const previewImage = entry.data.cover || entry.body?.match(/!\[[^\]]*\]\(([^\s)]+)(?:[^)]*)\)/)?.[1];
 const text = entry.body || '';
 const displayText = text.length > 300 ? `${RemoveMarkdown(text.slice(0,300))}...` : text;
 ---
