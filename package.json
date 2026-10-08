@@ -12,7 +12,7 @@
     "check": "astro check",
     "build": "astro sync --force && astro build && pagefind --site dist",
     "preview": "astro preview --host 127.0.0.1",
-    "verify": "node scripts/verify-renderers.mjs && node scripts/verify-build.mjs",
+    "verify": "node scripts/verify-renderers.mjs && node scripts/verify-build.mjs && node scripts/verify-preview.mjs",
     "audit:source": "node scripts/audit-source.mjs",
     "verify:renderers": "node scripts/verify-renderers.mjs"
   },

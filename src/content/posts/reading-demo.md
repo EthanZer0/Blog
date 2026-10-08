@@ -7,6 +7,7 @@ categorySlug: essays
 slug: reading-demo
 tags: [写作, 生活]
 pin: true
+typora-root-url: ../../../public
 ---
 
 有些时刻并不盛大，却值得记下来。清晨窗边的一束光，散步时吹来的风，和一本读到一半的书，都可以成为文字的起点。

@@ -15,21 +15,23 @@ import { MdiClockOutline, MdiClockTimeThreeOutline } from '../components/upstrea
 import { FeHash } from '../components/upstream/fa-hash';
 import { articles, articlePath, formatDate, tagPath, withBase, type Entry } from '../lib/content';
 import { siteConfig } from '../site.config';
-interface Props { entry: Entry; }
-const { entry } = Astro.props;
+import { relatedTargets } from '../lib/related';
+interface Props { entry: Entry; preview?: boolean; }
+const { entry, preview = false } = Astro.props;
 const { Content, headings: allHeadings } = await render(entry);
 const headings = allHeadings.filter(heading => heading.slug !== 'footnote-label').map((heading,index)=>({...heading,slug:`${index}__${slugify(heading.text)}`}));
 const all = await articles(entry.collection);
 const index = all.findIndex(item => item.id === entry.id);
-const previous = all[index + 1];
-const next = all[index - 1];
-const related=entry.data.related.map(id=>all.find(item=>item.id===id||item.data.slug===id)).filter((item):item is Entry=>Boolean(item));
+const previous = index >= 0 ? all[index + 1] : undefined;
+const next = index >= 0 ? all[index - 1] : undefined;
+const related = relatedTargets(entry.data.related, [...all, ...await articles(entry.collection === 'posts' ? 'notes' : 'posts')]);
 const topic=entry.data.topic&&(siteConfig.topics.find(topic=>topic.slug===entry.data.topic)||{slug:entry.data.topic,name:entry.data.topic,introduce:''});
 const topicNotes=all.filter(item=>item.data.topic===entry.data.topic).map(item=>({title:item.data.title,url:withBase(articlePath(item)),created:item.data.published.toISOString(),modified:item.data.updated?.toISOString()}));
 const note = entry.collection === 'notes';
 const ld = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: entry.data.title, description: entry.data.description, datePublished: entry.data.published.toISOString(), dateModified: (entry.data.updated || entry.data.published).toISOString(), author: { '@type': 'Person', name: siteConfig.owner }, url: new URL(withBase(articlePath(entry)), Astro.site).href };
 ---
-<Base title={entry.data.title} description={entry.data.description} article>
+<Base title={entry.data.title} description={entry.data.description} article noindex={preview}>
+  {preview && <div class="mx-auto mt-6 max-w-3xl rounded-xl border border-base-content/10 bg-base-100/80 px-4 py-3 text-sm text-base-content/70 backdrop-blur" data-pagefind-ignore role="status">本地预览 · {entry.data.draft ? '草稿尚未发布' : '已公开文章'} · 保存 Markdown 后自动更新</div>}
   <div id="main" class:list={[note ? 'note-layout relative mx-auto mt-12 grid min-h-[calc(100vh-6.5rem-10rem)] max-w-[60rem] print:block! print:max-w-full! gap-4 md:mt-24 md:grid-cols-1 xl:max-w-[calc(60rem+400px)] xl:grid-cols-[1fr_minmax(auto,60rem)_1fr]' : 'container mx-auto mt-[120px] max-w-7xl px-2 md:px-6 lg:px-4 xl:px-0']}>
     {note && <aside class="hidden min-w-0 xl:block" data-hide-print data-pagefind-ignore><nav aria-label="手记时间线" class="sticky top-[120px] mt-[120px] min-h-[300px]"><ul class="space-y-1 [&_i]:hover:text-accent">{all.slice(0,10).map(item => <li class="flex items-center">{item.id === entry.id && <span class="inline-flex items-center"><i class="i-material-symbols-arrow-circle-right-outline-rounded duration-200" /></span>}<a href={withBase(articlePath(item))} class:list={['min-w-0 truncate text-left text-neutral-8 tabular-nums transition-all hover:opacity-80',item.id === entry.id ? 'ml-2 opacity-100' : 'opacity-50']}>{item.data.title}</a></li>)}</ul></nav></aside>}
     <div class:list={['reading-layout relative min-h-[120px]', note && 'reading-layout--note']}>

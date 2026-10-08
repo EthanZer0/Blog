@@ -1,0 +1,13 @@
+---
+import { getCollection } from 'astro:content';
+import Article from '../../../layouts/Article.astro';
+
+export async function getStaticPaths() {
+  // 仅插件启动的本机开发服务生成预览路径，生产构建始终没有草稿预览页面。
+  if (!import.meta.env.DEV || process.env.BLOG_WORKBENCH_PREVIEW !== '1') return [];
+  const entries = [...await getCollection('posts'), ...await getCollection('notes')];
+  return entries.map(entry => ({ params: { collection: entry.collection, slug: entry.data.slug }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+<Article entry={entry} preview />
