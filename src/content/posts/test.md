@@ -18,7 +18,7 @@ typora-root-url: ../../../public
 
 ## 想到的事
 
-第二段![4cb74dd4a6587ac3502e5a74ca204bf0](/images/f03d554f9df6425344b5f35a.jpg)
+第二段
 
 ## 留给以后
 
