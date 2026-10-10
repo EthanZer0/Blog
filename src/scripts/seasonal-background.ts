@@ -6,10 +6,14 @@ import { createParticleBackground } from './background/particles';
 import { selectBackground } from './background/types';
 import type { BackgroundEffect, BackgroundMode, BackgroundRenderer } from './background/types';
 
+let dispose: (() => void) | undefined;
+
 export function mountSeasonalBackground() {
+  dispose?.();
   const canvas = document.querySelector<HTMLCanvasElement>('[data-seasonal-background]');
   const ctx = canvas?.getContext('2d');
   if (!canvas || !ctx) return;
+  const events = new AbortController(), signal = events.signal;
   const mobile = matchMedia('(max-width:1024px)'), reduced = matchMedia('(prefers-reduced-motion:reduce)');
   let effect: BackgroundEffect | null = null, renderer: BackgroundRenderer | undefined;
   let frame = 0, lastTime = 0, width = 0, height = 0, revision = 0, midnight = 0;
@@ -52,8 +56,9 @@ export function mountSeasonalBackground() {
       return;
     }
     // A quick theme reversal must cancel the pending outgoing transition.
-    revision++; pendingEffect = null; opacity?.stop(); canvas!.hidden = false;
-    opacity = animate(canvas!, { opacity: 1 }, Spring.presets.smooth);
+    const resuming = canvas!.hidden || !frame || pendingEffect !== null;
+    revision++; pendingEffect = null; canvas!.hidden = false;
+    if (resuming) { opacity?.stop(); opacity = animate(canvas!, { opacity: 1 }, Spring.presets.smooth); }
     resize(); if (!frame) frame = requestAnimationFrame(draw);
   }
   function scheduleMidnight() {
@@ -61,11 +66,18 @@ export function mountSeasonalBackground() {
     const now = new Date(), next = new Date(now); next.setHours(24, 0, 0, 0);
     midnight = window.setTimeout(() => { update(); scheduleMidnight(); }, next.getTime() - now.getTime());
   }
-  new MutationObserver(update).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-  document.addEventListener('astro:after-swap', update);
-  document.addEventListener('visibilitychange', () => { update(); scheduleMidnight(); });
-  window.addEventListener('resize', update, { passive: true });
-  window.addEventListener('mousedown', event => { if (!canvas!.hidden && !document.hidden) renderer?.pointerDown?.(event.clientX, event.clientY); });
+  const themeObserver = new MutationObserver(update);
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  document.addEventListener('astro:after-swap', update, { signal });
+  document.addEventListener('visibilitychange', () => { update(); scheduleMidnight(); }, { signal });
+  window.addEventListener('resize', update, { passive: true, signal });
+  window.addEventListener('mousedown', event => { if (!canvas!.hidden && !document.hidden) renderer?.pointerDown?.(event.clientX, event.clientY); }, { signal });
   mobile.addEventListener('change', update); reduced.addEventListener('change', update);
+  dispose = () => {
+    revision++; events.abort(); themeObserver.disconnect();
+    mobile.removeEventListener('change', update); reduced.removeEventListener('change', update);
+    clearTimeout(midnight); opacity?.stop(); stop();
+  };
   update(); scheduleMidnight();
+  return dispose;
 }

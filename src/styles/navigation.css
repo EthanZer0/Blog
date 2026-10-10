@@ -1,0 +1,34 @@
+/* Scoped palette: header effects and portalled navigation menus share warm tones. */
+:root {
+  --navigation-accent: #987a45;
+  --navigation-text: #655e51;
+  --navigation-rule: 166 149 118;
+  --navigation-glass-top: rgb(253 250 241 / .78);
+  --navigation-glass-bottom: rgb(255 253 247 / .92);
+  --navigation-sheet: #fcf9f0;
+}
+html[data-theme='dark'] {
+  --navigation-accent: #d1ba88;
+  --navigation-text: #c7bdac;
+  --navigation-rule: 189 177 151;
+  --navigation-glass-top: rgb(42 39 33 / .78);
+  --navigation-glass-bottom: rgb(49 45 37 / .92);
+  --navigation-sheet: #28251f;
+}
+.site-header, .navigation-submenu, .mobile-navigation-sheet {
+  --color-accent: var(--navigation-accent);
+}
+.navigation-capsule, .navigation-submenu, .navigation-button {
+  color: var(--navigation-text);
+  background: linear-gradient(to bottom, var(--navigation-glass-top), var(--navigation-glass-bottom));
+  box-shadow: 0 0 0 1px rgb(var(--navigation-rule) / .13), 0 8px 24px rgb(80 65 38 / .06);
+}
+.navigation-submenu { border-color: rgb(var(--navigation-rule) / .13); }
+.mobile-navigation-sheet { color: var(--navigation-text); background: var(--navigation-sheet); }
+.navigation-menu-link { transition: color 180ms ease-out, background-color 180ms ease-out; border-radius: 6px; }
+.navigation-menu-link:active { color: var(--navigation-accent); background: rgb(var(--navigation-rule) / .08); }
+@media (hover: hover) and (pointer: fine) {
+  .navigation-menu-link:hover, .navigation-button:hover { color: var(--navigation-accent); }
+  .navigation-menu-link:hover { background: rgb(var(--navigation-rule) / .08); }
+}
+.navigation-button[data-state='open'] { color: var(--navigation-accent); }

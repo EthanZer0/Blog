@@ -1,0 +1,66 @@
+.home-year-timeline, .home-windsock {
+  --year-timeline-ink: #918674;
+  --year-timeline-bar: #b9a47c;
+  --year-timeline-rule: 166, 149, 118;
+  color: var(--year-timeline-ink);
+  font-family: var(--app-font-serif), 'Songti SC', SimSun, serif;
+}
+.dark .home-year-timeline, .dark .home-windsock {
+  --year-timeline-ink: #aaa08d;
+  --year-timeline-bar: #a18d69;
+  --year-timeline-rule: 168, 150, 116;
+}
+.home-section-heading { margin: 1.25rem 0; text-align: center; font-size: 1.6rem; font-weight: 400; font-style: italic; letter-spacing: .08em; }
+.year-timeline-scroll { margin: 2rem auto 3rem; overflow-x: auto; overflow-y: hidden; }
+.year-timeline-chart { position: relative; height: 180px; min-width: 900px; max-width: 1800px; margin: auto; padding: 0 4%; }
+.year-timeline-axis { position: relative; top: 112px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); height: 1px; }
+.year-timeline-axis::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(var(--year-timeline-rule), .1), rgba(var(--year-timeline-rule), .5) 12%, rgba(var(--year-timeline-rule), .5) 88%, rgba(var(--year-timeline-rule), .08)); }
+.year-timeline-month { position: relative; height: 1px; }
+.year-timeline-node, .year-timeline-post { position: absolute; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; }
+.year-timeline-node { left: 0; top: -16px; width: 32px; height: 32px; transform: translateX(-50%); }
+.year-timeline-dot { position: absolute; left: 13px; top: 13px; width: 6px; height: 6px; border: 1px solid var(--year-timeline-bar); border-radius: 50%; background: var(--year-timeline-bar); }
+.year-timeline-total { position: absolute; bottom: 16px; left: 21px; width: 4px; border-radius: 3px 3px 0 0; background: linear-gradient(to top, rgba(var(--year-timeline-rule), .24), var(--year-timeline-bar)); }
+.year-timeline-post { bottom: 0; width: 12px; height: 36px; transform: translateX(-50%); }
+.year-timeline-mark { position: absolute; bottom: 0; left: 5px; width: 2px; border-radius: 2px 2px 0 0; background: linear-gradient(to top, rgba(var(--year-timeline-rule), .18), var(--year-timeline-bar)); }
+.year-timeline-node:focus-visible, .year-timeline-post:focus-visible { outline: 1px solid var(--year-timeline-bar); outline-offset: 3px; border-radius: 4px; }
+.year-timeline-node:hover .year-timeline-dot { background: transparent; }
+.year-timeline-label { position: absolute; top: 20px; left: 0; display: flex; flex-direction: column; align-items: center; gap: .1rem; transform: translateX(-50%); white-space: nowrap; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.year-timeline-label > :first-child { font-size: .75rem; opacity: .65; }
+.year-timeline-label > :last-child { font-size: 1.1rem; letter-spacing: .03em; }
+
+.home-windsock { --windsock-link: #7c7465; --windsock-hover: #987a45; }
+.dark .home-windsock { --windsock-link: #b0a695; --windsock-hover: #d1ba88; }
+.windsock-link {
+  position: relative;
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: var(--windsock-link);
+  letter-spacing: .08em;
+  text-decoration: none;
+  transition: color 180ms cubic-bezier(.22, 1, .36, 1), background-color 180ms cubic-bezier(.22, 1, .36, 1);
+}
+.windsock-link::after {
+  content: '';
+  position: absolute;
+  inset: auto 12px 7px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, currentColor 30%, currentColor 70%, transparent);
+  opacity: 0;
+  transform: scaleX(.35);
+  transform-origin: center;
+  transition: transform 220ms cubic-bezier(.22, 1, .36, 1), opacity 180ms ease-out;
+}
+@media (hover: hover) and (pointer: fine) {
+  .windsock-link:hover { color: var(--windsock-hover); }
+  .windsock-link:hover::after { opacity: .65; transform: scaleX(1); }
+}
+.windsock-link:focus-visible { color: var(--windsock-hover); outline: 1px solid currentColor; outline-offset: 3px; }
+.windsock-link:focus-visible::after { opacity: .65; transform: scaleX(1); }
+.windsock-link:active { color: var(--windsock-hover); background-color: rgba(var(--year-timeline-rule), .08); }
+@media (prefers-reduced-motion: reduce) {
+  .windsock-link, .windsock-link::after { transition: none; }
+}

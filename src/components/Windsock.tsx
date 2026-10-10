@@ -2,6 +2,31 @@
 import { motion } from 'motion/react';
 import { siteConfig } from '../site.config';
 import { withBase } from '../lib/url';
-import { IcTwotoneSignpost, FaSolidFeatherAlt, FaSolidHistory } from './upstream/menu-collection';
-const icons=[IcTwotoneSignpost,FaSolidFeatherAlt,FaSolidHistory];
-export default function Windsock({ latestNotePath }: { latestNotePath: string }){const items=siteConfig.nav.slice(1).map(item => item.title === '手记' ? { ...item, path: latestNotePath } : item);return <div className="center mt-28 flex flex-col"><div className="my-5 text-2xl font-medium">风向标</div><div className="mb-24 opacity-90">去到别处看看？</div><ul className="flex flex-col flex-wrap gap-2 gap-y-8 opacity-80 lg:flex-row">{items.map((item,index)=>{const Icon=icons[index];return <motion.li key={item.path} initial={{opacity:.0001,y:10}} viewport={{once:true}} whileInView={{opacity:1,y:0,transition:{stiffness:641,damping:23,mass:3.9,type:'spring',delay:index*.05}}} transition={{delay:.001}} className="flex items-center cursor-pointer justify-between text-sm duration-200 group"><a href={withBase(item.path)} className="flex items-center gap-4 text-neutral-8 duration-200 group-hover:text-accent! group-hover:-translate-y-2!">{Icon?<Icon className="w-6 h-6"/>:<i className={`${item.icon} w-6 h-6`}/>}<span>{item.title}</span></a>{index!==items.length-1&&<span className="mx-4 hidden select-none lg:inline"> · </span>}</motion.li>;})}</ul></div>;}
+import '../styles/home-year-timeline.css';
+
+export default function Windsock({ latestNotePath }: { latestNotePath: string }) {
+  const items = siteConfig.nav.slice(1).map(item =>
+    item.title === '手记' ? { ...item, path: latestNotePath } : item,
+  );
+  return (
+    <section className="home-windsock center mt-28 flex flex-col" aria-label="去到别处看看？">
+      <h2 className="home-section-heading">去到别处看看？</h2>
+      <ul className="mt-16 flex flex-col flex-wrap gap-2 gap-y-8 lg:flex-row">
+        {items.map((item, index) => (
+          <motion.li key={item.path}
+            initial={{ opacity: .0001, y: 10 }}
+            viewport={{ once: true }}
+            whileInView={{ opacity: 1, y: 0, transition: { stiffness: 641, damping: 23, mass: 3.9, type: 'spring', delay: index * .05 } }}
+            transition={{ delay: .001 }}
+            className="flex items-center justify-between text-sm"
+          >
+            <a href={withBase(item.path)} className="windsock-link">
+              {item.title}
+            </a>
+            {index !== items.length - 1 && <span className="mx-4 hidden select-none lg:inline"> · </span>}
+          </motion.li>
+        ))}
+      </ul>
+    </section>
+  );
+}

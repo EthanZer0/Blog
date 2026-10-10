@@ -12,7 +12,7 @@ const text = entry.body || '';
 const displayText = text.length > 300 ? `${RemoveMarkdown(text.slice(0,300))}...` : text;
 ---
 <!-- Adapted from Shiro PostLooseItem: title, summary, meta, hover bounds and spacing. -->
-<a href={withBase(articlePath(entry))} class="post-item relative flex flex-col py-8" data-published={entry.data.published.toISOString()} data-updated={(entry.data.updated||entry.data.published).toISOString()} data-pin={String(entry.data.pin)}>
+<a href={withBase(articlePath(entry))} class="post-item relative flex flex-col py-8" data-list-reveal data-published={entry.data.published.toISOString()} data-updated={(entry.data.updated||entry.data.published).toISOString()} data-pin={String(entry.data.pin)}>
   <h2 class="relative break-words text-2xl font-medium"><div class:list={['flex items-baseline gap-2', entry.data.pin ? 'w-[calc(100%-2rem)]' : 'w-full']}><span>{entry.data.title}</span></div>{entry.data.pin && <span aria-label="置顶" class="pointer-events-none absolute top-[4px] right-0 bottom-0 z-10 -m-5 box-content inline-flex size-5 items-center p-5 text-error"><PhPushPinFill /></span>}</h2>
   <div class="relative mt-8 space-y-2" data-post-loose>
     {entry.data.description && <p class="mb-4 break-all rounded-md px-4 py-2 text-sm leading-relaxed text-zinc-900 ring-1 ring-accent/10 dark:text-zinc-50">摘要： {entry.data.description}</p>}

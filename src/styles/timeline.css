@@ -1,0 +1,49 @@
+.timeline-page {
+  --timeline-muted: #938d80;
+  --timeline-ink: #292824;
+  color: var(--timeline-muted);
+  font-family: var(--app-font-serif), 'Songti SC', SimSun, serif;
+  letter-spacing: .035em;
+}
+html[data-theme='dark'] .timeline-page {
+  --timeline-muted: #9e998e;
+  --timeline-ink: #e7e3db;
+}
+.timeline-ink { color: var(--timeline-ink); }
+.timeline-year h2 { letter-spacing: .06em; }
+.timeline-month h3 { letter-spacing: .1em; }
+.timeline-row > a { font-weight: 400; line-height: 1.9; letter-spacing: .025em; }
+.timeline-row > time { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; letter-spacing: 0; }
+.timeline-counter > span { letter-spacing: .06em; }
+.timeline-row[hidden], .timeline-month[hidden], .timeline-year[hidden] { display: none; }
+.flip-digit {
+  --flip-height: clamp(26px, 7vw, 36px);
+  position: relative;
+  display: inline-block;
+  width: clamp(14px, 4vw, 24px);
+  height: var(--flip-height);
+  font-size: clamp(18px, 5vw, 25px);
+  font-weight: 500;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  color: #6d6657;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgb(104 92 64 / .06);
+}
+.flip-half {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+}
+.flip-top { top: 0; border-radius: 3px 3px 0 0; background: #faf6eb; }
+.flip-bottom { bottom: 0; border-radius: 0 0 3px 3px; background: #f6f0e2; }
+.flip-top::after { content: ''; position: absolute; inset: auto 0 0; height: 1px; background: rgb(104 92 64 / .08); }
+.flip-face { display: block; height: var(--flip-height); line-height: var(--flip-height); text-align: center; }
+.flip-bottom .flip-face { transform: translateY(-50%); }
+.flip-point { color: #6d6657; font-size: 20px; align-self: flex-end; line-height: 1; }
+html[data-theme='dark'] .flip-digit, html[data-theme='dark'] .flip-point { color: #c5bcaa; }
+html[data-theme='dark'] .flip-top { background: #35322b; }
+html[data-theme='dark'] .flip-bottom { background: #302d25; }

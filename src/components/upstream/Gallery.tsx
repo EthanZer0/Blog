@@ -4,7 +4,7 @@
 
 import clsx from 'clsx'
 import type { FC, UIEventHandler } from 'react'
-import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 
@@ -65,8 +65,8 @@ export const Gallery: FC<GalleryProps> = (props) => {
   const [currentIndex, setCurrentIndex] = useState(0)
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleOnScroll: UIEventHandler<HTMLDivElement> = useCallback(
-    throttle<UIEventHandler<HTMLDivElement>>((e) => {
+  const handleOnScroll = useMemo(
+    () => throttle<UIEventHandler<HTMLDivElement>>((e) => {
       const $ = e.target as HTMLDivElement
 
       const index = Math.floor(
@@ -91,7 +91,9 @@ export const Gallery: FC<GalleryProps> = (props) => {
     [containerRef],
   )
 
-  const autoplayTimerRef = useRef(null as any)
+  useEffect(() => () => handleOnScroll.cancel(), [handleOnScroll])
+
+  const autoplayTimerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined)
 
   const currentIndexRef = useStateToRef(currentIndex)
   const totalImageLengthRef = useStateToRef(images.length)
@@ -116,8 +118,10 @@ export const Gallery: FC<GalleryProps> = (props) => {
       if (totalImageLengthRef.current < 2 || !autoplayRef.current) {
         return
       }
+      clearInterval(autoplayTimerRef.current)
       if (inView) {
         autoplayTimerRef.current = setInterval(() => {
+          if (document.hidden) return
           if (
             currentIndexRef.current + 1 > totalImageLengthRef.current - 1 &&
             isForward.current
@@ -132,7 +136,7 @@ export const Gallery: FC<GalleryProps> = (props) => {
           handleScrollTo(index)
         }, AUTOPLAY_DURATION)
       } else {
-        autoplayTimerRef.current = clearInterval(autoplayTimerRef.current)
+        autoplayTimerRef.current = undefined
       }
     },
   })

@@ -378,7 +378,7 @@ export const ImageLazy: Component<
         </LazyLoad>
       </span>
 
-      <img className="hidden! print:block!" src={src} alt={alt || title} />
+      <img className="hidden! print:block!" loading="lazy" src={src} alt={alt || title} />
 
       {!!figcaption && (
         <figcaption className="mt-1 flex flex-col items-center justify-center">
@@ -549,11 +549,12 @@ const OptimizedImage = memo(
 
     // Extract EXIF data from image
     useEffect(() => {
-      const extractExif = async () => {
+      let active = true;
+      let img: HTMLImageElement | undefined;
+      setExifData(null);
+      const extractExif = () => {
         // Create a new image element to load the image and extract EXIF
-        const img = new window.Image()
-        img.src = src!
-
+        img = new window.Image()
         img.onload = () => {
           try {
             EXIF.getData(img as any, function (this: any) {
@@ -625,16 +626,18 @@ const OptimizedImage = memo(
                 exifData.equivalent35mmFocalLength ||
                 exifData.exposureCompensation
               ) {
-                setExifData(exifData)
+                if (active) setExifData(exifData)
               }
             })
           } catch (error) {
             console.error('Failed to extract EXIF data:', error)
           }
         }
+        img.src = src!
       }
 
-      extractExif()
+      if (!isGif) extractExif()
+      return () => { active = false; if (img) img.onload = null; };
     }, [src, isGif])
 
     return (

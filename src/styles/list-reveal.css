@@ -1,0 +1,10 @@
+/* Opt in before paint; without JS, every item remains readable. */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-list-motion='on'] [data-list-reveal]:not([data-list-revealed]) {
+    opacity: 0;
+    translate: 0 18px;
+  }
+}
+@media print {
+  [data-list-reveal] { opacity: 1 !important; translate: none !important; }
+}

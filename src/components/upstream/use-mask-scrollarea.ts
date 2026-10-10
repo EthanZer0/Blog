@@ -51,11 +51,13 @@ export const useContainerCanScroll = <T extends HTMLElement = HTMLElement>({
     if (!$) return
 
     $.addEventListener('scroll', eventHandler)
-    const resizeObserver = new ResizeObserver(debounce(eventHandler, 36))
+    const onResize = debounce(eventHandler, 36)
+    const resizeObserver = new ResizeObserver(onResize)
     resizeObserver.observe($)
     return () => {
       $.removeEventListener('scroll', eventHandler)
       resizeObserver.disconnect()
+      onResize.cancel()
     }
   }, [eventHandler, getDomRef, element])
 

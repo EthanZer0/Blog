@@ -1,18 +1,20 @@
 import { ScrollArea } from './upstream/ScrollArea';
-import { IcTwotoneSignpost, FaSolidFeatherAlt } from './upstream/menu-collection';
 
-type Publication = { id: string; title: string; url: string; type: 'post' | 'note' };
-// ActivityRecent / ActivityCard: only public article publication events are available statically.
+type Publication = { id: string; title: string; url: string; type: 'post' | 'note'; date: string; updated: boolean };
+const dateFormat = new Intl.DateTimeFormat('zh-CN', {
+  year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'Asia/Shanghai',
+});
+
+// Static activities are derived from public publication and modification dates.
 export default function HomeActivity({ publications }: { publications: Publication[] }) {
-  return <ScrollArea mask rootClassName="h-[400px] relative max-h-[80vh]">
-    <ul className="shiro-timeline mt-4 flex flex-col pb-8 pl-2">
-      {publications.map(entry => <li key={`${entry.type}-${entry.id}`} className="flex min-w-0 justify-between">
-        <div className="pb-4 text-base">
-          <div className="flex translate-y-1/4 gap-2">
-            <div className="rounded-full border shrink-0 border-accent/30 text-xs center inline-flex size-6 text-accent">{entry.type === 'post' ? <IcTwotoneSignpost /> : <FaSolidFeatherAlt />}</div>
-            <div className="space-x-2"><small>发布了</small>{' '}<a href={entry.url}><b>{entry.title}</b></a></div>
-          </div>
-        </div>
+  return <ScrollArea mask rootClassName="relative h-[420px] max-h-[65vh]">
+    <ul className="m-0 flex list-none flex-col gap-6 pb-6 pl-0 pr-4">
+      {publications.map(entry => <li key={`${entry.type}-${entry.id}`} className="recent-activity min-w-0 pl-4">
+        <p className="m-0 text-base leading-loose">
+          <span>{entry.updated ? '更新了' : '发布了'}{entry.type === 'post' ? '文稿' : '手记'}</span>
+          {' '}<a className="recent-title" href={entry.url}>{entry.title}</a>
+        </p>
+        <time className="mt-2 block text-[0.8125rem] tabular-nums" dateTime={entry.date}>{dateFormat.format(new Date(entry.date))}</time>
       </li>)}
     </ul>
   </ScrollArea>;

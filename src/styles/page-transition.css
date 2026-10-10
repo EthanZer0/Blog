@@ -1,0 +1,40 @@
+/* Route content moves independently of the persistent header and background. */
+html[data-astro-transition]::view-transition-old(root) {
+  animation: none;
+  opacity: 0;
+  clip-path: none;
+  mix-blend-mode: normal;
+}
+html[data-astro-transition]::view-transition-new(root) {
+  animation: none;
+  opacity: 1;
+  clip-path: none;
+  mix-blend-mode: normal;
+}
+html[data-astro-transition]::view-transition-group(root),
+html[data-astro-transition]::view-transition-group(page-content) { animation: none; }
+html[data-astro-transition]::view-transition-image-pair(page-content) { isolation: isolate; }
+html[data-astro-transition]::view-transition-old(page-content),
+html[data-astro-transition]::view-transition-new(page-content) {
+  mix-blend-mode: normal;
+  transform-origin: 50% 12vh;
+}
+@keyframes page-leave {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(-4px) scale(.997); }
+}
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(12px) scale(.992); }
+  65% { opacity: 1; transform: translateY(-1px) scale(1.001); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+/* Only route changes isolate content; theme changes keep the original root effect. */
+html:not([data-astro-transition]) .page-content { view-transition-name: none; }
+/* Astro's fallback already waits for the old page, so it needs no extra delay. */
+html[data-astro-transition-fallback='new'] .page-content[data-astro-transition-scope] { animation-delay: 0ms; }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+  }
+}

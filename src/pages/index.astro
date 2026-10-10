@@ -4,37 +4,42 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero';
 import YearTimeline from '../components/YearTimeline';
 import Windsock from '../components/Windsock';
-import { articles, articlePath, formatDate, withBase } from '../lib/content';
+import { articles, articlePath, formatDate, withBase, type Entry } from '../lib/content';
+import { recentDateLabel } from '../lib/recent-date';
 const posts = await articles('posts');
 const notes = await articles('notes');
 const entries = [...posts, ...notes].sort((a,b) => b.data.published.getTime() - a.data.published.getTime());
+const recentDate = (entry: Entry) => entry.data.updated && entry.data.updated > entry.data.published ? entry.data.updated : entry.data.published;
+const recent = [...entries].sort((a,b) => recentDate(b).getTime() - recentDate(a).getTime());
+const visibleRecent = recent.slice(0,10);
+const axisSteps = Math.max(visibleRecent.length - 1, 1);
 ---
 <Base>
   <main id="main" class="min-w-0">
     <Hero client:load />
-    <!-- Original ActivityScreen / TwoColumnLayout proportions; activities now build from public files. -->
-    <section id="recent" class="mx-auto mt-24 max-w-[1800px] scroll-mt-24" data-pagefind-ignore>
-      <div class="relative mx-auto block size-full min-w-0 max-w-[1800px] flex-col flex-wrap items-center lg:flex lg:flex-row">
-        <div class="center flex w-full flex-col lg:h-auto lg:w-1/2 px-4"><div class="relative w-full max-w-full lg:max-w-2xl">
-          <section data-home-animation="posts" class="mt-8 flex flex-col gap-4 lg:mt-0">
-            <h2 class="text-2xl font-medium leading-loose">最近更新的文稿</h2>
-            <ul class="shiro-timeline mt-4">{posts.slice(0,5).map(entry => <li class="flex min-w-0 justify-between"><a class="min-w-0 truncate" href={withBase(articlePath(entry))}>{entry.data.title}</a><time data-relative-time data-absolute-after="180" class="ml-2 shrink-0 self-end text-xs opacity-70" datetime={entry.data.published.toISOString()}>{formatDate(entry.data.published)}</time></li>)}</ul>
-            <a class="flex items-center justify-end opacity-70 duration-200 hover:text-accent" href={withBase('/posts/')}><i class="i-mingcute-arrow-right-circle-line" aria-hidden="true"></i><span class="ml-2">还有更多</span></a>
-            <hr class="my-4 h-[0.5px] border-0 bg-black/30 dark:bg-white/30" />
-            <h2 class="text-2xl font-medium leading-loose">最近更新的手记</h2>
-            <ul class="shiro-timeline mt-4">{notes.slice(0,5).map(entry => <li class="flex min-w-0 justify-between"><a class="min-w-0 truncate" href={withBase(articlePath(entry))}>{entry.data.title}</a><time data-relative-time data-absolute-after="180" class="ml-2 shrink-0 self-end text-xs opacity-70" datetime={entry.data.published.toISOString()}>{formatDate(entry.data.published)}</time></li>)}</ul>
-            <a class="flex items-center justify-end opacity-70 duration-200 hover:text-accent" href={`${withBase('/timeline/')}?type=note`}><i class="i-mingcute-arrow-right-circle-line" aria-hidden="true"></i><span class="ml-2">还有更多</span></a>
-          </section>
-        </div></div>
-        <div class="center block w-full flex-col lg:h-auto lg:w-1/2 lg:flex px-4"><div class="relative w-full max-w-full lg:max-w-2xl">
-          <div data-home-animation="recent" class="mt-8 w-full text-lg lg:mt-0">
-          <h2 class="mb-8 text-2xl font-medium leading-loose lg:ml-8">最近发生的事</h2>
-          <HomeActivity publications={entries.map(entry => ({id:entry.id,title:entry.data.title,url:withBase(articlePath(entry)),type:entry.collection === 'posts' ? 'post' : 'note'}))} client:load />
+    <section id="recent" aria-label="近期文章与动态" class="home-recent mx-auto mt-24 max-w-7xl scroll-mt-24 px-5 sm:px-8 lg:px-10" data-pagefind-ignore>
+      <div class="grid min-w-0 items-start gap-y-12 lg:grid-cols-[1.1fr_1fr] lg:gap-x-10">
+        <section data-home-animation="posts" class="min-w-0">
+          <h2 class="recent-heading mb-7 text-[1.65rem] leading-relaxed">近期</h2>
+          <ol class="m-0 list-none p-0">
+            {visibleRecent.map((entry,index) => <li class="recent-item grid grid-cols-[2rem_minmax(0,1fr)_auto] gap-x-3 py-4 sm:gap-x-4" style={`--recent-line-start:${Math.max(0,.32 * (1-index/axisSteps))};--recent-line-end:${Math.max(0,.32 * (1-(index+1)/axisSteps))}`}>
+              <span class="recent-sequence row-span-2 self-start text-base tabular-nums">{String(index+1).padStart(2,'0')}</span>
+              <a class="recent-title min-w-0 break-words text-[1.1rem] leading-relaxed md:text-xl" href={withBase(articlePath(entry))}>{entry.data.title}</a>
+              <time data-relative-time data-relative-calendar data-date-kind={recentDate(entry) > entry.data.published ? '最后修改' : '发布'} class="row-span-2 self-center whitespace-nowrap text-[11px] tabular-nums sm:text-[0.8125rem]" datetime={recentDate(entry).toISOString()} title={`${recentDate(entry) > entry.data.published ? '最后修改' : '发布'}：${formatDate(recentDate(entry))}`}>{recentDateLabel(recentDate(entry))}</time>
+              <span class="recent-meta col-start-2 mt-1 flex items-center gap-1 text-[0.8125rem]"><span>{entry.data.category}</span><span aria-hidden="true">·</span><span>{entry.collection === 'posts' ? '文稿' : '手记'}</span></span>
+            </li>)}
+          </ol>
+          <a class="recent-more mt-5 inline-block text-[0.8125rem] tracking-wide" href={withBase('/timeline/')}>查看全部</a>
+        </section>
+        <section class="recent-activities min-w-0 lg:pl-10">
+          <div data-home-animation="recent">
+            <h2 class="recent-heading mb-7 text-[1.65rem] leading-relaxed">最近的事</h2>
+            <HomeActivity publications={recent.map(entry => ({id:entry.id,title:entry.data.title,url:withBase(articlePath(entry)),type:entry.collection === 'posts' ? 'post' : 'note',date:recentDate(entry).toISOString(),updated:recentDate(entry) > entry.data.published}))} client:visible />
           </div>
-        </div></div>
+        </section>
       </div>
     </section>
-    <YearTimeline publications={entries.map(entry => ({id:entry.id,title:entry.data.title,created:entry.data.published.toISOString(),url:withBase(articlePath(entry))}))} client:load />
-    <Windsock latestNotePath={notes[0] ? articlePath(notes[0]) : '/notes/'} client:load />
+    <YearTimeline publications={entries.map(entry => ({id:entry.id,title:entry.data.title,created:entry.data.published.toISOString(),url:withBase(articlePath(entry))}))} client:visible />
+    <Windsock latestNotePath={notes[0] ? articlePath(notes[0]) : '/notes/'} client:visible />
   </main>
 </Base>

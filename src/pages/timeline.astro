@@ -3,17 +3,43 @@ import Base from '../layouts/Base.astro';
 import TimelineProgress from '../components/TimelineProgress';
 import { articles, articlePath, withBase } from '../lib/content';
 const entries = [...await articles('posts'), ...await articles('notes')].sort((a,b) => b.data.published.getTime()-a.data.published.getTime());
-const yearOf = (date: Date) => Number(new Intl.DateTimeFormat('en',{year:'numeric',timeZone:'Asia/Shanghai'}).format(date));
-const years = [...new Set(entries.map(entry => yearOf(entry.data.published)))];
+const dateParts = new Intl.DateTimeFormat('en-GB', { year:'numeric', month:'numeric', day:'2-digit', timeZone:'Asia/Shanghai' });
+const dated = entries.map(entry => {
+  const parts = Object.fromEntries(dateParts.formatToParts(entry.data.published).map(part => [part.type, part.value]));
+  return { entry, year:Number(parts.year), month:Number(parts.month), day:parts.day };
+});
+const years = [...new Set(dated.map(row => row.year))];
+const monthNames = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+const monthShort = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 ---
 <Base title="时间线">
-  <main id="main" data-header-hide-bg class="mx-auto mt-14 max-w-3xl px-2 lg:mt-[80px] lg:px-0 2xl:max-w-4xl [&_header.prose]:mb-[80px]">
-    <header class="prose prose-p:my-2"><h1>时间线</h1><h3>共有{entries.length}篇，再接再厉</h3><hr class="my-8 h-[0.5px] w-[80px] border-0 bg-black/30 dark:bg-white/30" /><TimelineProgress client:load /><p>活在当下，珍惜眼下</p></header>
-    <div class="mt-10 text-zinc-950/80 dark:text-zinc-50/80">
-      {years.map(year => { const rows = entries.filter(entry => yearOf(entry.data.published)===year); return <section class="my-4" data-year-group>
-        <h2 class="relative mb-4 ml-3 rounded-md text-lg font-medium before:absolute before:inset-y-[4px] before:-left-3 before:w-[2px] before:bg-accent before:content-['']">{year}<small class="ml-2">({rows.length})</small></h2>
-        <ul class="shiro-timeline">{rows.map(entry => <li class="flex items-center justify-between" data-entry-type={entry.collection} data-id={entry.id}><span class="flex min-w-0 shrink items-center"><time datetime={entry.data.published.toISOString()} class="mr-2 inline-block w-12 tabular-nums">{new Intl.DateTimeFormat('en-us',{month:'2-digit',day:'2-digit',timeZone:'Asia/Shanghai'}).format(entry.data.published)}</time><a class="min-w-0 truncate leading-6" href={withBase(articlePath(entry))}>{entry.data.title}</a></span><span class="hidden text-sm lg:inline">{entry.collection === 'posts' ? `${entry.data.category}/博文` : '手记'}</span></li>)}</ul>
-      </section>; })}
+  <main id="main" data-header-hide-bg class="timeline-page mx-auto mt-[100px] max-w-4xl px-5 md:mt-[120px] md:px-8">
+    <header class="mb-16 md:mb-20">
+      <h1 class="m-0 text-sm font-normal tracking-widest">时间线</h1>
+      <p class="mb-7 mt-3 flex items-baseline gap-2"><span data-timeline-count class="timeline-ink text-5xl font-normal tabular-nums">{entries.length}</span><span class="text-sm">篇</span></p>
+      <TimelineProgress client:load />
+      <p class="mb-0 mt-6 text-sm tracking-widest">活在当下，珍惜眼下</p>
+    </header>
+    <div class="space-y-14 md:space-y-16">
+      {years.map(year => {
+        const rows = dated.filter(row => row.year === year);
+        const months = [...new Set(rows.map(row => row.month))];
+        return <section class="timeline-year" data-year-group data-year={year}>
+          <h2 data-list-reveal class="mb-7 flex items-baseline gap-3 font-normal"><span class="text-2xl tabular-nums">{year}</span><span class="text-xs" data-year-count>本年 {rows.length} 篇</span></h2>
+          <div class="space-y-8">
+            {months.map(month => <section class="timeline-month" data-month-group>
+              <h3 data-list-reveal class="mb-3 flex items-center gap-1 text-sm font-normal"><span>{monthNames[month-1]}</span><span aria-hidden="true">·</span><span class="text-xs tracking-wider">{monthShort[month-1]}</span></h3>
+              <ul class="m-0 list-none space-y-1 p-0">
+                {rows.filter(row => row.month === month).map(({entry,day}) => <li class="timeline-row grid grid-cols-[1.75rem_minmax(0,1fr)_auto] items-baseline gap-x-2 py-2 md:grid-cols-[2rem_minmax(0,1fr)_auto] md:gap-x-4" data-list-reveal data-entry-type={entry.collection} data-id={entry.id}>
+                  <time datetime={entry.data.published.toISOString()} class="text-sm tabular-nums">{day}</time>
+                  <a class="timeline-ink min-w-0 break-words text-sm leading-relaxed transition-opacity hover:opacity-70 md:text-base" href={withBase(articlePath(entry))}>{entry.data.title}</a>
+                  <span class="flex items-baseline gap-1 whitespace-nowrap text-[11px] md:text-xs"><span>{entry.data.category}</span><span aria-hidden="true">·</span><span>{entry.collection === 'posts' ? '文稿' : '手记'}</span></span>
+                </li>)}
+              </ul>
+            </section>)}
+          </div>
+        </section>;
+      })}
     </div>
   </main>
 </Base>

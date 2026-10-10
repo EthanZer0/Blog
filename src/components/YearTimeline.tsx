@@ -1,306 +1,102 @@
-import { motion as m } from 'motion/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { motion, useInView, useReducedMotion } from 'motion/react';
+import { useEffect, useMemo, useRef } from 'react';
 import { FloatPopover } from './FloatPopover';
-import { Spring } from './upstream/spring';
-function Link({href,...props}:React.AnchorHTMLAttributes<HTMLAnchorElement>) { return <a href={href} {...props}/>; }
-function useInView({threshold}: {threshold:number;triggerOnce:boolean}) { const [node,ref]=useState<HTMLDivElement|null>(null); const [inView,set]=useState(false); useEffect(()=>{if(!node)return;const observer=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){set(true);observer.disconnect();}},{threshold});observer.observe(node);return()=>observer.disconnect();},[node,threshold]);return {ref,inView}; }
-type Post = {
-  id: string
-  created: string // ISO datetime string
-  title: string
-  url: string
+import '../styles/home-year-timeline.css';
+
+type Post = { id: string; created: string; title: string; url: string };
+const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+const calendar = new Intl.DateTimeFormat('zh-CN', {
+  timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
+});
+function dateParts(value: Date) {
+  const parts = calendar.formatToParts(value);
+  const number = (type: string) => Number(parts.find(part => part.type === type)?.value);
+  return { year: number('year'), month: number('month'), day: number('day') };
 }
-
-type DataByDate<T> = {
-  month: string[]
-  data: Array<Array<T[] | null>>
-}
-
-function organizePostsByDate<T extends Post>(posts: T[]): DataByDate<T> {
-  const postsByDate: Array<Array<T[] | null>> = []
-  const monthLabels: string[] = []
-
-  // Determine the current month
-  const currentMonth = new Date()
-  currentMonth.setDate(1) // Set to the first of the month to avoid month overflow issues
-  currentMonth.setHours(0, 0, 0, 0) // Normalize the time to midnight
-
-  // Initialize months and data arrays for the last 12 months including the current month
-  for (let i = 0; i < 12; i++) {
-    const month = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() - (11 - i),
-      1,
-    )
-    monthLabels.push(`${month.getFullYear()}.${month.getMonth() + 1}`)
-    const daysInMonth = new Date(
-      month.getFullYear(),
-      month.getMonth() + 1,
-      0,
-    ).getDate()
-    postsByDate.push(new Array(daysInMonth).fill(null))
+function organizePosts(posts: Post[]) {
+  const current = dateParts(new Date());
+  const months = Array.from({ length: 12 }, (_, index) => {
+    const date = new Date(Date.UTC(current.year, current.month - 1 - 11 + index, 1));
+    const year = date.getUTCFullYear(), month = date.getUTCMonth() + 1;
+    const days = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    return { year, month, days, posts: [] as Array<Post & { day: number }> };
+  });
+  for (const post of posts) {
+    const date = dateParts(new Date(post.created));
+    months.find(month => month.year === date.year && month.month === date.month)?.posts.push({ ...post, day: date.day });
   }
-
-  // Group posts by day
-  posts.forEach((post) => {
-    const postDate = new Date(post.created)
-    const monthIndex = monthLabels.indexOf(
-      `${postDate.getFullYear()}.${postDate.getMonth() + 1}`,
-    )
-    const day = postDate.getDate() - 1 // Arrays are zero-indexed, days are 1-indexed
-
-    if (monthIndex !== -1) {
-      if (!postsByDate[monthIndex][day]) {
-        postsByDate[monthIndex][day] = []
-      }
-      postsByDate[monthIndex]?.[day]?.push(post)
+  return months.map(month => {
+    const byDay = new Map<number, typeof month.posts>();
+    for (const post of month.posts) {
+      const peers = byDay.get(post.day) ?? [];
+      peers.push(post);
+      byDay.set(post.day, peers);
     }
-  })
-
-  // Convert days with null only to empty arrays
-  postsByDate.forEach((month, idx) => {
-    month.forEach((day, jdx) => {
-      if (!day) {
-        postsByDate[idx][jdx] = []
-      }
-    })
-  })
-
-  return { month: monthLabels, data: postsByDate }
+    const offsets = new Map<(typeof month.posts)[number], number>();
+    byDay.forEach(peers => peers.forEach((post, index) => offsets.set(post, index - (peers.length - 1) / 2)));
+    return { ...month, posts: month.posts.map(post => ({ ...post, offset: offsets.get(post)! })) };
+  });
 }
 
-function PhDotBold() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="1em"
-      height="1em"
-      viewBox="0 0 256 256"
-      className="text-accent"
-    >
-      <path
-        fill="currentColor"
-        d="M144 128a16 16 0 1 1-16-16a16 16 0 0 1 16 16"
-      />
-    </svg>
-  )
-}
-
-export default function YearTimeline({ publications }: { publications: Array<Post & {url:string}> }) {
-  const t = (key:string,{count=0}={}) => key === "timeline_title" ? "热力图的千篇一律，\n不如做成了时间线？" : `发布了 ${count} 篇文章`;
-  const yearData = publications;
-  const { data, month } = useMemo(
-    () =>
-      organizePostsByDate(publications),
-    [publications],
-  )
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const [animationStarted, setAnimationStarted] = useState(false)
-
-  // Add InView detection
-  const { ref: inViewRef, inView } = useInView({
-    threshold: 0.1,
-    triggerOnce: true,
-  })
-
-  const [w,setW] = useState(0);
-  useEffect(()=>{ const update=()=>setW(innerWidth);update();window.addEventListener("resize",update);return()=>window.removeEventListener("resize",update); },[])
+export default function YearTimeline({ publications }: { publications: Post[] }) {
+  const months = useMemo(() => organizePosts(publications), [publications]);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const visible = useInView(sectionRef, { once: true, amount: 0.1 });
+  const reduced = useReducedMotion();
   useEffect(() => {
-    // scroll to end
-    if (scrollRef.current) {
-      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth
-    }
-  }, [w])
-
-  useEffect(() => {
-    // Start animation when data is loaded AND component is in view
-    if (yearData && inView && !animationStarted) {
-      setAnimationStarted(true)
-    }
-  }, [yearData, inView, animationStarted])
+    const scroll = scrollRef.current;
+    if (!scroll) return;
+    const latest = () => { scroll.scrollLeft = scroll.scrollWidth; };
+    latest();
+    const observer = new ResizeObserver(latest);
+    observer.observe(scroll);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="mt-24 w-full" ref={inViewRef}>
-      <m.div
-        className="my-5 whitespace-pre-line text-balance text-center text-2xl font-medium"
-        initial={{ opacity: 0, y: 10 }}
-        transition={Spring.presets.snappy}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-      >
-        {t('timeline_title')}
-      </m.div>
-      <div
-        className="scrollbar-none m-auto my-12 w-full overflow-x-auto overflow-y-hidden"
-        ref={scrollRef}
-      >
-        <div
-          className={`relative mx-auto flex h-[200px] min-w-[900px] max-w-[1800px] items-end px-6 pb-12 lg:px-12 xl:px-16 2xl:px-36 ${
-            animationStarted ? 'timeline-reveal' : 'timeline-hidden'
-          }`}
+    <section ref={sectionRef} id="year-timeline" className="home-year-timeline mt-24 w-full" aria-label="近十二个月的文章时间轴">
+      <h2 className="home-section-heading">时间...</h2>
+      <div className="year-timeline-scroll scrollbar-none" ref={scrollRef}>
+        <motion.div
+          className="year-timeline-chart"
+          initial={reduced ? false : { opacity: 0, clipPath: 'inset(0 100% 0 0)' }}
+          animate={visible || reduced ? { opacity: 1, clipPath: 'inset(0 0% 0 0)' } : undefined}
+          transition={{ duration: reduced ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] }}
         >
-          <span className="mr-1 flex translate-y-[6px] select-none items-center -space-x-2 font-medium text-accent">
-            <PhDotBold />
-            <PhDotBold />
-            <PhDotBold />
-          </span>
-          {/* Line */}
-          <div className="relative flex h-px w-full justify-center rounded-md bg-accent">
-            <div className="relative w-[calc(100%-1%-30px)]">
-              {month.map((label, idx) => {
-                const timelineWidthPercent = 99
-                const monthLeftPosition =
-                  (idx / month.length) * timelineWidthPercent + 2
-
-                const thisMonthTotalPost = data[idx].reduce(
-                  (acc, cur) => acc + (cur?.length || 0),
-                  0,
-                )
-
-                return (
-                  <div
-                    key={label}
-                    className="absolute h-[2px]"
-                    style={{
-                      left: `${monthLeftPosition}%`,
-                      width: `${timelineWidthPercent / month.length}%`,
-                    }}
+          <div className="year-timeline-axis">
+            {months.map(({ year, month, days, posts }) => (
+              <div className="year-timeline-month" key={year + '-' + month}>
+                <FloatPopover mobileAsSheet type="tooltip" trigger="both" asChild placement="bottom"
+                  triggerElement={
+                    <button type="button" className="year-timeline-node" aria-label={year + '年' + month + '月，发布了 ' + posts.length + ' 篇文章'}>
+                      <span className="year-timeline-dot" />
+                      {posts.length > 0 && <span className="year-timeline-total" style={{ height: Math.min(12 + posts.length * 8, 88) + 'px' }} />}
+                    </button>
+                  }
+                >
+                  {year} 年 {month} 月 · 发布了 {posts.length} 篇文章
+                </FloatPopover>
+                {posts.map((post, index) => {
+                  const offset = post.offset;
+                  return <FloatPopover key={post.url} mobileAsSheet type="tooltip" trigger="both" asChild placement="bottom"
+                    triggerElement={
+                      <button type="button" className="year-timeline-post" aria-label={post.title}
+                        style={{ left: 'calc(' + (16 + (post.day - 1) / days * 78) + '% + ' + offset * 4 + 'px)' }}>
+                        <span className="year-timeline-mark" style={{ height: (14 + Math.min(index, 4) * 3) + 'px' }} />
+                      </button>
+                    }
                   >
-                    {data[idx].length > 0 &&
-                      data[idx].map((items, dayIdx) =>
-                        items?.map((item, index) => {
-                          const created = new Date(item.created)
-                          const dateInThisMonth = created.getDate()
-                          const thisMonthTotalDays = new Date(
-                            created.getFullYear(),
-                            created.getMonth() + 1,
-                            0,
-                          ).getDate()
-
-                          const leftPercentage =
-                            (dateInThisMonth / thisMonthTotalDays) * 90 + 10
-
-                          // Calculate delay for staggered animation
-                          const animationDelay =
-                            3 + (idx * 12 + dayIdx + index) * 0.02
-
-                          return (
-                            <m.div
-                              key={item.id}
-                              className="absolute"
-                              style={{
-                                left: `${leftPercentage}%`,
-                              }}
-                              initial={{
-                                y: -100,
-                                opacity: 0,
-                              }}
-                              animate={{
-                                y: 0,
-                                opacity: 1,
-                              }}
-                              transition={{
-                                delay: animationDelay,
-                                duration: 0.6,
-                                ease: 'easeOut',
-                                type: 'spring',
-                                stiffness: 100,
-                                damping: 15,
-                              }}
-                            >
-                              <FloatPopover
-                                mobileAsSheet
-                                type="tooltip"
-                                asChild
-                                placement="bottom"
-                                triggerElement={
-                                  <div
-                                    className="absolute top-0 lg:top-1/2"
-                                    style={{
-                                      transform: `translateX(-50%) translateY(calc(-100% + ${-1 * index * 13}px - ${3 * index}px))`,
-                                    }}
-                                  >
-                                    <div className="h-4 w-[2px] rounded-full bg-accent" />
-                                  </div>
-                                }
-                              >
-                                <Link
-                                  className="shiro-link--underline"
-                                  href={item.url}
-                                >
-                                  {item.title} - {created.toLocaleDateString()}
-                                </Link>
-                              </FloatPopover>
-                            </m.div>
-                          )
-                        }),
-                      )}
-                    <m.div
-                      className="absolute left-0 top-1/2"
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{
-                        delay: 3 + idx * 0.1,
-                        duration: 0.3,
-                        ease: 'easeOut',
-                      }}
-                    >
-                      <div className="size-[8px] -translate-x-1/4 -translate-y-1/2 rounded-full bg-accent" />
-                    </m.div>
-
-                    <FloatPopover
-                      type="tooltip"
-                      mobileAsSheet
-                      placement="bottom"
-                      triggerElement={
-                        <m.div
-                          className="absolute left-0"
-                          style={{
-                            top: 'calc(50% + 2px)',
-                            transform: 'translateX(calc(100% - 0.5px))',
-                          }}
-                          initial={{ scaleY: 0 }}
-                          animate={{ scaleY: 1 }}
-                          transition={{
-                            delay: 3.2 + idx * 0.1,
-                            duration: 0.5,
-                            ease: 'easeOut',
-                          }}
-                        >
-                          <div
-                            className="w-[3px] rounded-md bg-accent"
-                            style={{
-                              height: `${Math.min(thisMonthTotalPost * 12, 250)}px`,
-                              transformOrigin: 'bottom',
-                              transform: 'translateY(-100%)',
-                            }}
-                          />
-                        </m.div>
-                      }
-                      asChild
-                    >
-                      {t('timeline_published', { count: thisMonthTotalPost })}
-                    </FloatPopover>
-
-                    <m.span
-                      className="pointer-events-none absolute left-0 top-1/2 mt-4 inline-block -translate-x-1/2"
-                      initial={{ opacity: 0, y: 10, x: '-50%' }}
-                      animate={{ opacity: 1, y: 0, x: '-50%' }}
-                      transition={{
-                        delay: 3.5 + idx * 0.1,
-                        duration: 0.3,
-                        ease: 'easeOut',
-                      }}
-                    >
-                      {label}
-                    </m.span>
-                  </div>
-                )
-              })}
-            </div>
+                    <a className="shiro-link--underline" href={post.url}>{post.title}</a>
+                    <span className="ml-2 text-sm opacity-60">{calendar.format(new Date(post.created))}</span>
+                  </FloatPopover>;
+                })}
+                <span className="year-timeline-label"><span>{year}</span><span>{monthNames[month - 1]}</span></span>
+              </div>
+            ))}
           </div>
-        </div>
+        </motion.div>
       </div>
-    </div>
-  )
+    </section>
+  );
 }

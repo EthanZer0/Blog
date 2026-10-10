@@ -3,14 +3,28 @@ import ThemeSwitcher from './ThemeSwitcher';
 import { siteConfig } from '../site.config';
 import { withBase } from '../lib/content';
 ---
-<!-- Shiro Footer.tsx spacing and FooterInfo structure. -->
-<footer class="relative z-[1] mt-32 border-t bg-[var(--footer-bg)] py-6 text-base-content/80" data-pagefind-ignore>
-  <div class="px-4 sm:px-8"><div class="relative mx-auto max-w-7xl lg:px-8">
-    <div class="space-x-0 space-y-3 md:space-x-6 md:space-y-0"><div class="flex items-center gap-4 md:inline-flex"><b class="inline-flex items-center font-medium">更多 <svg class="ml-2 inline -rotate-90 select-none" width="1em" height="1em" viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z" /></svg></b><span class="space-x-4 text-neutral-8/90"><a href={withBase('/about/')} class="link-hover link">关于</a><a href={withBase('/timeline/')} class="link-hover link">时光</a></span></div></div>
-    <div class="mt-12 space-y-3 text-center md:mt-6 md:text-left">
-      <div><span>© {new Date().getFullYear()} </span><a href={withBase('/')}>{siteConfig.owner}</a><span>.</span><span class="select-none whitespace-pre opacity-50"> | </span><a href={withBase('/feed.xml')}>RSS</a><span class="select-none whitespace-pre opacity-50"> | </span><a href={withBase('/sitemap-index.xml')}>站点地图</a><span class="select-none whitespace-pre opacity-50"> | </span><span class="mt-3 block md:mt-0 md:inline">Stay hungry. Stay foolish.</span></div>
-      <div><span class="my-3 block md:my-0 md:inline">Powered by <a class="link-hover link" href="https://astro.build/">Astro</a><span class="mx-1">&</span><a class="link-hover link" href="https://github.com/Innei/Shiro">白</a>.</span></div>
+<footer class="site-footer relative z-[1] mt-32 pb-8 pt-14" data-pagefind-ignore>
+  <div class="px-4 sm:px-8">
+    <div class="relative mx-auto max-w-7xl lg:px-8">
+      <div>
+        <p class="m-0 font-serif text-[1.375rem] leading-relaxed text-[#615d53] dark:text-[#d4cec1]">{siteConfig.owner}</p>
+        <p class="mb-0 mt-1 font-serif text-sm italic leading-relaxed">{siteConfig.hero.description}</p>
+      </div>
+      <p class="mb-0 mt-5 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-xs leading-relaxed">
+        <span>© {new Date().getFullYear()} <a href={withBase('/')} class="link-hover">{siteConfig.owner}</a></span>
+        <span aria-hidden="true" class="opacity-50">·</span>
+        <span>Powered by <a class="link-hover" href="https://astro.build/" target="_blank" rel="noreferrer">Astro</a> & <a class="link-hover" href="https://github.com/Innei/Shiro" target="_blank" rel="noreferrer">白</a></span>
+      </p>
+      <div class="mt-8 border-t border-[#9c906e]/15 pt-4 dark:border-[#d4cec1]/10">
+        <nav aria-label="页尾导航" class="flex min-h-10 flex-wrap items-center gap-x-3 gap-y-2 pr-32 text-sm">
+          <a href={withBase('/about/')} class="link-hover">关于我</a>
+          <span aria-hidden="true" class="opacity-30">|</span>
+          <a href={withBase('/feed.xml')} class="link-hover">RSS</a>
+          <span aria-hidden="true" class="opacity-30">|</span>
+          <a href={withBase('/sitemap-index.xml')} class="link-hover">站点地图</a>
+        </nav>
+      </div>
+      <div class="absolute bottom-0 right-0 lg:right-8"><ThemeSwitcher client:load /></div>
     </div>
-    <div class="mt-6 flex flex-col items-center gap-4 md:absolute md:bottom-0 md:right-0 md:mt-0 md:flex-row"><ThemeSwitcher client:load /></div>
-  </div></div>
+  </div>
 </footer>
