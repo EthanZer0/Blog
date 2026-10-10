@@ -1,0 +1,9 @@
+---
+import Work from '../../layouts/Work.astro';
+import { publicWorks } from '../../lib/works';
+export async function getStaticPaths() {
+  return (await publicWorks()).map(item => ({params:{slug:item.entry.data.slug},props:item}));
+}
+const { entry, reviewPath } = Astro.props;
+---
+<Work entry={entry} reviewPath={reviewPath} />

@@ -10,7 +10,7 @@ export function mountListReveal() {
     animations.delete(row);
   };
   const observer = new IntersectionObserver(entries => {
-    const visible = entries.filter(entry => entry.isIntersecting && !(entry.target as HTMLElement).closest('[hidden]'));
+    const visible = entries.filter(entry => entry.isIntersecting && !entry.target.hasAttribute('data-list-revealed') && !(entry.target as HTMLElement).closest('[hidden]'));
     visible.sort((a, b) => a.target.compareDocumentPosition(b.target) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1);
     visible.forEach((entry, index) => {
       const row = entry.target as HTMLElement;

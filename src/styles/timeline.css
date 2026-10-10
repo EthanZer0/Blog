@@ -19,6 +19,7 @@ html[data-theme='dark'] .timeline-page {
 .flip-digit {
   --flip-height: clamp(26px, 7vw, 36px);
   position: relative;
+  perspective: 200px;
   display: inline-block;
   width: clamp(14px, 4vw, 24px);
   height: var(--flip-height);
@@ -43,6 +44,11 @@ html[data-theme='dark'] .timeline-page {
 .flip-top::after { content: ''; position: absolute; inset: auto 0 0; height: 1px; background: rgb(104 92 64 / .08); }
 .flip-face { display: block; height: var(--flip-height); line-height: var(--flip-height); text-align: center; }
 .flip-bottom .flip-face { transform: translateY(-50%); }
+.flip-leaf-top, .flip-leaf-bottom { backface-visibility: hidden; will-change: transform; }
+.flip-leaf-top { z-index: 3; transform-origin: center bottom; animation: timeline-flip-top 210ms cubic-bezier(.55,.055,.675,.19) both; }
+.flip-leaf-bottom { z-index: 2; transform-origin: center top; animation: timeline-flip-bottom 210ms 210ms cubic-bezier(.215,.61,.355,1) both; }
+@keyframes timeline-flip-top { from { transform: rotateX(0deg); } to { transform: rotateX(-90deg); } }
+@keyframes timeline-flip-bottom { from { transform: rotateX(90deg); } to { transform: rotateX(0deg); } }
 .flip-point { color: #6d6657; font-size: 20px; align-self: flex-end; line-height: 1; }
 html[data-theme='dark'] .flip-digit, html[data-theme='dark'] .flip-point { color: #c5bcaa; }
 html[data-theme='dark'] .flip-top { background: #35322b; }

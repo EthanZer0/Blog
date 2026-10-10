@@ -1,0 +1,39 @@
+---
+import Base from '../../layouts/Base.astro';
+import WorkCover from '../../components/WorkCover.astro';
+import { publicWorks, workPath } from '../../lib/works';
+import { workTypeLabel, workStatusLabel } from '../../lib/work-filters';
+import { withBase } from '../../lib/url';
+import '../../styles/collections.css';
+const works = await publicWorks();
+---
+<Base title="书与影" description="在别人的故事里，留下自己的回声。">
+  <main id="main" data-header-hide-bg class="collections-page" data-works-list data-pagefind-ignore>
+    <header class="works-header"><h1>书与影</h1><p>在别人的故事里，留下自己的回声。</p></header>
+    <div class="works-filters" data-work-filters hidden>
+      <div class="works-filter-row" role="group" aria-label="作品类型">
+        {[['','全部'],['book','书籍'],['movie','电影'],['series','剧集']].map(([value,label]) => <button type="button" data-filter="type" data-value={value} aria-pressed={value === ''}>{label}</button>)}
+      </div>
+      <div class="works-filter-row" role="group" aria-label="阅读与观看状态">
+        {[['','全部'],['in-progress','正在看'],['finished','已看完'],['planned','想看']].map(([value,label]) => <button type="button" data-filter="status" data-value={value} aria-pressed={value === ''}>{label}</button>)}
+      </div>
+    </div>
+    <p class="works-count" data-work-count role="status" aria-live="polite">{works.length} 件作品</p>
+    <div data-works-results>
+      <div class="works-grid">
+        {works.map(({entry:work,reviewPath}) => <section class="work-card" data-work-type={work.data.type} data-work-status={work.data.status} data-list-reveal>
+          <a class="work-cover-link" data-work-link href={withBase(workPath(work))} aria-label={`查看${work.data.title}`}><WorkCover title={work.data.title} cover={work.data.cover} /></a>
+          <h2><a data-work-link href={withBase(workPath(work))}>{work.data.title}</a></h2>
+          <p class="work-meta">{[work.data.creator,work.data.year].filter(value => value !== undefined && value !== '').map((value,index) => <>{index > 0 && <span aria-hidden="true">·</span>}<span>{value}</span></>)}</p>
+          <p class="work-meta">{work.data.rating !== undefined && <><span>{work.data.rating.toFixed(1)} / 10</span><span aria-hidden="true">·</span></>}<span>{workStatusLabel(work.data.status,work.data.type === 'book')}</span><span class="sr-only">，{workTypeLabel[work.data.type]}</span></p>
+          {work.data.summary && <p class="work-summary">{work.data.summary}</p>}
+          {reviewPath && <a class="work-review" href={withBase(reviewPath)}>{work.data.type === 'book' ? '读这篇书评' : '读这篇影评'}</a>}
+        </section>)}
+      </div>
+      <div class="works-empty" data-works-empty hidden={works.length > 0}>
+        <p data-works-empty-text>{works.length ? '这一页暂时留白。' : '这里暂时还没有收藏，故事会慢慢留下来。'}</p>
+        <button type="button" data-work-reset hidden>查看全部</button>
+      </div>
+    </div>
+  </main>
+</Base>

@@ -1,6 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
+import { workSchema } from './lib/work-schema';
 
 const article = z.object({
   title: z.string(),
@@ -25,6 +26,7 @@ const article = z.object({
 });
 
 export const collections = {
+  works: defineCollection({ loader: glob({ pattern: '**/*.md', base: './src/content/works' }), schema: workSchema }),
   posts: defineCollection({ loader: glob({ pattern: '**/*.md', base: './src/content/posts' }), schema: article }),
   notes: defineCollection({ loader: glob({ pattern: '**/*.md', base: './src/content/notes' }), schema: article }),
 };

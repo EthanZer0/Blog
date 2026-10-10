@@ -1,0 +1,9 @@
+---
+import { withBase } from '../lib/url';
+interface Props { title: string; cover?: string; }
+const { title, cover } = Astro.props;
+---
+<div class="work-cover" data-work-cover>
+  <span class="work-cover-placeholder" aria-hidden={!!cover}>{title}</span>
+  {cover && <img src={withBase(cover)} alt={`${title}的封面`} loading="lazy" decoding="async" width="400" height="600" />}
+</div>

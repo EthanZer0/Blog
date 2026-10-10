@@ -73,6 +73,8 @@ slug 与 categorySlug 使用小写英文、数字及连字符。文稿地址为 
 
 ## GitHub Pages
 
+书籍、电影和剧集收藏的字段、封面、状态与评论关联见 [书与影维护说明](docs/COLLECTIONS.md)。作品使用独立的 `src/content/works/` 集合。
+
 首次部署与个人资料替换步骤见 [部署记录](docs/DEPLOYMENT.md)。
 
 1. 将仓库推送到 GitHub，主分支为 `main`。

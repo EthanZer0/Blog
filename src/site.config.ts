@@ -38,6 +38,7 @@ export const siteConfig = {
     { title: '文稿', path: '/posts/', icon: 'i-mingcute-book-2-line' },
     { title: '手记', path: '/notes/', icon: 'i-mingcute-quill-pen-line' },
     { title: '时光', path: '/timeline/', icon: 'i-mingcute-history-line',subMenu:[{title:'手记',path:'/timeline/?type=note',icon:'i-mingcute-quill-pen-line'},{title:'文稿',path:'/timeline/?type=post',icon:'i-mingcute-book-2-line'},{title:'专栏',path:'/notes/series/',icon:'i-mingcute-align-bottom-fill'}] },
+    { title: '书与影', path: '/collections/', icon: 'i-mingcute-book-2-line' },
     { title: '关于', path: '/about/', icon: 'i-mingcute-user-3-line' },
   ] as NavItem[],
 };

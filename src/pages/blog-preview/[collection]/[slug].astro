@@ -1,13 +1,16 @@
 ---
 import { getCollection } from 'astro:content';
 import Article from '../../../layouts/Article.astro';
+import Work from '../../../layouts/Work.astro';
+import { publicWorks } from '../../../lib/works';
 
 export async function getStaticPaths() {
   // 仅插件启动的本机开发服务生成预览路径，生产构建始终没有草稿预览页面。
   if (!import.meta.env.DEV || process.env.BLOG_WORKBENCH_PREVIEW !== '1') return [];
-  const entries = [...await getCollection('posts'), ...await getCollection('notes')];
+  const entries = [...await getCollection('posts'), ...await getCollection('notes'), ...await getCollection('works')];
   return entries.map(entry => ({ params: { collection: entry.collection, slug: entry.data.slug }, props: { entry } }));
 }
 const { entry } = Astro.props;
+const reviewPath = entry.collection === 'works' && !entry.data.draft ? (await publicWorks()).find(item => item.entry.id === entry.id)?.reviewPath : undefined;
 ---
-<Article entry={entry} preview />
+{entry.collection === 'works' ? <Work entry={entry} reviewPath={reviewPath} preview /> : <Article entry={entry} preview />}

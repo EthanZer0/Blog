@@ -1,0 +1,39 @@
+---
+import { render } from 'astro:content';
+import Base from './Base.astro';
+import WorkCover from '../components/WorkCover.astro';
+import type { Work } from '../lib/works';
+import { workTypeLabel, workStatusLabel } from '../lib/work-filters';
+import { withBase } from '../lib/url';
+import { formatDate } from '../lib/content';
+import '../styles/collections.css';
+import 'katex/dist/katex.min.css';
+interface Props { entry: Work; reviewPath?: string; preview?: boolean; }
+const { entry:work, reviewPath, preview = false } = Astro.props;
+const { Content } = await render(work);
+---
+<Base noindex={preview} title={work.data.title} description={work.data.summary || `${workTypeLabel[work.data.type]} · ${work.data.title}`}>
+  <main id="main" data-header-hide-bg class="collections-page work-detail" data-work-detail>
+    {preview && <p class="work-meta" data-pagefind-ignore role="status">本地作品预览 · {work.data.draft ? "草稿尚未发布" : "已公开作品"} · 保存后自动更新</p>}
+    <a class="work-back" data-work-back href={withBase('/collections/')}>返回书与影</a>
+    <header class="work-detail-header">
+      <WorkCover title={work.data.title} cover={work.data.cover} />
+      <div class="work-detail-info">
+        <span class="work-type">{workTypeLabel[work.data.type]}</span>
+        <h1 data-pagefind-meta="title">{work.data.title}</h1>
+        {work.data.originalTitle && <p class="work-original">{work.data.originalTitle}</p>}
+        <p class="work-meta">{work.data.creator && <span>{work.data.type === 'book' ? '作者' : '导演'}：{work.data.creator}</span>}{work.data.creator && work.data.year && <span aria-hidden="true">·</span>}{work.data.year && <span>{work.data.year}</span>}</p>
+        <p class="work-meta">{work.data.rating !== undefined && <><span>{work.data.rating.toFixed(1)} / 10</span><span aria-hidden="true">·</span></>}<span>{workStatusLabel(work.data.status,work.data.type === 'book')}</span></p>
+        <p class="work-meta"><span>记录于 <time datetime={work.data.recorded.toISOString()}>{formatDate(work.data.recorded)}</time></span>{work.data.status === 'finished' && work.data.finished && <><span aria-hidden="true">·</span><span>完成于 <time datetime={work.data.finished.toISOString()}>{formatDate(work.data.finished)}</time></span></>}</p>
+      </div>
+    </header>
+    <article class="prose markdown work-notes" data-article-body data-reading-region data-content-kind="work" data-pagefind-body>
+      <span hidden data-pagefind-meta="subtitle">{workTypeLabel[work.data.type]}</span>
+      <span hidden>{work.data.title} {work.data.originalTitle} {work.data.creator}</span>
+      {work.data.summary && <p class="work-detail-summary">{work.data.summary}</p>}
+      <Content />
+    </article>
+    <div data-article-end aria-hidden="true"></div>
+    {reviewPath && <a class="work-review work-detail-review" href={withBase(reviewPath)}>{work.data.type === 'book' ? '读这篇书评' : '读这篇影评'}</a>}
+  </main>
+</Base>

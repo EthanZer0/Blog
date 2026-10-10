@@ -89,8 +89,8 @@ for (const required of ['feed.xml','sitemap-index.xml','robots.txt','pagefind/pa
 }
 const rss = load(await readFile(path.join(root,'feed.xml'),'utf8'),{xml:true});
 if (rss('channel > link').text() !== new URL(`${base}/`, site).href) errors.push('RSS channel URL does not match deployment homepage');
-// The about page reuses the reader enhancement hook but is not an RSS entry.
-const articleCount = [...pages.entries()].filter(([file, $]) => $('[data-article-body]').length > 0 && !file.endsWith(`${path.sep}about${path.sep}index.html`)).length;
+// Only published posts and notes are RSS entries; works/about reuse reader hooks.
+const articleCount = [...pages.values()].filter($ => $('[data-content-kind=posts], [data-content-kind=notes]').length > 0).length;
 if(rss('item').length !== articleCount) errors.push(`RSS has ${rss('item').length} items for ${articleCount} published article pages`);
 for(const link of rss('item > link').toArray()) await checkUrl(rss(link).text(),path.join(root,'index.html'));
 if(errors.length) { console.error(errors.join('\n')); process.exit(1); }

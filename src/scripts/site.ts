@@ -3,7 +3,9 @@ import { Spring,softBouncePreset } from '../components/upstream/spring';
 import { throttle } from 'lodash-es';
 import { recentDateLabel } from '../lib/recent-date';
 import { mountListReveal } from './list-reveal';
+import { mountCollections } from './collections';
 let dispose:(()=>void)|undefined;
+let previousPageTop = 0;
 function initializePage(){
  dispose?.();const controller=new AbortController(),signal=controller.signal,cleanups:Array<()=>void>=[];
  dispose=()=>{controller.abort();cleanups.forEach(cleanup=>cleanup());};
@@ -170,10 +172,18 @@ if (location.pathname.includes('/timeline/')) {
 
 
 cleanups.push(()=>{cancelAnimationFrame(headerFrame);scrolling?.stop();clearScrollingListeners?.();});
+cleanups.push(mountCollections());
 cleanups.push(mountListReveal());
 }
 document.addEventListener('astro:page-load',initializePage);
 document.addEventListener('astro:before-swap',event=>{
+  previousPageTop = document.querySelector('.page-content')?.getBoundingClientRect().top ?? 0;
   dispose?.();
   event.newDocument.documentElement.dataset.listMotion = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'off' : 'on';
+});
+document.addEventListener('astro:after-swap', () => {
+  const newPageTop = document.querySelector('.page-content')?.getBoundingClientRect().top ?? 0;
+  // The transition group uses the new page's geometry. Keep the old snapshot
+  // at its captured viewport position, including history/anchor navigation.
+  document.documentElement.style.setProperty('--page-old-offset', `${previousPageTop - newPageTop}px`);
 });
