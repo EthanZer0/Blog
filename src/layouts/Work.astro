@@ -23,7 +23,7 @@ const { Content } = await render(work);
         <h1 data-pagefind-meta="title">{work.data.title}</h1>
         {work.data.originalTitle && <p class="work-original">{work.data.originalTitle}</p>}
         <p class="work-meta">{work.data.creator && <span>{work.data.type === 'book' ? '作者' : '导演'}：{work.data.creator}</span>}{work.data.creator && work.data.year && <span aria-hidden="true">·</span>}{work.data.year && <span>{work.data.year}</span>}</p>
-        <p class="work-meta">{work.data.rating !== undefined && <><span>{work.data.rating.toFixed(1)} / 10</span><span aria-hidden="true">·</span></>}<span>{workStatusLabel(work.data.status,work.data.type === 'book')}</span></p>
+        <p class="work-meta">{work.data.rating !== undefined && <><span class="work-rating">{work.data.rating.toFixed(1)} / 10</span><span aria-hidden="true">·</span></>}<span>{workStatusLabel(work.data.status,work.data.type === 'book')}</span></p>
         <p class="work-meta"><span>记录于 <time datetime={work.data.recorded.toISOString()}>{formatDate(work.data.recorded)}</time></span>{work.data.status === 'finished' && work.data.finished && <><span aria-hidden="true">·</span><span>完成于 <time datetime={work.data.finished.toISOString()}>{formatDate(work.data.finished)}</time></span></>}</p>
       </div>
     </header>

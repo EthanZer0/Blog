@@ -12,9 +12,11 @@ const works = await publicWorks();
     <header class="works-header"><h1>书与影</h1><p>在别人的故事里，留下自己的回声。</p></header>
     <div class="works-filters" data-work-filters hidden>
       <div class="works-filter-row" role="group" aria-label="作品类型">
+        <span class="works-filter-label" aria-hidden="true">类型</span>
         {[['','全部'],['book','书籍'],['movie','电影'],['series','剧集']].map(([value,label]) => <button type="button" data-filter="type" data-value={value} aria-pressed={value === ''}>{label}</button>)}
       </div>
       <div class="works-filter-row" role="group" aria-label="阅读与观看状态">
+        <span class="works-filter-label" aria-hidden="true">状态</span>
         {[['','全部'],['in-progress','正在看'],['finished','已看完'],['planned','想看']].map(([value,label]) => <button type="button" data-filter="status" data-value={value} aria-pressed={value === ''}>{label}</button>)}
       </div>
     </div>
@@ -25,7 +27,7 @@ const works = await publicWorks();
           <a class="work-cover-link" data-work-link href={withBase(workPath(work))} aria-label={`查看${work.data.title}`}><WorkCover title={work.data.title} cover={work.data.cover} /></a>
           <h2><a data-work-link href={withBase(workPath(work))}>{work.data.title}</a></h2>
           <p class="work-meta">{[work.data.creator,work.data.year].filter(value => value !== undefined && value !== '').map((value,index) => <>{index > 0 && <span aria-hidden="true">·</span>}<span>{value}</span></>)}</p>
-          <p class="work-meta">{work.data.rating !== undefined && <><span>{work.data.rating.toFixed(1)} / 10</span><span aria-hidden="true">·</span></>}<span>{workStatusLabel(work.data.status,work.data.type === 'book')}</span><span class="sr-only">，{workTypeLabel[work.data.type]}</span></p>
+          <p class="work-meta">{work.data.rating !== undefined && <><span class="work-rating">{work.data.rating.toFixed(1)} / 10</span><span aria-hidden="true">·</span></>}<span>{workStatusLabel(work.data.status,work.data.type === 'book')}</span><span class="sr-only">，{workTypeLabel[work.data.type]}</span></p>
           {work.data.summary && <p class="work-summary">{work.data.summary}</p>}
           {reviewPath && <a class="work-review" href={withBase(reviewPath)}>{work.data.type === 'book' ? '读这篇书评' : '读这篇影评'}</a>}
         </section>)}
