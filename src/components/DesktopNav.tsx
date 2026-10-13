@@ -51,7 +51,7 @@ export default function DesktopNav({ pathname: initialPathname, nav }: { pathnam
     return () => { window.removeEventListener('scroll', schedule);document.removeEventListener('astro:after-swap',navigate); cancelAnimationFrame(frame); clearTimeout(timer); };
   }, []);
   return <>
-    <LayoutGroup id="header-main"><div className="duration-100" style={{ opacity, visibility: opacity === 0 ? 'hidden' : 'visible' }}><Capsule pathname={pathname} label="主导航" nav={nav} /></div></LayoutGroup>
-    <AnimatePresence>{floating && <motion.div initial={reduced ? false : { y: -20 }} animate={{ y: 0 }} exit={{ y: -20, opacity: 0 }} className="pointer-events-none fixed inset-x-0 top-4 z-10 mr-[var(--removed-body-scroll-bar-size,0px)] flex justify-center"><LayoutGroup id="header-floating"><Capsule pathname={pathname} label="浮动导航" nav={nav} /></LayoutGroup></motion.div>}</AnimatePresence>
+    <LayoutGroup id="header-main"><div data-main-nav className="duration-100" style={{ opacity, visibility: opacity === 0 ? 'hidden' : 'visible' }}><Capsule pathname={pathname} label="主导航" nav={nav} /></div></LayoutGroup>
+    <AnimatePresence>{floating && <motion.div data-floating-nav initial={reduced ? false : { y: -20 }} animate={{ y: 0 }} exit={{ y: -20, opacity: 0 }} className="pointer-events-none fixed inset-x-0 top-4 z-10 mr-[var(--removed-body-scroll-bar-size,0px)] flex justify-center"><LayoutGroup id="header-floating"><Capsule pathname={pathname} label="浮动导航" nav={nav} /></LayoutGroup></motion.div>}</AnimatePresence>
   </>;
 }

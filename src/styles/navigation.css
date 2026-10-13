@@ -32,3 +32,38 @@ html[data-theme='dark'] {
   .navigation-menu-link:hover { background: rgb(var(--navigation-rule) / .08); }
 }
 .navigation-button[data-state='open'] { color: var(--navigation-accent); }
+
+/* Immediate feedback while the target page is being prepared. */
+.site-header[data-route-pending] [data-main-nav],
+.site-header[data-route-pending] button[aria-label='展开导航'] { opacity: 1 !important; visibility: visible !important; }
+.site-header[data-route-pending] [data-floating-nav] { visibility: hidden !important; pointer-events: none; }
+.site-header a[data-navigation-pending], .navigation-menu-link[data-navigation-pending] {
+  color: var(--navigation-accent); background-color: rgb(var(--navigation-rule) / .08);
+  border-radius: 6px;
+}
+
+.navigation-feedback { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
+.navigation-progress { position: absolute; inset: 0 0 auto; height: 2px; overflow: hidden; opacity: 0; transition: opacity 140ms ease-out; }
+.navigation-progress::before {
+  content: ''; display: block; width: 32%; height: 100%;
+  background: linear-gradient(90deg, transparent, var(--navigation-accent), transparent);
+  transform: translateX(-100%);
+  animation: navigation-progress-flow 1300ms cubic-bezier(.4,0,.2,1) infinite paused;
+}
+.navigation-feedback[data-loading] .navigation-progress { opacity: .85; }
+.navigation-feedback[data-loading] .navigation-progress::before { animation-play-state: running; }
+@keyframes navigation-progress-flow { to { transform: translateX(415%); } }
+.navigation-error {
+  position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+  width: min(360px, calc(100% - 40px)); padding: 14px 20px; text-align: center;
+  pointer-events: auto; background: var(--navigation-sheet); color: var(--navigation-text);
+  border-radius: 8px; box-shadow: 0 2px 20px rgb(80 65 38 / .08);
+}
+.navigation-error p { margin: 0; font-size: 13px; line-height: 1.8; }
+.navigation-error button { margin-top: 10px; padding: 5px 12px; font: inherit; font-size: 13px; color: var(--navigation-accent); text-underline-offset: 4px; }
+.navigation-error button:hover { text-decoration: underline; }
+@media (prefers-reduced-motion: reduce) {
+  .navigation-progress { transition: none; }
+  .navigation-progress::before { animation: none; width: 100%; transform: none; }
+}
+@media print { .navigation-feedback { display: none !important; } }

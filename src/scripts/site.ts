@@ -4,6 +4,7 @@ import { throttle } from 'lodash-es';
 import { recentDateLabel } from '../lib/recent-date';
 import { mountListReveal } from './list-reveal';
 import { mountCollections } from './collections';
+import './navigation-feedback';
 let dispose:(()=>void)|undefined;
 let previousPageTop = 0;
 function initializePage(){
