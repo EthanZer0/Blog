@@ -86,7 +86,7 @@ $$
 
 下面使用站点的演示头像作为图片交互示例；点击可以放大查看。
 
-![Shiro 演示占位图](/avatar.png)
+![Shiro 演示占位图](/images/d4bcaea48384b35afe40fef1.webp)
 
 ## 写在最后
 

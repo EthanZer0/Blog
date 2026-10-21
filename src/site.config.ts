@@ -9,7 +9,7 @@ export const siteConfig = {
   title: '凌晨Feng - 静思，笃行',
   description: '一隅清净地，且行，且留。',
   owner: '凌晨Feng',
-  avatar: '/avatar.jpg',
+  avatar: '/images/6b397b6503ebfaafc08e1a93.webp',
   hero: {
     title: {
       template: [

@@ -11,7 +11,7 @@ summary: 刚看完。查克真的气死人，这么伤害自己的弟弟。不�
 draft: false
 rating: 10
 typora-root-url: ../../../public
-cover: /images/d2be6aa9bfd214e8b5d1ba90.jpg
+cover: /images/78aac2d9674eceb2d7e7cff8.webp
 finished: 2026-10-08
 ---
 

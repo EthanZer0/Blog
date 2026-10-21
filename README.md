@@ -34,7 +34,7 @@ npm run preview
 夏冬亮色粒子按个人设计使用全屏均匀、零散的柔和纯色圆点（直径 2.6–4.2px），约每 170px 网格一个，漂浮速度 2–4px/s；不发光、不闪烁、不响应滚动，也不在中央淡出。
 - `src/content/posts/*.md`：文稿。
 - `src/content/notes/*.md`：手记。
-- `public/avatar.jpg`：当前个人头像，首页与导航栏共用；路径由 `siteConfig.avatar` 配置。
+- `public/images/6b397b6503ebfaafc08e1a93.webp`：当前个人头像，首页与导航栏共用；路径由 `siteConfig.avatar` 配置。
 - `src/pages/about.astro`：个人介绍。
 
 首页大字使用 `hero.title.template` 按顺序组合，沿用 Shiro 的 `type`、可选 `text` 和可选 `class`。换行写作 `{ type: 'br' }`，不需要填写文字；字体与字号配置在各片段的 `class`，小字简介在 `hero.description`。当前包含两行介绍与一行 code，可直接替换：
