@@ -17,7 +17,7 @@ const { Content } = await render(work);
     {preview && <p class="work-meta" data-pagefind-ignore role="status">本地作品预览 · {work.data.draft ? "草稿尚未发布" : "已公开作品"} · 保存后自动更新</p>}
     <a class="work-back" data-work-back href={withBase('/collections/')}>返回书与影</a>
     <header class="work-detail-header">
-      <WorkCover title={work.data.title} cover={work.data.cover} />
+      <WorkCover title={work.data.title} cover={work.data.cover} priority />
       <div class="work-detail-info">
         <span class="work-type">{workTypeLabel[work.data.type]}</span>
         <h1 data-pagefind-meta="title">{work.data.title}</h1>

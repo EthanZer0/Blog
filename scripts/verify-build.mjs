@@ -74,6 +74,10 @@ for (const [file, $] of pages) {
     const raw = $(element).attr(element.tagName === 'img' || element.tagName === 'script' ? 'src' : 'href');
     await checkUrl(raw, file, element.tagName === 'a');
   }
+  for (const element of $('img[srcset]').toArray()) {
+    const srcset = $(element).attr('srcset');
+    if (srcset.includes('/_blog-images/')) for (const item of srcset.split(',')) await checkUrl(item.trim().split(/\s+/)[0], file);
+  }
   for (const element of $('astro-island').toArray()) {
     for (const key of ['component-url','renderer-url']) await checkUrl($(element).attr(key),file);
   }

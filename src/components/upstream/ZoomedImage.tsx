@@ -518,7 +518,8 @@ const OptimizedImage = memo(
     ref?: React.RefObject<HTMLImageElement | null>
     src?: string
   }) => {
-    const { height, width } = useMarkdownImageRecord(src!) || rest
+    const record = useMarkdownImageRecord(src!)
+    const { height, width } = record || rest
 
     const isGif = src!.endsWith('.gif')
     const useOptimize = false
@@ -532,6 +533,9 @@ const OptimizedImage = memo(
         src={src}
         ref={placeholderImageRef}
         {...rest}
+        srcSet={record?.srcset || rest.srcSet}
+        sizes={record?.sizes || rest.sizes}
+        decoding="async"
       />
     )
 
@@ -552,6 +556,8 @@ const OptimizedImage = memo(
       let active = true;
       let img: HTMLImageElement | undefined;
       setExifData(null);
+      // 响应式图片不为读取 EXIF 另下载高清源图；放大时才请求它。
+      if (record?.srcset) return;
       const extractExif = () => {
         // Create a new image element to load the image and extract EXIF
         img = new window.Image()
@@ -638,7 +644,7 @@ const OptimizedImage = memo(
 
       if (!isGif) extractExif()
       return () => { active = false; if (img) img.onload = null; };
-    }, [src, isGif])
+    }, [src, isGif, record?.srcset])
 
     return (
       <>

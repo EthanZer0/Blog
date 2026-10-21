@@ -5,9 +5,11 @@ import RemoveMarkdown from 'remove-markdown';
 import { MdiClockOutline } from './upstream/clock';
 import { PhPushPinFill } from './upstream/pin';
 import { FeHash } from './upstream/fa-hash';
+import { responsiveImage } from '../lib/responsive-images.mjs';
 interface Props { entry: Entry; }
 const { entry } = Astro.props;
 const previewImage = entry.data.cover || entry.body?.match(/!\[[^\]]*\]\(([^\s)]+)(?:[^)]*)\)/)?.[1];
+const image = await responsiveImage(previewImage, '88px');
 const text = entry.body || '';
 const displayText = text.length > 300 ? `${RemoveMarkdown(text.slice(0,300))}...` : text;
 ---
@@ -16,7 +18,7 @@ const displayText = text.length > 300 ? `${RemoveMarkdown(text.slice(0,300))}...
   <h2 class="relative break-words text-2xl font-medium"><div class:list={['flex items-baseline gap-2', entry.data.pin ? 'w-[calc(100%-2rem)]' : 'w-full']}><span>{entry.data.title}</span></div>{entry.data.pin && <span aria-label="置顶" class="pointer-events-none absolute top-[4px] right-0 bottom-0 z-10 -m-5 box-content inline-flex size-5 items-center p-5 text-error"><PhPushPinFill /></span>}</h2>
   <div class="relative mt-8 space-y-2" data-post-loose>
     {entry.data.description && <p class="mb-4 break-all rounded-md px-4 py-2 text-sm leading-relaxed text-zinc-900 ring-1 ring-accent/10 dark:text-zinc-50">摘要： {entry.data.description}</p>}
-    <div class="relative overflow-hidden text-justify">{previewImage && <div class="float-right mb-2 ml-3 size-[5.5rem] overflow-hidden rounded-md bg-cover bg-center bg-no-repeat" style={{backgroundImage:`url(${withBase(previewImage)})`}} />}<p class="break-all leading-loose text-zinc-800/90 dark:text-zinc-200/90">{displayText}</p></div>
+    <div class="relative overflow-hidden text-justify">{previewImage && <img src={withBase(previewImage)} srcset={image.srcset} sizes={image.sizes} alt="" loading="lazy" decoding="async" width="88" height="88" class="float-right mb-2 ml-3 size-[5.5rem] rounded-md object-cover" />}<p class="break-all leading-loose text-zinc-800/90 dark:text-zinc-200/90">{displayText}</p></div>
   </div>
   <div class="relative mt-4 space-y-2" data-post-compact hidden><div class="relative overflow-hidden text-justify">{entry.data.description&&<p class="mb-2 break-all leading-loose text-zinc-800/90 dark:text-zinc-200/90">{entry.data.description}</p>}</div></div>
   <div class="mt-2 flex select-none flex-wrap items-center justify-end gap-4 text-base-content/60">

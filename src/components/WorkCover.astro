@@ -1,9 +1,11 @@
 ---
 import { withBase } from '../lib/url';
-interface Props { title: string; cover?: string; }
-const { title, cover } = Astro.props;
+import { responsiveImage } from '../lib/responsive-images.mjs';
+interface Props { title: string; cover?: string; priority?: boolean; }
+const { title, cover, priority = false } = Astro.props;
+const image = await responsiveImage(cover, '(max-width: 640px) 40vw, 240px');
 ---
 <div class="work-cover" data-work-cover>
   <span class="work-cover-placeholder" aria-hidden={!!cover}>{title}</span>
-  {cover && <img src={withBase(cover)} alt={`${title}的封面`} loading="lazy" decoding="async" width="400" height="600" />}
+  {cover && <img src={withBase(cover)} srcset={image.srcset} sizes={image.sizes} alt={`${title}的封面`} loading={priority ? 'eager' : 'lazy'} fetchpriority={priority ? 'high' : undefined} decoding="async" width={image.width || 400} height={image.height || 600} />}
 </div>

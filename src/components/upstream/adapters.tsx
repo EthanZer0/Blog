@@ -11,7 +11,7 @@ export function useIsMobile(){return useViewport(v=>v.w<=1024);}
 export function useIsUnMounted(){const ref=useRef(false);useEffect(()=>{ref.current=false;return()=>{ref.current=true;};},[]);return ref;}
 export function useStateToRef<T>(value:T){const ref=useRef(value);ref.current=value;return ref;}
 export function useEventCallback<T extends (...args:any[])=>any>(fn:T){const ref=useStateToRef(fn);const stable=useRef((...args:Parameters<T>)=>ref.current(...args));return stable.current;}
-export type ImageRecord={src:string;width:number;height:number;accent?:string;blurHash?:string};
+export type ImageRecord={src:string;width:number;height:number;accent?:string;blurHash?:string;srcset?:string;sizes?:string};
 export const ImageRecords=createContext<ImageRecord[]>([]);
 export function useMarkdownImageRecord(src:string){return useContext(ImageRecords).find(image=>image.src===src);}
 export const WrappedWidth=createContext(0);

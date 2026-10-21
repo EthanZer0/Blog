@@ -22,6 +22,10 @@ npm run preview
 
 ## 写作与配置
 
+正文、文章列表和书与影封面的本地 PNG/JPEG/WebP 会生成响应式 WebP 版本，浏览器按显示宽度选图；32KB 以下图片直接使用原文件，动画与外链保留。正文点击放大仍使用文章引用的较高清版本，原始素材不会通过此流程额外公开。图片宽高用于预留空间，详情页作品封面优先加载。React 图片与图集接管后保留响应式信息。
+
+变体缓存位于 node_modules/.cache/blog-images，构建只把页面实际引用的变体复制到 dist/_blog-images，开发服务器也可预览。不改写 Markdown 或 public 源文件；Typora 博客插件 0.17 导入时另有图片优化和本机原图归档。网络外链需主动导入才能进入本地优化流程。npm run verify 包含图片尺寸、变体体积、路径保护及产物引用检查。
+
 - `src/site.config.ts`：站点名称、简介、Hero、头像、社交链接、导航。
 - `src/site.config.ts` 的 `background`：`'auto'` 按访客本地月份和亮暗主题自动选择背景；可设置 `'spring'`、`'summer'`、`'autumn'`、`'winter'` 固定季节，或 `'none'` 关闭。手机、正文阅读页、打印及减少动态偏好下自动隐藏。
 

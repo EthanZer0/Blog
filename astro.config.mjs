@@ -11,6 +11,7 @@ import { rehypeShiro } from './src/lib/rehype-shiro.mjs';
 import { unified } from '@astrojs/markdown-remark';
 import { rehypeShiroHighlight } from './src/lib/rehype-shiro-highlight.mjs';
 import rehypeSlug from 'rehype-slug';
+import { rehypeResponsiveImages, responsiveImagesIntegration } from './src/lib/responsive-images.mjs';
 
 const site = process.env.SITE_URL || 'https://example.com';
 const base = process.env.BASE_PATH || '/';
@@ -20,13 +21,13 @@ export default defineConfig({
   base,
   output: 'static',
   trailingSlash: 'always',
-  integrations: [react(), sitemap()],
+  integrations: [react(), sitemap(), responsiveImagesIntegration()],
   vite: { plugins: [tailwindcss()] },
   markdown: {
     syntaxHighlight: false,
     processor: unified({
       remarkPlugins: [remarkMath, remarkDirective, shiroHtmlBlocks, shiroDirectives],
-      rehypePlugins: [rehypeShiroHighlight, rehypeRaw, rehypeKatex, rehypeSlug, rehypeShiro],
+      rehypePlugins: [rehypeShiroHighlight, rehypeRaw, rehypeKatex, rehypeSlug, rehypeResponsiveImages, rehypeShiro],
       remarkRehype: { footnoteLabel: '脚注', footnoteBackLabel: '返回引用' },
     }),
   },

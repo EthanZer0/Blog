@@ -28,7 +28,7 @@ export const GridMarkdownImages: FC<{
 )
 
 const GridZoomImage: FC<{ src: string }> = memo(({ src }) => {
-  const { accent, height, width, blurHash } = useMarkdownImageRecord(src) || {}
+  const { accent, height, width, blurHash, srcset, sizes } = useMarkdownImageRecord(src) || {}
   const cropUrl = addImageUrlResizeQuery(src, 600)
   const imageEl = useRef<HTMLImageElement>(null)
   const wGreaterThanH = width && height ? width > height : true
@@ -58,6 +58,9 @@ const GridZoomImage: FC<{ src: string }> = memo(({ src }) => {
             height={height}
             width={width}
             src={cropUrl}
+            srcSet={srcset}
+            sizes={sizes}
+            decoding="async"
             ref={imageEl}
             className={clsx(
               'm-0! max-w-max object-cover',
